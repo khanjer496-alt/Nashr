@@ -1,3 +1,4 @@
+import { brand } from '@gitroom/nashr-brand/brand.config';
 import {
   AnalyticsData,
   AuthTokenDetails,
@@ -68,7 +69,7 @@ export class ThreadsProvider extends SocialAbstract implements SocialProvider {
       return {
         type: 'bad-body',
         value:
-          "One of the media URLs is invalid or inaccessible, make sure it's being uploaded to Postiz first",
+          `One of the media URLs is invalid or inaccessible, make sure it's being uploaded to ${brand.name} first`,
       };
     }
     if (body.includes('text must be at most 500 characters')) {

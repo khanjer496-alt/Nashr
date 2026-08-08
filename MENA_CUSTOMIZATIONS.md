@@ -235,6 +235,105 @@ live registry and matched.
 stack was never started, and `caddy validate` never ran. Those require a first real
 deploy.
 
+### 2026-08-08 — Phases 2, 3 and 5
+
+#### Phase 2 — Rebrand
+**Added:** `libraries/nashr-brand/` (single source of brand truth), `/about`, `/terms`,
+`/privacy`, `/licenses` pages, Nashr logo/favicon/OG assets.
+**Modified:** 68 → 23 files matching `postiz`; palette (Gulf teal `#0E7C74`, copper
+`#B4552D`, both ≥4.9:1 on white); root `metadata` export.
+
+**No `package.json` in the new libraries — deliberate.** No library in this repo has one;
+`pnpm-lock.yaml` records no library importers, so adding one breaks
+`pnpm install --frozen-lockfile` in CI. Resolution is via tsconfig paths only.
+
+**Real bug fixed:** `nevo@postiz.com` was hard-coded as the agency notification
+recipient — our notifications would have gone to the upstream author's inbox. Now
+`AGENCY_NOTIFICATION_EMAIL`.
+
+**AGPL §13 fix:** `(site)/layout.tsx` renders `null` until `/user/self` resolves and
+`proxy.ts` redirected anonymous visitors to `/auth`, so `/licenses` was unreachable when
+signed out. A source offer only reachable by authenticated users does not satisfy §13.
+The four legal paths are now in the proxy allowlist with a minimal public shell.
+
+**Hidden, not deleted:** upstream testimonials and "Join 10,000+ Entrepreneurs" are behind
+`NEXT_PUBLIC_SHOW_TESTIMONIALS` (default off) — those quotes were given to Postiz, and
+showing them under Nashr would misrepresent them.
+
+#### Phase 3 — Arabic and MENA foundation
+**Added:** `libraries/nashr-i18n/` (markets, timezone, currency, numerals, datetime,
+hijri, typography, direction) and `libraries/nashr-content/` (6 bilingual campaigns,
+5 vertical profiles). `RTL_CHECKLIST.md`, `UNTRANSLATED_BACKEND_STRINGS.md`.
+**Modified:** all 16 locale files — 234 "Postiz" occurrences → 0.
+
+**Five RTL bugs fixed:** `<html>` had neither `dir` nor `lang` (direction came only from a
+client effect, so Arabic first-painted LTR then snapped); the toast rendered off-screen
+(logical `start-[50%]` combined with physical `-translate-x-[50%]`); two context menus
+anchored by measured `left` opened off-viewport; `dayjs.locale('ar-AE')` silently no-ops
+and keeps the previous locale, so an `ar-AE` calendar would have shown English month
+names; `change.dir.tsx` had an empty dependency array and never reacted to a language
+switch.
+
+**Saudi National Day edition numbers are Hijri-counted** — 2025 was the 95th, not
+`2025−1932 = 93`. `editionNumber()` returns `null` outside a verified lookup table rather
+than printing a wrong national-day number.
+
+**Open brand decision:** "نشر" is also the ordinary noun for *publishing*, so bare
+mid-sentence use is ambiguous. Currently rendered as «نشر» with Arabic guillemets.
+**This needs the brand owner's ratification.**
+
+#### Phase 5 — MENA content agents
+**Added:** `libraries/nashr-agents/` (34 files) — six agents, 26 tools, 8 sensitive —
+built on the existing Mastra runtime, plus `nashr-agents.controller.ts` on its own route
+(upstream `copilot.controller.ts` untouched).
+
+Guardrails are enforced once, centrally, and cannot be opted out of:
+- **The model only ever receives an opaque `proposalId`.** The confirmation HMAC is minted
+  solely by the authenticated HTTP approve endpoint, so **a model cannot approve its own
+  action**. Proposals are single-use and bound to exact arguments.
+- Registration-time validation rejects a `write|publish|delete|message|schedule|campaign`
+  tool that is not marked sensitive — a mistake is a boot failure, not an incident.
+- Redaction runs before prompt assembly, before logging, and before user-facing errors.
+- 30 s/tool, 120 s/turn, ≤2 retries, **0 retries on sensitive writes**.
+- Prohibited claims are injected into every system prompt and re-checked on output.
+
+`PostsPort` deliberately fails closed: wiring scheduling here would create a second path
+to the queue that bypasses the Temporal approval chokepoint.
+
+**Known limitation:** `ProposalStorePort` is in-memory. **A multi-replica deployment needs
+a Redis implementation**, or a proposal created on replica A cannot be approved on
+replica B.
+
+#### Integration wiring (lead engineer)
+`tsconfig.base.json` path aliases for all five new libraries; `api.module.ts` registers
+`NashrApprovalController` and `NashrAgentsController` inside `authenticatedController`
+(so `AuthMiddleware.forRoutes` covers them) with their services as providers.
+
+#### Verified
+```
+nashr-permissions   37 passed      nashr-approval   55 passed
+nashr-agents       148 passed      nashr-i18n        5 passed
+                                   TOTAL           245 passed
+backend nest build       exit 0
+orchestrator nest build  exit 0
+frontend tsc --noEmit    exit 0
+```
+The `nashr-i18n` Hijri tests were **added by the lead engineer**: Phase 3 claimed an
+852-conversion stress test but left nothing reproducible in the repo. The new spec pins
+Ramadan 1445, Eid al-Fitr 1446 and Eid al-Adha 1447 against real observed dates and
+round-trips 400 consecutive days.
+
+#### Upstream bugs found, not fixed (tracked)
+- `mastodon.custom.provider.ts:52` passes 5 args to `generateUrlDynamic`, which takes 4
+  (`mastodon.provider.ts:87`). The extra `refresh` is silently dropped. Does not break the
+  build.
+- The root `jest.config.ts` calls `getJestProjects()` from `@nx/jest`, which is not
+  installed and has no `nx.json`. **The root test runner is broken upstream for every
+  project**, which is consistent with the audit finding of zero tests. Each Nashr library
+  ships a self-contained config instead.
+- `apps/orchestrator/.swcrc` duplicates the tsconfig alias list and carries a stale
+  absolute `baseUrl` from an upstream developer's machine.
+
 ---
 
 ## Planned changes (not yet made)

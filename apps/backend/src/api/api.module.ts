@@ -47,6 +47,11 @@ import { OauthProvider } from '@gitroom/backend/services/auth/providers/oauth.pr
 // Nashr (نشر) addition — approval workflow wiring.
 import { NashrApprovalController } from '@gitroom/backend/api/routes/nashr-approval.controller';
 import { NashrApprovalService } from '@gitroom/nashr-approval/approval.service';
+import { NashrAgentsController } from '@gitroom/backend/api/routes/nashr-agents.controller';
+import {
+  NashrAgentsService,
+  OpenAiModelPort,
+} from '@gitroom/nashr-agents/nashr-agents.service';
 
 const authenticatedController = [
   UsersController,
@@ -70,6 +75,7 @@ const authenticatedController = [
   AdminController,
   // Nashr (نشر) addition. Placed here so AuthMiddleware.forRoutes covers it.
   NashrApprovalController,
+  NashrAgentsController,
 ];
 @Module({
   imports: [UploadModule],
@@ -87,6 +93,8 @@ const authenticatedController = [
   providers: [
     // Nashr (نشر) addition.
     NashrApprovalService,
+    NashrAgentsService,
+    OpenAiModelPort,
     AuthService,
     StripeService,
     OpenaiService,

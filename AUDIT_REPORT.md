@@ -284,7 +284,8 @@ every import path.
 
 **Additionally: the brand name leaks into the translations.** e.g.
 `locales/ar/translation.json` contains
-`"…عند حدوث شيء ما في Postiz عبر طلب HTTP"`. Any rebrand must sweep all 18 locale files, not just code.
+`"…عند حدوث شيء ما في Postiz عبر طلب HTTP"` — **234 occurrences across the locale files**.
+Any rebrand must sweep all 16 locale files, not just code.
 
 **Recommendation:** do **not** rename the `@gitroom/*` import scope. It is internal,
 never customer-visible, and renaming it would touch ~900 files and permanently
@@ -377,8 +378,8 @@ ship upstream branding).
 - Public API v1 + API keys
 - Stripe billing, 5 tiers, usage-limit enforcement (HTTP 402)
 - Email (SMTP/Resend) + in-app notifications + digest workflow
-- **i18n framework with Arabic already a shipped locale** (`libraries/react-shared-libraries/src/translation`)
-- **Partial RTL support** — `change.dir.tsx`, `language.component.tsx`, 99 `rtl` references
+- **i18n framework with Arabic already a shipped locale** (`libraries/react-shared-libraries/src/translation`), 16 locales, `ar` has 739 keys
+- **Minimal RTL support** — `change.dir.tsx`, `language.component.tsx`. See the correction below: real RTL coverage is far thinner than a raw grep suggests
 - AI: OpenAI captions, fal images, LangGraph agent, Mastra agent runtime + memory, CopilotKit UI
 
 ### B. Configuration only (env vars / config files, no code)
@@ -396,7 +397,7 @@ ship upstream branding).
 - Default timezone → `Asia/Dubai`; locale-aware date/time via existing dayjs
 - AED/SAR currency formatting in `pricing.ts` + billing UI
 - Arabic typography (font stack, line-height, numeral form)
-- Extend `i18n.json` targets; correct machine-translated Arabic that leaks "Postiz"
+- Extend `i18n.json` targets; correct machine-translated Arabic that leaks "Postiz" (234 occurrences)
 - Re-price and rename subscription tiers for MENA
 - About / Terms / Privacy / Open-Source Licenses pages
 - Self-built Docker image instead of `ghcr.io/gitroomhq/postiz-app`
@@ -431,7 +432,7 @@ ship upstream branding).
 | Gap | Severity | Note |
 |---|---|---|
 | **Snapchat provider absent** | High | Snapchat penetration in Saudi/UAE is very high. Not in the 36 providers. Postponed to post-MVP but must be disclosed to beta customers. |
-| Arabic translation is machine-generated | Medium | `i18n.json` uses lingo.dev + `gpt-4.1`. Brief forbids unreviewed machine translation. Requires native review. |
+| Arabic translation is machine-generated | Medium | `i18n.json` uses lingo.dev + `gpt-4.1`. 739 keys, unreviewed. Brief forbids unreviewed machine translation. Requires native review. |
 | No Hijri calendar support | Medium | Ramadan/Eid scheduling needs Hijri awareness. |
 | No `ar-AE` vs `ar-SA` distinction | Medium | Only generic `ar` exists today. |
 | Currency is USD-only | Low | `pricing.ts` uses bare numbers; formatting is presentational. |
@@ -452,4 +453,32 @@ ls libraries/nestjs-libraries/src/integrations/social/ | wc -l → 37 (36 provid
 wc -l libraries/nestjs-libraries/src/database/prisma/schema.prisma → 970
 wc -l LICENSE                                      → 661
 cat version.txt                                    → v1.47.0
+```
+
+
+---
+
+## 21. Corrections to this audit (added 2026-08-08, post-implementation)
+
+Three figures in the original audit were wrong. They were found during Phase 3 and are
+corrected here rather than quietly edited away, since the plan was sized against them.
+
+| Claim | Originally stated | Verified against `git show main:` | Effect |
+|---|---|---|---|
+| Locale directories | 18 | **16** | Minor. Scope of the locale sweep was slightly overstated. |
+| `ar` translation keys | ~1,400 | **739** | My count divided the raw quote count by 2; each key/value pair has 4 quotes. The native-review burden is roughly **half** what the audit implied. |
+| RTL support | "99 `rtl` references … partial RTL support" | **109 total hits, but 75 are `shortlink`/`shortLink` substring matches. Only 34 are genuinely direction-related.** | Material. The audit **overstated existing RTL support**. Real pre-existing coverage was a handful of `rtl:rotate-180` classes and a few escape-hatch CSS rules — not a working RTL layout. |
+
+The RTL error is the one that mattered: a case-insensitive `grep -i rtl` matches
+`sho**rtl**ink`, and this repo has a lot of short-link code. Phase 3 was correspondingly
+more work than planned, and RISK-P3 (RTL layout breakage) was **under**-rated rather than
+over-rated.
+
+Reproduce:
+```
+git show main:libraries/react-shared-libraries/src/translation/locales/ar/translation.json \
+  | python3 -c "import json,sys;print(len(json.load(sys.stdin)))"          # 739
+git ls-tree main --name-only .../locales/ | wc -l                          # 16
+git grep -ni rtl main -- apps/frontend/src libraries/react-shared-libraries/src | wc -l   # 109
+  ... | grep -ci shortlink                                                 # 75
 ```

@@ -5,6 +5,21 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        // Nashr brand design tokens. Defined in src/app/colors.scss and mirrored
+        // from libraries/nashr-brand/src/brand.config.ts (`brand.colors`).
+        brand: {
+          DEFAULT: 'var(--brand-primary)',
+          primary: 'var(--brand-primary)',
+          primaryHover: 'var(--brand-primary-hover)',
+          primarySoft: 'var(--brand-primary-soft)',
+          accent: 'var(--brand-accent)',
+          accentHover: 'var(--brand-accent-hover)',
+          gold: 'var(--brand-gold)',
+          success: 'var(--brand-success)',
+          warning: 'var(--brand-warning)',
+          danger: 'var(--brand-danger)',
+          info: 'var(--brand-info)',
+        },
         primary: 'var(--color-primary)',
         secondary: 'var(--color-secondary)',
         textColor: 'var(--new-btn-text)',

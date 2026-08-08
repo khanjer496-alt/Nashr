@@ -35,6 +35,8 @@
       "@gitroom/nashr-approval": ["libraries/nashr-approval/src/index.ts"],
       "@gitroom/nashr-approval/*": ["libraries/nashr-approval/src/*"],
       "@gitroom/react/*": ["libraries/react-shared-libraries/src/*"],
+      "@gitroom/nashr-agents": ["libraries/nashr-agents/src/index.ts"],
+      "@gitroom/nashr-agents/*": ["libraries/nashr-agents/src/*"],
       "@gitroom/nashr-brand": ["libraries/nashr-brand/src/index.ts"],
       "@gitroom/nashr-brand/*": ["libraries/nashr-brand/src/*"],
       "@gitroom/nashr-i18n": ["libraries/nashr-i18n/src/index.ts"],

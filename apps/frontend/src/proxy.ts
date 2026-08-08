@@ -10,6 +10,9 @@ import {
 } from '@gitroom/react/translation/i18n.config';
 acceptLanguage.languages(languages);
 
+// Reachable without authentication.
+const publicPages = ['/about', '/terms', '/privacy', '/licenses'];
+
 // This function can be marked `async` if using `await` inside
 export async function proxy(request: NextRequest) {
   const nextUrl = request.nextUrl;
@@ -47,7 +50,10 @@ export async function proxy(request: NextRequest) {
     nextUrl.pathname.startsWith('/uploads/') ||
     nextUrl.pathname.startsWith('/p/') ||
     nextUrl.pathname.startsWith('/provider/') ||
-    nextUrl.pathname.startsWith('/icons/')
+    nextUrl.pathname.startsWith('/icons/') ||
+    // Public information pages. /licenses carries the AGPL-3.0 §13 source-code
+    // offer, which must reach every network user, signed in or not.
+    publicPages.some((page) => nextUrl.pathname.startsWith(page))
   ) {
     return topResponse;
   }

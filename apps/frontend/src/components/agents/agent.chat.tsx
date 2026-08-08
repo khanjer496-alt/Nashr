@@ -1,5 +1,6 @@
 'use client';
 
+import { brand } from '@gitroom/nashr-brand/brand.config';
 import React, {
   FC,
   useCallback,
@@ -67,12 +68,12 @@ export const AgentChat: FC = () => {
         }
         className="trz agent bg-newBgColorInner flex flex-col gap-[15px] transition-all flex-1 items-center relative"
       >
-        <div className="absolute left-0 w-full h-full pb-[20px]">
+        <div className="absolute start-0 w-full h-full pb-[20px]">
           <CopilotChat
             className="w-full h-full"
             labels={{
               title: t('your_assistant', 'Your Assistant'),
-              initial: t('agent_welcome_message', `Hello, I am your Postiz agent 🙌🏻.
+              initial: t('agent_welcome_message', `Hello, I am your ${brand.name} agent 🙌🏻.
               
 I can schedule a post or multiple posts to multiple channels and generate pictures and videos.
 

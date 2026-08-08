@@ -1,5 +1,6 @@
 'use client';
 
+import { brand } from '@gitroom/nashr-brand/brand.config';
 import { useVariables } from '@gitroom/react/helpers/variable.context';
 import { Analytics as DubAnalyticsIn } from '@dub/analytics/react';
 import { getCookie } from 'react-use-cookie';
@@ -10,7 +11,7 @@ export const DubAnalytics = () => {
   return (
     <DubAnalyticsIn
       domainsConfig={{
-        refer: 'postiz.pro',
+        refer: process.env.NEXT_PUBLIC_DUB_REFER_DOMAIN || brand.domain,
       }}
     />
   );

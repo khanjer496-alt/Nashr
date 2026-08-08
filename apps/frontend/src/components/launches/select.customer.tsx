@@ -39,8 +39,16 @@ export const SelectCustomer: FC<{
       return;
     }
 
-    const { x, y, width, height } = ref.current?.getBoundingClientRect();
-    setPos({ top: y + height, left: x });
+    const rect = ref.current?.getBoundingClientRect();
+    const { y, height } = rect;
+    // Anchor the dropdown by its inline-start edge. Anchoring by `left` in RTL
+    // makes the panel grow away from the trigger and off the viewport edge.
+    const isRtl = document.documentElement.getAttribute('dir') === 'rtl';
+    setPos(
+      isRtl
+        ? { top: y + height, right: window.innerWidth - rect.right }
+        : { top: y + height, left: rect.x }
+    );
     setOpen(true);
   }, [open]);
 
@@ -58,8 +66,8 @@ export const SelectCustomer: FC<{
         data-tooltip-content={t('select_customer_tooltip', 'Select Customer')}
         onClick={openClose}
         className={clsx(
-          'relative z-[20] cursor-pointer h-[42px] rounded-[8px] pl-[16px] pr-[12px] gap-[8px] border flex items-center',
-          open ? 'border-[#612BD3]' : 'border-newColColor'
+          'relative z-[20] cursor-pointer h-[42px] rounded-[8px] ps-[16px] pe-[12px] gap-[8px] border flex items-center',
+          open ? 'border-[#0E7C74]' : 'border-newColColor'
         )}
       >
         <div>

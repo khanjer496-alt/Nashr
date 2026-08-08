@@ -33,7 +33,10 @@ export const Toaster = () => {
   return (
     <div
       className={clsx(
-        'animate-fadeDown rounded-[8px] gap-[18px] flex items-center overflow-hidden bg-customColor8 p-[16px] min-w-[319px] fixed start-[50%] text-white z-[900] top-[32px] -translate-x-[50%] h-[56px]',
+        // `start-[50%]` is logical (right:50% in RTL) but `translate-x` is physical,
+        // so the -50% half-step pushed the toast a full width off-screen in Arabic.
+        // The `rtl:` variant flips the sign to match.
+        'animate-fadeDown rounded-[8px] gap-[18px] flex items-center overflow-hidden bg-customColor8 p-[16px] min-w-[319px] fixed start-[50%] text-white z-[900] top-[32px] -translate-x-[50%] rtl:translate-x-[50%] h-[56px]',
         toasterType === 'success' ? 'shadow-greenToast' : 'shadow-yellowToast'
       )}
     >
@@ -73,7 +76,7 @@ export const Toaster = () => {
         height="56"
         viewBox="0 0 60 56"
         fill="none"
-        className="absolute top-0 start-0"
+        className="absolute top-0 start-0 rtl:-scale-x-100"
       >
         <g filter="url(#filter0_f_376_2968)">
           <ellipse

@@ -1,5 +1,6 @@
 'use client';
 
+import { brand } from '@gitroom/nashr-brand/brand.config';
 import {
   FC,
   useMemo,
@@ -54,7 +55,7 @@ const TikTokSettings: FC<{
     }
     return t(
       'tiktok_restriction_upload_video',
-      'TikTok restriction: For upload-only video, TikTok does not accept a title or message. The content will default to "#Postiz" and you can edit it inside the TikTok app before publishing.'
+      `TikTok restriction: For upload-only video, TikTok does not accept a title or message. The content will default to "#${brand.name}" and you can edit it inside the TikTok app before publishing.`
     );
   }, [hasMedia, isUploadMode, isVideo, t]);
 

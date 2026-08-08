@@ -1,3 +1,4 @@
+import { brand } from '@gitroom/nashr-brand/brand.config';
 import {
   ClientInformation,
   PostDetails,
@@ -17,7 +18,7 @@ export class MastodonCustomProvider extends MastodonProvider {
 
   async externalUrl(url: string) {
     const form = new FormData();
-    form.append('client_name', 'Postiz');
+    form.append('client_name', brand.name);
     form.append(
       'redirect_uris',
       `${process.env.FRONTEND_URL}/integrations/social/mastodon`

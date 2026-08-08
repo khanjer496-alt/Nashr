@@ -60,7 +60,7 @@ export const FinishTrial: FC<{ close: () => void }> = (props) => {
             </button>
           </div>
           <div className="relative h-[400px]">
-            <div className="absolute left-0 top-0 w-full h-full overflow-hidden overflow-y-auto">
+            <div className="absolute start-0 top-0 w-full h-full overflow-hidden overflow-y-auto">
               <div className="mt-[10px] flex w-full justify-center items-center gap-[10px]">
                 {!finished && <LoadingComponent height={150} width={150} />}
                 {finished && (

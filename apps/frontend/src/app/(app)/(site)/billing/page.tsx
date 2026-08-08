@@ -1,9 +1,9 @@
 export const dynamic = 'force-dynamic';
+import { brandTitle } from '@gitroom/nashr-brand/brand.config';
 import { BillingComponent } from '@gitroom/frontend/components/billing/billing.component';
 import { Metadata } from 'next';
-import { isGeneralServerSide } from '@gitroom/helpers/utils/is.general.server.side';
 export const metadata: Metadata = {
-  title: `${isGeneralServerSide() ? 'Postiz' : 'Gitroom'} Billing`,
+  title: brandTitle('Billing'),
   description: '',
 };
 export default async function Page() {

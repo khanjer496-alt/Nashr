@@ -1,3 +1,4 @@
+import { brand } from '@gitroom/nashr-brand/brand.config';
 import * as Sentry from '@sentry/nestjs';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import { capitalize } from 'lodash';
@@ -39,7 +40,7 @@ export const initializeSentry = (appName: string, allowLogs = false) => {
         },
         contexts: {
           app: {
-            name: `Postiz ${capitalize(appName)}`,
+            name: `${brand.name} ${capitalize(appName)}`,
           },
         },
       },

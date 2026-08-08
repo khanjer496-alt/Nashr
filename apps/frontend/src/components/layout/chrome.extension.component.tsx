@@ -1,12 +1,18 @@
 import { useVariables } from '@gitroom/react/helpers/variable.context';
+
+// The browser extension is published by upstream; point this at your own store
+// listing with NEXT_PUBLIC_EXTENSION_STORE_URL. Leave it empty to hide the entry
+// point entirely (the extension integration itself stays intact).
+const storeUrl = process.env.NEXT_PUBLIC_EXTENSION_STORE_URL || '';
+
 export const ChromeExtensionComponent = () => {
   const { billingEnabled } = useVariables();
-  if (!billingEnabled) {
+  if (!billingEnabled || !storeUrl) {
     return null;
   }
   return (
     <a
-      href="https://chromewebstore.google.com/detail/postiz/cidhffagahknaeodkplfbcpfeielnkjl"
+      href={storeUrl}
       target="_blank"
       className="hover:text-newTextColor"
     >
