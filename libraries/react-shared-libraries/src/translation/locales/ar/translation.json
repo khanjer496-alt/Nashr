@@ -457,7 +457,7 @@
   "faq_am_i_going_to_be_charged_by_postiz": "هل سيفرض «نشر» رسومًا عليّ؟",
   "faq_to_confirm_credit_card_information_postiz_will_hold": "لتأكيد بيانات البطاقة الائتمانية سيحجز «نشر» مبلغ 2 دولار ويعيده فورًا، ويمكنك إلغاء اشتراكك في أي وقت من الإعدادات دون الحاجة إلى التحدث مع أحد.",
   "faq_can_i_trust_postiz_gitroom": "هل يمكنني الوثوق بـ«نشر»؟",
-  "faq_postiz_gitroom_is_proudly_open_source": "«نشر» مفتوح المصدر بكل فخر! نحن نؤمن بثقافة أخلاقية وشفافة، ما يعني أن «نشر» سيبقى متاحًا دائمًا. يمكنك الاطّلاع على الكود بالكامل أو استخدامه في مشاريعك الشخصية. لعرض مستودع المصدر المفتوح، <a href=\"https://github.com/gitroomhq/postiz-app\" target=\"_blank\" style=\"text-decoration: underline;\">اضغط هنا</a>.",
+  "faq_postiz_gitroom_is_proudly_open_source": "«نشر» مفتوح المصدر بكل فخر! نحن نؤمن بثقافة أخلاقية وشفافة، ما يعني أن «نشر» سيبقى متاحًا دائمًا. يمكنك الاطّلاع على الكود بالكامل أو استخدامه في مشاريعك الشخصية. لعرض مستودع المصدر المفتوح، <a href=\"{{sourceUrl}}\" target=\"_blank\" style=\"text-decoration: underline;\">اضغط هنا</a>.",
   "faq_what_are_channels": "ما هي القنوات؟",
   "faq_postiz_gitroom_allows_you_to_schedule_posts": "يتيح لك «نشر» جدولة منشوراتك على قنوات مختلفة.\nوالقناة هي منصة للنشر يمكنك من خلالها جدولة منشوراتك.\nعلى سبيل المثال، يمكنك الجدولة على X وفيسبوك وإنستغرام وتيك توك ويوتيوب وريديت ولينكدإن وDribbble وThreads وPinterest.",
   "faq_what_are_team_members": "من هم أعضاء الفريق؟",

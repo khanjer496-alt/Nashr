@@ -334,6 +334,99 @@ round-trips 400 consecutive days.
 - `apps/orchestrator/.swcrc` duplicates the tsconfig alias list and carries a stale
   absolute `baseUrl` from an upstream developer's machine.
 
+### 2026-08-08 — Phases 7 and 8
+
+#### SECURITY: four real cross-tenant leaks found and fixed
+RISK-02 was not theoretical. An adversarial suite seeded two live organizations in
+PostgreSQL and attacked org A as org B. **Four attacks succeeded** before the fix; all
+were reachable from authenticated HTTP endpoints.
+
+**The worst: full cross-tenant post takeover.** `PostsRepository.createOrUpdatePost`
+upserted on `where: { id: value.id || uuidv4() }` with `value.id` taken straight from the
+request body and no ownership check. Passing another org's post id took the UPDATE branch
+on their row — and because `updateData()` connects `organization` to the caller, the
+victim's post was overwritten **and moved into the attacker's org**. It sits below
+`PostsService.createPost`, so it was reachable from **every** `CreationMethod`: dashboard,
+public API v1, MCP tools, autopost, CLI.
+
+**This is an upstream Postiz v1.47.0 defect, not one we introduced** — confirmed at
+`posts.repository.ts:578` on pristine `main`.
+
+| Leak | Endpoint | Effect |
+|---|---|---|
+| `createOrUpdatePost` upsert | `POST /posts` | Overwrite + steal another org's post |
+| `createOrUpdatePost` group sweep | `POST /posts` | Soft-delete another org's whole thread |
+| `editTag` | `PUT /posts/tags/:id` | Rename/recolour another org's tags |
+| `updateIntegrationGroup` | `PUT /integrations/:id/group` | Attach own channel to another org's brand |
+
+All fixed with minimal `organizationId` filters, each commented and pinned by a regression
+test. Positive tests were added alongside so the fix cannot be "corrected" into a
+behaviour change.
+
+**Recommend responsible disclosure to upstream** via their `SECURITY.md`. Owner's call.
+
+#### Operational defect fixed: a successful restore reported failure
+`ops/scripts/restore-postgres.sh` `cleanup()` ended with
+`[ -n "${TMP_PLAIN}" ] && ...`. As an EXIT trap the function's status replaces the
+script's, and that test returns 1 whenever `TMP_PLAIN` is empty — the **unencrypted**
+path. So a correct restore exited 1. The encrypted path sets `TMP_PLAIN`, which hid it.
+An operator mid-incident would have been told a good restore failed. Reproduced, fixed,
+re-verified.
+
+#### Browser-verified RTL — and three new bugs
+Phase 3's RTL work had only ever been statically inspected. Chromium confirmed the
+headline fix is real: `<html dir="rtl" lang="ar">` is genuinely **server-rendered**
+(verified three ways — raw HTTP body, `javaScriptEnabled: false`, and `dir` at
+`waitUntil: 'commit'` vs post-hydration). **0px horizontal overflow and zero off-viewport
+elements across all 28 page/language/viewport combinations.**
+
+Three new bugs found, two fixed:
+1. **FIXED — English legal prose was bidi-mangled in Arabic.** Rendered inside
+   `<html dir="rtl">`, neutral characters moved to the wrong edge, producing
+   `":You can obtain the complete source code of Nashr at"`. This is the page carrying
+   the **AGPL §13 source offer**, so legibility is a compliance concern, not a cosmetic
+   one. Fixed with `dir="ltr"` on the shared `LegalPage` container.
+2. **FIXED — no Arabic typeface was ever shipped.** `--nashr-font-arabic` named families
+   with no `@font-face` behind them; CDP reported Arabic rasterised by DejaVu Sans
+   (`isCustomFont: false`) while Latin was correctly self-hosted. Now self-hosted via
+   `next/font/google` (`IBM_Plex_Sans_Arabic`). Verified in build output: an
+   `@font-face` covering `unicode-range: U+6??` pointing at a real woff2.
+3. **OPEN — Arabic sessions server-render English copy.**
+   `i18next-browser-languagedetector` cannot read cookies during SSR, so every response
+   is English and swaps after hydration. Direction does not snap; the words do.
+
+#### Known defect, pinned not fixed
+`NashrBrandProfile.autonomousPublishing` and `.clientApprovalRequired` exist as columns
+but nothing reads them — `autonomy.policy.ts` still resolves both from env, so per-brand
+settings are silently ignored. Both directions **fail closed**, so it is a correctness
+defect rather than a security hole.
+
+#### AGPL §13 defect found in Phase 8 and fixed
+See `AUDIT_REPORT.md` §21. All 16 locales hardcoded the upstream repo URL in the
+customer-facing source-offer FAQ; i18next prefers the resource over the React default, so
+the link pointed at upstream regardless of `NEXT_PUBLIC_SOURCE_URL`. Fixed by
+interpolating `{{sourceUrl}}`, pinned by `agpl-source-offer.spec.ts`.
+
+#### Verified totals
+```
+nashr-permissions   37     nashr-approval    55     nashr-agents  148
+nashr-i18n          46     tests/integration 217
+TOTAL              503 passing   (upstream shipped 0)
+
+migrations: 3 applied to real PostgreSQL 16, 52 tables, ZERO drift both directions
+backup/restore drill: seed -> backup -> DROP SCHEMA -> restore -> identical sha256
+frontend next build / backend nest build / orchestrator nest build: all exit 0
+Playwright: 186 passed, 2 failed (the font guard, now fixed), 48 skipped
+```
+The 48 Playwright skips are the authenticated surface — reported as *skipped*, never as
+passing, so a green run cannot be mistaken for full coverage.
+
+**Not verified:** the backend never started (Temporal blocks in
+`TemporalRegister.onModuleInit` on `ECONNREFUSED 127.0.0.1:7233` before `listen()`
+resolves, and Temporal is not installed here). Four of Phase 3's five RTL fixes — the
+calendar, toaster, context menus, modals, tables, composer — sit behind the auth gate and
+were **not rendered**.
+
 ---
 
 ## Planned changes (not yet made)

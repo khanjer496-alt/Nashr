@@ -546,7 +546,12 @@ html[dir='rtl'] [dir='ltr'] {
      the sign has to flip with the document direction. */
   --nashr-center-x: -50%;
 
-  --nashr-font-arabic: 'IBM Plex Sans Arabic', 'Noto Kufi Arabic',
+  // `--nashr-font-arabic-loaded` is the self-hosted family injected by
+  // next/font in (app)/layout.tsx. It must come first: the named fallbacks
+  // below are only installed on some client machines, so without it Arabic
+  // rendered in a default system face.
+  --nashr-font-arabic: var(--nashr-font-arabic-loaded), 'IBM Plex Sans Arabic',
+    'Noto Kufi Arabic',
     'Noto Sans Arabic', 'SF Arabic', 'Geeza Pro', 'Segoe UI', 'Dubai', Tahoma,
     sans-serif;
   --nashr-font-arabic-display: 'Noto Kufi Arabic', 'IBM Plex Sans Arabic',

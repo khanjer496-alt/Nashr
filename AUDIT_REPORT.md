@@ -482,3 +482,35 @@ git ls-tree main --name-only .../locales/ | wc -l                          # 16
 git grep -ni rtl main -- apps/frontend/src libraries/react-shared-libraries/src | wc -l   # 109
   ... | grep -ci shortlink                                                 # 75
 ```
+
+### Second round of corrections (found during Phase 8)
+
+| Claim | Originally stated | Verified | Effect |
+|---|---|---|---|
+| Social providers | 36 | **34 registered** | I counted files in `integrations/social/`, which includes `social.integrations.interface.ts` and `hashnode.tags.ts` (not providers), and `MastodonCustomProvider`, which upstream has **commented out** at `integration.manager.ts:76`. The substantive claim — all official OAuth/API, no scraping — is unchanged. |
+| Analytics-capable providers | 13 | **11** | Same over-count method. |
+| `@mastra/*` licence (RISK-L5) | "must verify" | **Apache-2.0** | Verified in the installed manifests for `@mastra/core` and `@ag-ui/mastra`. Compatible with SaaS resale. RISK-L5 downgraded to 🟢, with the caveat that `@mastra/core` ships no `LICENSE` file. |
+
+Reproduce:
+```
+grep -c "new .*Provider()" <(sed -n '42,76p' .../integration.manager.ts)   # 35, of which
+grep -n "MastodonCustomProvider" .../integration.manager.ts                # line 76 is commented
+python3 -c "import json;print(json.load(open('node_modules/@mastra/core/package.json'))['license'])"
+```
+
+### A section 13 defect found in Phase 8 (now fixed)
+
+All 16 locale files hardcoded `https://github.com/gitroomhq/postiz-app` inside the
+customer-facing FAQ value `faq_postiz_gitroom_is_proudly_open_source`. i18next prefers a
+resource value over the React default, so the product's own "view the source code" link
+sent customers to **upstream Postiz regardless of `NEXT_PUBLIC_SOURCE_URL`** — both an
+unmet AGPL §13 obligation and a customer-facing use of the Postiz trademark.
+
+It survived the Phase 2 branding sweep because that sweep matched `Postiz`, not the
+lowercase URL, and Phase 3 preserved the URL believing it to be required attribution.
+Attribution *is* required — but it belongs on `/licenses`, which carries it; the §13
+offer must point at **our** modified source.
+
+Fixed by interpolating `{{sourceUrl}}` in all 16 locales and passing `brand.sourceUrl`
+from the component. Pinned by `libraries/nashr-i18n/src/agpl-source-offer.spec.ts`, which
+fails if any locale reintroduces an upstream link.

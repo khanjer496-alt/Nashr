@@ -576,6 +576,20 @@ export class PostsRepository {
         await this._post.model.post.upsert({
           where: {
             id: value.id || uuidv4(),
+            // NASHR FIX (Phase 7, RISK-02): `id` came straight from the
+            // request body with no ownership check. Supplying another
+            // organization's post id made this upsert take the UPDATE branch
+            // on their row — overwriting its content and, because
+            // `updateData()` connects `organization` to the caller, moving the
+            // post into the caller's organization. A full cross-tenant post
+            // takeover, reachable from every CreationMethod (WEB/API/MCP/
+            // AUTOPOST/CLI) via PostsService.createPost.
+            // With the filter present an id from another tenant simply does
+            // not match, so the upsert creates a new row for the caller
+            // instead of hijacking one.
+            // Regression test: tests/integration/tenant-isolation.spec.ts
+            //   "createOrUpdatePost cannot hijack another org's post by id".
+            organizationId: orgId,
           },
           create: { ...updateData('create') },
           update: {
@@ -629,11 +643,19 @@ export class PostsRepository {
       }
     }
 
+    // NASHR FIX (Phase 7, RISK-02): the three `group` lookups below had no
+    // organizationId filter, and `group` is caller-supplied. Passing another
+    // organization's group id soft-deleted their whole thread — a destructive
+    // cross-tenant write. A group only ever spans one organization, so scoping
+    // these to `orgId` changes nothing for a legitimate caller.
+    // Regression test: tests/integration/tenant-isolation.spec.ts
+    //   "createOrUpdatePost cannot sweep away another org's post group".
     const previousPost = body.group
       ? (
           await this._post.model.post.findFirst({
             where: {
               group: body.group,
+              organizationId: orgId,
               deletedAt: null,
               parentPostId: null,
             },
@@ -648,6 +670,7 @@ export class PostsRepository {
       await this._post.model.post.updateMany({
         where: {
           group: body.group,
+          organizationId: orgId,
           deletedAt: null,
         },
         data: {
@@ -663,6 +686,7 @@ export class PostsRepository {
       await this._post.model.post.updateMany({
         where: {
           group: body.group,
+          organizationId: orgId,
           deletedAt: null,
           id: {
             notIn: posts.map((p) => p.id),
@@ -853,6 +877,14 @@ export class PostsRepository {
     return this._tags.model.tags.update({
       where: {
         id,
+        // NASHR FIX (Phase 7, RISK-02): `orgId` was accepted and then dropped
+        // from the WHERE, so any authenticated member of ANY organization
+        // could rename and recolour another organization's tags by id via
+        // PUT /posts/tags/:id. `deleteTag` immediately below already scoped
+        // correctly; this now matches it.
+        // Regression test: tests/integration/tenant-isolation.spec.ts
+        //   "editTag cannot rewrite the victim tag".
+        orgId,
       },
       data: {
         name: body.name,

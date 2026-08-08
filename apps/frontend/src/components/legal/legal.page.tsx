@@ -12,7 +12,17 @@ export const LegalPage: FC<{
   children: ReactNode;
 }> = ({ title, subtitle, updated, children }) => {
   return (
-    <div className="flex-1 w-full">
+    // `dir="ltr"` isolates this subtree from an RTL document.
+    //
+    // These pages are English prose and are not yet translated. Rendered inside
+    // `<html dir="rtl">` the Unicode bidi algorithm moves neutral characters --
+    // sentence-final periods, colons -- to the wrong edge, producing output like
+    // ":You can obtain the complete source code of Nashr at". That is not
+    // cosmetic here: this component renders the AGPL section 13 source offer,
+    // which has to be legible.
+    //
+    // Remove this only when the legal copy is genuinely translated, not before.
+    <div dir="ltr" className="flex-1 w-full">
       <div className="w-full max-w-[860px] mx-auto px-[20px] py-[40px] flex flex-col gap-[28px]">
         <header className="flex flex-col gap-[8px]">
           <div className="text-[12px] uppercase tracking-[0.18em] font-[600] text-brand-primarySoft">

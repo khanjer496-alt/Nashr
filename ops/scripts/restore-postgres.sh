@@ -93,7 +93,16 @@ case "${DUMP_FILE}" in
     WORK_FILE="${TMP_PLAIN}"
     ;;
 esac
-cleanup() { [ -n "${TMP_PLAIN}" ] && { shred -u "${TMP_PLAIN}" 2>/dev/null || rm -f "${TMP_PLAIN}"; }; }
+# NOTE: this MUST end with an explicit success. As an EXIT trap, the function's
+# status replaces the script's, and a bare `[ -n "${TMP_PLAIN}" ] && ...` returns
+# 1 whenever TMP_PLAIN is empty (the unencrypted path) -- making a SUCCESSFUL
+# restore report failure. The encrypted path sets TMP_PLAIN, which hid this.
+cleanup() {
+  if [ -n "${TMP_PLAIN}" ]; then
+    shred -u "${TMP_PLAIN}" 2>/dev/null || rm -f "${TMP_PLAIN}"
+  fi
+  return 0
+}
 trap cleanup EXIT INT TERM
 
 # --- 2. confirmation -------------------------------------------------------

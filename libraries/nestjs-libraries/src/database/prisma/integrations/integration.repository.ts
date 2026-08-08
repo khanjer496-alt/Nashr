@@ -452,7 +452,27 @@ export class IntegrationRepository {
     });
   }
 
-  updateIntegrationGroup(org: string, id: string, group: string) {
+  async updateIntegrationGroup(org: string, id: string, group: string) {
+    // NASHR FIX (Phase 7, RISK-02): the integration was scoped to `org`, but
+    // the Customer was connected by bare id with no ownership check, so via
+    // PUT /integrations/:id/group an organization could attach its own channel
+    // to ANOTHER organization's brand — a cross-tenant foreign key that puts a
+    // competitor's channel inside the victim's brand grouping.
+    // `updateOnCustomerName` directly above already resolves the Customer
+    // within `orgId`; this now does the same.
+    // Regression test: tests/integration/tenant-isolation.spec.ts
+    //   "updateIntegrationGroup cannot attach an attacker integration to a victim brand".
+    if (group) {
+      const customer = await this._customers.model.customer.findFirst({
+        where: { id: group, orgId: org, deletedAt: null },
+        select: { id: true },
+      });
+
+      if (!customer) {
+        throw new Error('Customer not found');
+      }
+    }
+
     return this._integration.model.integration.update({
       where: {
         id,

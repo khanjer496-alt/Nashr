@@ -25,9 +25,14 @@ const useFaqList = () => {
       : []),
     {
       title: t('faq_can_i_trust_postiz_gitroom', `Can I trust ${brand.name}?`),
+      // The AGPL section 13 source offer. The translated resources override
+      // this default, so the URL MUST be interpolated rather than baked into
+      // either string - a hardcoded link here pointed customers at upstream
+      // Postiz instead of our own modified source, leaving section 13 unmet.
       description: t(
         'faq_postiz_gitroom_is_proudly_open_source',
-        `${brand.name} is proudly open-source! We believe in an ethical and transparent culture, meaning that ${brand.name} will live forever. You can check out the entire code or use it for personal projects. ${brand.name} is built on ${brand.upstream.name} and distributed under the ${brand.upstream.license}. To view the source code, <a href="${brand.sourceUrl}" target="_blank" style="text-decoration: underline;">click here</a>.`
+        `${brand.name} is proudly open-source! We believe in an ethical and transparent culture, meaning that ${brand.name} will live forever. You can check out the entire code or use it for personal projects. ${brand.name} is built on ${brand.upstream.name} and distributed under the ${brand.upstream.license}. To view the source code, <a href="{{sourceUrl}}" target="_blank" style="text-decoration: underline;">click here</a>.`,
+        { sourceUrl: brand.sourceUrl, interpolation: { escapeValue: false } }
       ),
     },
     {

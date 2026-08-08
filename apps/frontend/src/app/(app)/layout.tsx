@@ -8,7 +8,7 @@ import 'react-tooltip/dist/react-tooltip.css';
 import '@copilotkit/react-ui/styles.css';
 import LayoutContext from '@gitroom/frontend/components/layout/layout.context';
 import { ReactNode } from 'react';
-import { Plus_Jakarta_Sans } from 'next/font/google';
+import { Plus_Jakarta_Sans, IBM_Plex_Sans_Arabic } from 'next/font/google';
 import PlausibleProvider from 'next-plausible';
 import clsx from 'clsx';
 import { VariableContextComponent } from '@gitroom/react/helpers/variable.context';
@@ -65,6 +65,17 @@ const jakartaSans = Plus_Jakarta_Sans({
   subsets: ['latin'],
 });
 
+// Nashr: without this, no Arabic @font-face is ever shipped and Arabic glyphs
+// fall back to whatever the client OS provides (verified in-browser: rasterised
+// by DejaVu Sans, isCustomFont=false) while Latin was correctly self-hosted.
+// next/font self-hosts at build time, so this adds no third-party request.
+const plexArabic = IBM_Plex_Sans_Arabic({
+  weight: ['400', '500', '600'],
+  subsets: ['arabic'],
+  display: 'swap',
+  variable: '--nashr-font-arabic-loaded',
+});
+
 export default async function AppLayout({ children }: { children: ReactNode }) {
   const cookieStore = await cookies();
   // Resolve the cookie onto a locale we actually ship (e.g. `ar-AE` -> `ar-AE`,
@@ -94,7 +105,11 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
       </head>
       <ChangeDirClient />
       <body
-        className={clsx(jakartaSans.className, 'dark text-primary !bg-primary')}
+        className={clsx(
+          jakartaSans.className,
+          plexArabic.variable,
+          'dark text-primary !bg-primary'
+        )}
       >
         <VariableContextComponent
           storageProvider={
