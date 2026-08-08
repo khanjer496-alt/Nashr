@@ -150,6 +150,10 @@ model UserOrganization {
   @@unique([userId, organizationId])
   @@index([disabled])
   nashrRole            NashrRole            @default(VIEWER)
+  /// Brand a CLIENT-role member is scoped to. Null for org-wide roles.
+  /// Without this, CLIENT scoping fails closed and CLIENT_APPROVAL is unusable.
+  nashrCustomerId      String?
+  nashrCustomer        Customer?            @relation("nashrClientScope", fields: [nashrCustomerId], references: [id])
   nashrAgentActions    NashrAgentActionLog[]
 }
 
@@ -315,6 +319,7 @@ model Customer {
 
   @@unique([orgId, name, deletedAt])
   nashrBrandProfile NashrBrandProfile?
+  nashrScopedMembers UserOrganization[] @relation("nashrClientScope")
 }
 
 model Integration {
@@ -1051,6 +1056,10 @@ model NashrBrandProfile {
   /// Newline-separated claims the agents must never make.
   prohibitedClaims String?
   keywords         String?
+  /// Autonomous publishing is OFF by default: the brief forbids enabling it by default.
+  autonomousPublishing   Boolean @default(false)
+  /// When true, a post needs CLIENT_APPROVAL as well as INTERNAL_REVIEW.
+  clientApprovalRequired Boolean @default(true)
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @updatedAt
   deletedAt        DateTime?

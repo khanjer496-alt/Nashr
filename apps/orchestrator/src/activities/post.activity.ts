@@ -25,6 +25,16 @@ import {
 } from '@gitroom/nestjs-libraries/temporal/temporal.search.attribute';
 import { SubscriptionService } from '@gitroom/nestjs-libraries/database/prisma/subscriptions/subscription.service';
 
+// ── Nashr (نشر) addition — approval gate ─────────────────────────────────────
+// Kept to a single import block + a single guard call so `git merge upstream`
+// stays trivial. See libraries/nashr-approval/src/publish.gate.ts.
+import { PrismaRepository } from '@gitroom/nestjs-libraries/database/prisma/prisma.service';
+import {
+  PrismaApprovalGate,
+  assertPublishAllowed,
+} from '@gitroom/nashr-approval/publish.gate';
+// ─────────────────────────────────────────────────────────────────────────────
+
 // Drops fields the workflow and downstream activities never read — biggest wins are `error` (grows per retry) and `childrenPost` (Prisma side-loads it on every recursive row).
 function slimPost(post: any) {
   if (!post) return post;
@@ -63,8 +73,28 @@ export class PostActivity {
     private _refreshIntegrationService: RefreshIntegrationService,
     private _webhookService: WebhooksService,
     private _temporalService: TemporalService,
-    private _subscriptionService: SubscriptionService
+    private _subscriptionService: SubscriptionService,
+    // Nashr addition. PrismaRepository is provided by the @Global()
+    // DatabaseModule the orchestrator already imports, so this needs no new
+    // module registration.
+    private _nashrPrisma: PrismaRepository<'post' | 'nashrPostApproval'>
   ) {}
+
+  /**
+   * Nashr (نشر) addition — the approval gate.
+   *
+   * Throws unless the post carries an APPROVED record in the append-only
+   * `NashrPostApproval` trail, or the organization has explicitly opted in to
+   * autonomous publishing (off by default, see autonomy.policy.ts).
+   *
+   * This sits in the Temporal publish activity on purpose: it is the one place
+   * every CreationMethod — WEB, API, MCP, AUTOPOST, CLI — has to pass through.
+   * A UI-only check would be bypassed by the public API and the MCP tools.
+   */
+  private async assertNashrApproved(organizationId: string, postId: string) {
+    const gate = new PrismaApprovalGate(this._nashrPrisma.model as any);
+    return assertPublishAllowed(gate, { organizationId, postId });
+  }
 
   @ActivityMethod()
   async getIntegrationById(orgId: string, id: string) {
@@ -224,6 +254,14 @@ export class PostActivity {
     posts: Post[],
     allowPending: boolean
   ) {
+    // ── Nashr (نشر) addition — approval gate ─────────────────────────────────
+    // First statement in the publish path, before any provider call, so an
+    // unapproved post cannot reach a social network. Throws
+    // NashrApprovalRequiredError; the workflow's existing error handling marks
+    // the post ERROR with this message.
+    await this.assertNashrApproved(integration.organizationId, posts[0]?.id);
+    // ─────────────────────────────────────────────────────────────────────────
+
     if (process.env.STRIPE_SECRET_KEY) {
       const subscription = await this._subscriptionService.getSubscription(
         integration.organizationId

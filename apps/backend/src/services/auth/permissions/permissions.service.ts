@@ -8,6 +8,21 @@ import dayjs from 'dayjs';
 import { WebhooksService } from '@gitroom/nestjs-libraries/database/prisma/webhooks/webhooks.service';
 import { AuthorizationActions, Sections } from './permission.exception.class';
 
+// ── Nashr (نشر) additions ────────────────────────────────────────────────────
+import { PrismaRepository } from '@gitroom/nestjs-libraries/database/prisma/prisma.service';
+import {
+  NashrRoleName,
+  RoleCheckFailure,
+  firstDenied,
+} from '@gitroom/nashr-permissions/role.matrix';
+import {
+  AllowedCustomerIds,
+  resolveBrandScope,
+} from '@gitroom/nashr-permissions/brand.scope';
+import { RolePolicy } from './permissions.ability';
+import { NashrRoleException } from './nashr.role.exception';
+// ─────────────────────────────────────────────────────────────────────────────
+
 export type AppAbility = Ability<[AuthorizationActions, Sections]>;
 
 @Injectable()
@@ -16,7 +31,11 @@ export class PermissionsService {
     private _subscriptionService: SubscriptionService,
     private _postsService: PostsService,
     private _integrationService: IntegrationService,
-    private _webhooksService: WebhooksService
+    private _webhooksService: WebhooksService,
+    // Nashr addition: role lookups read UserOrganization directly, because
+    // upstream's auth middleware only projects `role` and `disabled` onto
+    // req.org.users[0] — `nashrRole` is not there.
+    private _prisma: PrismaRepository<'userOrganization'>
   ) {}
   async getPackageOptions(orgId: string) {
     const subscription =
@@ -169,5 +188,80 @@ export class PermissionsService {
         // @ts-ignore
         item.constructor,
     });
+  }
+
+  // ───────────────────────────────────────────────────────────────────────────
+  // Nashr (نشر) additions — role gating.
+  //
+  // Entirely separate from the tier gating above. `check()` is untouched: both
+  // gates run, and both must pass. See permissions.guard.ts.
+  // ───────────────────────────────────────────────────────────────────────────
+
+  /**
+   * The member's NashrRole in this organization, read fresh from the database.
+   * Returns null when there is no active membership — the guard treats that as
+   * a denial rather than as a default role.
+   */
+  async getNashrMembership(orgId: string, userId: string) {
+    if (!orgId || !userId) return null;
+
+    return (await (this._prisma.model as any).userOrganization.findFirst({
+      // Both columns in the WHERE: a userId alone must never resolve a
+      // membership in an organization the request is not scoped to.
+      where: { organizationId: orgId, userId, disabled: false },
+      select: { id: true, nashrRole: true },
+    })) as { id: string; nashrRole: NashrRoleName } | null;
+  }
+
+  async getNashrRole(
+    orgId: string,
+    userId: string
+  ): Promise<NashrRoleName | null> {
+    const membership = await this.getNashrMembership(orgId, userId);
+    return membership?.nashrRole ?? null;
+  }
+
+  /**
+   * Which brands (`Customer`s) this member may touch.
+   * null ⇒ organization-wide, [] ⇒ nothing (fail-closed default for CLIENT).
+   */
+  async getAllowedCustomerIds(
+    orgId: string,
+    userId: string
+  ): Promise<AllowedCustomerIds> {
+    const membership = await this.getNashrMembership(orgId, userId);
+    if (!membership) return [];
+    const { allowedCustomerIds } = resolveBrandScope(
+      membership.nashrRole,
+      membership as any
+    );
+    return allowedCustomerIds;
+  }
+
+  /**
+   * Throws NashrRoleException (403) on the first permission the member lacks.
+   * Default deny: a missing membership or an unknown role denies everything.
+   */
+  async checkNashrRole(
+    orgId: string,
+    userId: string,
+    required: RolePolicy[]
+  ): Promise<NashrRoleName> {
+    const role = await this.getNashrRole(orgId, userId);
+
+    if (!role) {
+      throw new NashrRoleException({
+        resource: required[0]?.[0] ?? 'organization',
+        action: required[0]?.[1] ?? 'read',
+        role: 'NONE',
+      });
+    }
+
+    const denied: RoleCheckFailure | null = firstDenied(role, required);
+    if (denied) {
+      throw new NashrRoleException(denied);
+    }
+
+    return role;
   }
 }

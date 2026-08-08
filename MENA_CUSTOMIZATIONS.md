@@ -150,6 +150,46 @@ Private-repo runners have 7 GB RAM and root `build` uses `--workspace-concurrenc
 `if: github.repository == 'gitroomhq/postiz-app'`, so its job never executes in this
 fork. No change needed — avoiding pointless merge surface.
 
+### 2026-08-08 — Phase 4: RBAC + approval workflow
+
+**Added**
+| Path | Purpose |
+|---|---|
+| `libraries/nashr-permissions/**` | Role matrix, 6 roles x 10 resources x 13 actions, default-deny |
+| `libraries/nashr-approval/**` | Approval state machine + service + publish gate |
+| `apps/backend/src/api/routes/nashr-approval.controller.ts` | `/nashr/approvals` endpoints |
+| `.../migrations/20260808000200_nashr_client_scope_and_publish_controls/` | CLIENT scope link + publishing controls |
+| `.../migrations/migration_lock.toml` | Required by `prisma migrate deploy` |
+
+**Modified**
+- `apps/backend/src/services/auth/permissions/**` — role checks run **in addition to**
+  the existing subscription-tier checks, never replacing them. Endpoints without role
+  metadata behave exactly as before.
+- `apps/orchestrator/src/activities/post.activity.ts` — approval gate in
+  `postSocialInternal`.
+- `apps/backend/src/api/api.module.ts` — registered the controller inside
+  `authenticatedController` so `AuthMiddleware.forRoutes` covers it, and the service in
+  `providers`.
+- `tsconfig.base.json` — path aliases for the new libraries.
+- `schema.prisma` — `UserOrganization.nashrCustomerId` -> `Customer`, plus
+  `NashrBrandProfile.autonomousPublishing` (default **false**) and
+  `clientApprovalRequired` (default **true**).
+
+**Why the gate sits in `postSocialInternal`:** workflows `v1.0.1`–`v1.0.4` never call
+`getPost`, so a gate there would miss them. All six versions funnel through
+`postSocial`/`postSocialPending` into `postSocialInternal`, making it the one place every
+`CreationMethod` (WEB, API, MCP, AUTOPOST, CLI) must pass. UI-only enforcement would be
+bypassable through the public API.
+
+**Why `nashrCustomerId` was necessary:** nothing linked an org member to a brand, so
+CLIENT scoping failed closed and the CLIENT_APPROVAL stage was unusable — it would have
+shipped a required workflow stage that no one could complete.
+
+**Autonomous publishing is off by default**, per the brief. A typo in the kill switch
+fails closed, and that behaviour is covered by a test.
+
+Verified: 92 tests pass (37 permissions + 55 approval), re-run after the schema change.
+
 ---
 
 ## Planned changes (not yet made)
