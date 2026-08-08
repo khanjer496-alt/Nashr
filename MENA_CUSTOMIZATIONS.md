@@ -129,6 +129,27 @@ sits alongside upstream `Role` rather than replacing it.
 
 Verified: `prisma validate` → "The schema is valid 🚀".
 
+### 2026-08-08 — CI: raise Node heap for the backend build
+
+**Modified:** `.github/workflows/build.yml` — added job-level
+`NODE_OPTIONS: --max-old-space-size=5120`.
+
+**Reason:** `nest build` for `apps/backend` fails with
+`FATAL ERROR: Ineffective mark-compacts near heap limit — JavaScript heap out of memory`
+at Node's default ~2 GB cap on GitHub-hosted runners.
+
+**This is an upstream condition, not a Nashr regression.** Verified: build run #1 on
+`main` at `7d08f5b6` — pristine upstream Postiz v1.47.0, authored by the Postiz
+maintainer — failed identically before any Nashr commit existed.
+
+Private-repo runners have 7 GB RAM and root `build` uses `--workspace-concurrency=1`
+(one app at a time), so a 5 GB heap leaves headroom for the OS.
+
+**Checked and deliberately left alone:** `.github/workflows/stale.yml` runs on a
+30-minute cron, but is already guarded by
+`if: github.repository == 'gitroomhq/postiz-app'`, so its job never executes in this
+fork. No change needed — avoiding pointless merge surface.
+
 ---
 
 ## Planned changes (not yet made)
