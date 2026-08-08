@@ -1,0 +1,179 @@
+# syntax=docker/dockerfile:1.7
+# ---------------------------------------------------------------------------
+# Nashr (نشر) — production application image
+#
+# Built by US, not pulled from ghcr.io/gitroomhq/postiz-app (closes RISK-D3).
+# Never tag this image `:latest` for a production deploy — always a version tag.
+#
+# Build:
+#   docker build -f Dockerfile.prod \
+#     --build-arg NASHR_VERSION=1.0.0 \
+#     --build-arg STORAGE_PROVIDER=local \
+#     -t ghcr.io/<your-org>/nashr-app:1.0.0 .
+#
+# One container runs frontend (4200), backend (3000), orchestrator (3002) and
+# an internal nginx (5000) under pm2-runtime. That mirrors upstream Postiz's
+# own topology, so upstream start scripts keep working across merges
+# (RISK-D2). Caddy in docker-compose.prod.yaml terminates TLS in front of it.
+# ---------------------------------------------------------------------------
+
+# Base image pinned by DIGEST, not just tag (closes RISK-D6).
+# To refresh: docker buildx imagetools inspect node:22.22-bookworm-slim
+ARG NODE_IMAGE=node:22.22-bookworm-slim@sha256:e21fc383b50d5347dc7a9f1cae45b8f4e2f0d39f7ade28e4eef7d2934522b752
+ARG PNPM_VERSION=10.6.1
+ARG PM2_VERSION=6.0.13
+
+# ---------------------------------------------------------------------------
+# Stage 1: builder
+# ---------------------------------------------------------------------------
+FROM ${NODE_IMAGE} AS builder
+
+ARG PNPM_VERSION
+
+# Native toolchain is needed by a handful of transitive deps (sharp, bufferutil).
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+      g++ \
+      make \
+      python3 \
+      ca-certificates \
+      openssl \
+ && rm -rf /var/lib/apt/lists/*
+
+RUN npm --no-update-notifier --no-fund --global install "pnpm@${PNPM_VERSION}"
+
+WORKDIR /app
+
+# Build-time configuration.
+#
+# Next.js inlines NEXT_PUBLIC_* into the client bundle and evaluates
+# next.config.js redirects()/rewrites() at BUILD time — apps/frontend/next.config.js
+# branches on STORAGE_PROVIDER to decide whether /uploads/* is served locally.
+# These therefore MUST be correct at build time, not only at runtime.
+ARG NASHR_VERSION=0.0.0-dev
+ARG STORAGE_PROVIDER=local
+ARG NEXT_PUBLIC_UPLOAD_STATIC_DIRECTORY=/uploads
+ARG NEXT_PUBLIC_BACKEND_URL=
+ARG NEXT_PUBLIC_SENTRY_DSN=
+ARG NEXT_PUBLIC_POSTHOG_KEY=
+ARG NEXT_PUBLIC_POSTHOG_HOST=
+ARG NEXT_PUBLIC_GTM_ID=
+ARG NEXT_PUBLIC_POLOTNO=
+ARG NEXT_PUBLIC_DISCORD_SUPPORT=
+ARG NEXT_PUBLIC_APP_URL=
+ARG NEXT_PUBLIC_DOCS_URL=
+# AGPL-3.0 section 13: the source offer shown to every network user. If this is
+# not baked in at BUILD time the client bundle falls back to the upstream
+# Postiz repo, which is NOT the corresponding source for this deployment.
+ARG NEXT_PUBLIC_SOURCE_URL=
+ARG NEXT_PUBLIC_BRAND_LEGAL_NAME=
+ARG NEXT_PUBLIC_BRAND_JURISDICTION=
+ARG NEXT_PUBLIC_BRAND_GOVERNING_LAW=
+ARG NEXT_PUBLIC_SUPPORT_EMAIL=
+ARG NEXT_PUBLIC_PRIVACY_EMAIL=
+
+ENV NEXT_PUBLIC_VERSION=$NASHR_VERSION \
+    NEXT_PUBLIC_APP_VERSION=$NASHR_VERSION \
+    STORAGE_PROVIDER=$STORAGE_PROVIDER \
+    NEXT_PUBLIC_UPLOAD_STATIC_DIRECTORY=$NEXT_PUBLIC_UPLOAD_STATIC_DIRECTORY \
+    NEXT_PUBLIC_BACKEND_URL=$NEXT_PUBLIC_BACKEND_URL \
+    NEXT_PUBLIC_SENTRY_DSN=$NEXT_PUBLIC_SENTRY_DSN \
+    NEXT_PUBLIC_POSTHOG_KEY=$NEXT_PUBLIC_POSTHOG_KEY \
+    NEXT_PUBLIC_POSTHOG_HOST=$NEXT_PUBLIC_POSTHOG_HOST \
+    NEXT_PUBLIC_GTM_ID=$NEXT_PUBLIC_GTM_ID \
+    NEXT_PUBLIC_POLOTNO=$NEXT_PUBLIC_POLOTNO \
+    NEXT_PUBLIC_DISCORD_SUPPORT=$NEXT_PUBLIC_DISCORD_SUPPORT \
+    NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL \
+    NEXT_PUBLIC_DOCS_URL=$NEXT_PUBLIC_DOCS_URL \
+    NEXT_PUBLIC_SOURCE_URL=$NEXT_PUBLIC_SOURCE_URL \
+    NEXT_PUBLIC_BRAND_LEGAL_NAME=$NEXT_PUBLIC_BRAND_LEGAL_NAME \
+    NEXT_PUBLIC_BRAND_JURISDICTION=$NEXT_PUBLIC_BRAND_JURISDICTION \
+    NEXT_PUBLIC_BRAND_GOVERNING_LAW=$NEXT_PUBLIC_BRAND_GOVERNING_LAW \
+    NEXT_PUBLIC_SUPPORT_EMAIL=$NEXT_PUBLIC_SUPPORT_EMAIL \
+    NEXT_PUBLIC_PRIVACY_EMAIL=$NEXT_PUBLIC_PRIVACY_EMAIL \
+    NEXT_TELEMETRY_DISABLED=1 \
+    NX_ADD_PLUGINS=false \
+    HUSKY=0 \
+    CI=true
+
+COPY . /app
+
+# `postinstall` runs `prisma generate`, so the schema must already be present.
+# --frozen-lockfile makes an out-of-date pnpm-lock.yaml a build failure rather
+# than a silent dependency drift.
+RUN pnpm install --frozen-lockfile
+
+# `nest build` OOMs at Node's default heap (~2 GB) on this monorepo. 5120 MB
+# matches .github/workflows/build.yml — keep the two in step or CI and the
+# image build will fail in different ways.
+RUN NODE_OPTIONS="--max-old-space-size=5120" pnpm run build
+
+# ---------------------------------------------------------------------------
+# Stage 2: runtime
+# ---------------------------------------------------------------------------
+FROM ${NODE_IMAGE} AS runtime
+
+ARG PNPM_VERSION
+ARG PM2_VERSION
+ARG NASHR_VERSION=0.0.0-dev
+
+LABEL org.opencontainers.image.title="Nashr" \
+      org.opencontainers.image.description="Nashr (نشر) — MENA social media management, based on Postiz (AGPL-3.0)" \
+      org.opencontainers.image.licenses="AGPL-3.0-only" \
+      org.opencontainers.image.version="${NASHR_VERSION}" \
+      org.opencontainers.image.base.name="node:22.22-bookworm-slim"
+
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+      nginx \
+      curl \
+      ca-certificates \
+      openssl \
+      tini \
+ && rm -rf /var/lib/apt/lists/* \
+ && rm -f /etc/nginx/sites-enabled/default
+
+RUN npm --no-update-notifier --no-fund --global install \
+      "pnpm@${PNPM_VERSION}" \
+      "pm2@${PM2_VERSION}" \
+ && npm cache clean --force
+
+# Unprivileged runtime user. The whole container runs as `www` — nginx never
+# runs a root master here, so every temp/log path is redirected to /tmp or to
+# the container's stdout/stderr (see ops/docker/nginx.prod.conf).
+RUN addgroup --system --gid 10001 www \
+ && adduser --system --uid 10001 --ingroup www --home /home/www --shell /usr/sbin/nologin www \
+ && mkdir -p /home/www/.pm2 /uploads /config /app \
+ && chown -R www:www /home/www /uploads /config /app /var/lib/nginx /var/log/nginx
+
+COPY --from=builder --chown=www:www /app /app
+COPY --chown=www:www ops/docker/nginx.prod.conf /etc/nginx/nginx.conf
+COPY --chown=www:www ops/docker/entrypoint.sh /usr/local/bin/nashr-entrypoint
+COPY --chown=www:www ops/docker/healthcheck.sh /usr/local/bin/nashr-healthcheck
+COPY --chown=www:www ops/docker/pm2.production.json /app/ops/docker/pm2.production.json
+
+RUN chmod 0755 /usr/local/bin/nashr-entrypoint /usr/local/bin/nashr-healthcheck
+
+WORKDIR /app
+
+ENV NODE_ENV=production \
+    NEXT_TELEMETRY_DISABLED=1 \
+    NX_ADD_PLUGINS=false \
+    HOME=/home/www \
+    PM2_HOME=/home/www/.pm2 \
+    PORT=3000 \
+    ORCHESTRATOR_PORT=3002 \
+    NASHR_VERSION=${NASHR_VERSION} \
+    NEXT_PUBLIC_VERSION=${NASHR_VERSION}
+
+USER www
+
+# 5000 = internal nginx. Nothing else is published; Caddy talks to this only.
+EXPOSE 5000
+
+# Interval is generous: a cold Next.js start on a small host can take ~60s.
+HEALTHCHECK --interval=30s --timeout=10s --start-period=120s --retries=5 \
+  CMD ["/usr/local/bin/nashr-healthcheck"]
+
+ENTRYPOINT ["/usr/bin/tini", "--", "/usr/local/bin/nashr-entrypoint"]
+CMD ["pm2-runtime", "start", "/app/ops/docker/pm2.production.json"]

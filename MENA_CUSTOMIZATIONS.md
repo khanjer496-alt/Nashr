@@ -190,6 +190,51 @@ fails closed, and that behaviour is covered by a test.
 
 Verified: 92 tests pass (37 permissions + 55 approval), re-run after the schema change.
 
+### 2026-08-08 — Phase 6: Production deployment
+
+**Added (root):** `Dockerfile.prod`, `docker-compose.prod.yaml`,
+`docker-compose.staging.yaml`, `DEPLOYMENT.md`, `BACKUP_AND_RECOVERY.md`,
+`SECURITY_CHECKLIST.md`, `OPERATIONS_RUNBOOK.md`.
+**Added (`ops/`, 22 files):** Caddy config (automatic HTTPS), container entrypoint +
+healthcheck, preflight guard, Postgres/uploads backup + restore + automated monthly
+restore drill, secret rotation, logrotate, systemd timers, Temporal production
+dynamicconfig.
+
+**Rewritten:** `.env.example` (133 → 502 lines). Placeholders only; upstream's
+real-looking fake Resend key removed.
+
+**Modified:** `.gitignore` — a bare `.env` does **not** match `.env.prod` or
+`.env.staging`, so real secrets could have been committed. Now ignores every variant and
+re-includes the examples. Verified with `git check-ignore`.
+
+**Not removed:** upstream `docker-compose.yaml` and `docker-compose.dev.yaml` are
+untouched. Production is a separate file so upstream tooling keeps working.
+
+**No root `Dockerfile`:** deliberate, so `railway.toml`, `Jenkins/` and a bare
+`docker build .` stay unambiguous. Production builds are always `-f Dockerfile.prod`.
+
+#### Upstream behaviours found and worked around
+| Finding | Consequence |
+|---|---|
+| `main.ts` tests `!process.env.NOT_SECURED`; `"false"` is truthy in JS | Setting `NOT_SECURED=false` **enables** the insecure path. Guards reject the variable's *presence*, not its value. Same trap for `DISALLOW_PLUS`, `DISABLE_IMAGE_COMPRESSION`, `RUN_CRON`. |
+| `STORAGE_PROVIDER` is read in `next.config.js` `redirects()`/`rewrites()` | It is **build-time**, not runtime. Switching local ↔ cloudflare needs a rebuild. |
+| `NEXT_PUBLIC_SOURCE_URL` is build-time | Set only at runtime, the client bundle still points at upstream Postiz and the AGPL §13 obligation is unmet. Now a required build arg — the build fails without it. |
+| `pnpm run pm2-run` calls `prisma-db-push --accept-data-loss` | The entrypoint bypasses it and drives pm2 directly, using `prisma migrate deploy` only. |
+| `dynamicconfig/development-sql.yaml` enables a setting its own comment warns against in production | Production mounts a separate config. |
+
+**Host sizing:** runtime limits total ≈6.6 GB; the build alone needs ~5 GB. Minimum to
+run 8 GB / 4 vCPU / 80 GB SSD; recommended 16 GB / 4–8 vCPU / 160 GB NVMe.
+
+**Verified:** `bash -n` passes on all 9 scripts; `docker compose config` renders prod,
+staging and upstream; removing `JWT_SECRET` fails with
+`required variable JWT_SECRET is missing a value`; preflight exits 1 on a bad env
+(14 blockers) and 0 on a good one; all 10 pinned image digests re-resolved against the
+live registry and matched.
+
+**Not verified — no Docker daemon in this environment.** The image was never built, the
+stack was never started, and `caddy validate` never ran. Those require a first real
+deploy.
+
 ---
 
 ## Planned changes (not yet made)

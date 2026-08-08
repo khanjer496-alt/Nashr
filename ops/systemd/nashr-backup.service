@@ -1,0 +1,40 @@
+# /etc/systemd/system/nashr-backup.service
+#
+# Install:
+#   sudo cp ops/systemd/nashr-backup.* /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now nashr-backup.timer
+#   systemctl list-timers nashr-backup.timer
+
+[Unit]
+Description=Nashr PostgreSQL + uploads backup
+Documentation=file:///opt/nashr/BACKUP_AND_RECOVERY.md
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+# Adjust to wherever the repo is checked out on the host.
+WorkingDirectory=/opt/nashr
+Environment=BACKUP_DIR=/var/backups/nashr
+# Off-host upload credentials. Point this at a 0600 root-owned file holding
+# BACKUP_R2_ACCESS_KEY_ID / BACKUP_R2_SECRET_ACCESS_KEY. Keeping them OUT of
+# .env.prod means the app container never sees the backup credentials, so an
+# app compromise cannot delete the backups.
+EnvironmentFile=-/etc/nashr/backup.env
+# Optional at-rest encryption of the dump before it leaves the host.
+# Environment=BACKUP_PASSPHRASE_FILE=/etc/nashr/backup.passphrase
+
+ExecStart=/opt/nashr/ops/scripts/backup-postgres.sh docker-compose.prod.yaml .env.prod
+ExecStart=/opt/nashr/ops/scripts/backup-uploads.sh  docker-compose.prod.yaml .env.prod
+
+# A backup run that hangs must not block the next one forever.
+TimeoutStartSec=3600
+Nice=10
+IOSchedulingClass=idle
+
+StandardOutput=append:/var/log/nashr/backup.log
+StandardError=append:/var/log/nashr/backup.log
+
+[Install]
+WantedBy=multi-user.target

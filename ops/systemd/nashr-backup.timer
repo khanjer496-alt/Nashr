@@ -1,0 +1,19 @@
+# /etc/systemd/system/nashr-backup.timer
+
+[Unit]
+Description=Nightly Nashr backup
+Documentation=file:///opt/nashr/BACKUP_AND_RECOVERY.md
+
+[Timer]
+# 02:00 Asia/Dubai = 22:00 UTC the previous day. Chosen because it is the
+# quietest window for UAE customers: after the evening posting peak and before
+# the morning one.
+OnCalendar=*-*-* 22:00:00 UTC
+# If the host was off at 22:00, run as soon as it comes back.
+Persistent=true
+# Spread the load if several hosts ever share a backup target.
+RandomizedDelaySec=300
+Unit=nashr-backup.service
+
+[Install]
+WantedBy=timers.target

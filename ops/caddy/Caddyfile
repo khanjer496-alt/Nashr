@@ -1,0 +1,76 @@
+# ---------------------------------------------------------------------------
+# Nashr — production edge (Caddy 2).
+#
+# Caddy over nginx+certbot for the edge, deliberately:
+#   * ACME issuance AND renewal are built in — no certbot cron, no renewal
+#     hook that silently stops working, no 03:00 expiry incident.
+#   * HTTP->HTTPS redirect, OCSP stapling and modern TLS defaults are on
+#     with zero configuration, so there is no hand-written cipher list to rot.
+#   * The whole edge is ~40 readable lines instead of ~200.
+# The in-container nginx (ops/docker/nginx.prod.conf) stays as-is because it is
+# upstream Postiz's own routing layer; replacing it would fight future merges.
+#
+# Variables come from the compose env file:
+#   NASHR_DOMAIN   e.g. app.nashr.example
+#   ACME_EMAIL     e.g. ops@nashr.example
+# ---------------------------------------------------------------------------
+
+{
+	email {$ACME_EMAIL}
+	admin 127.0.0.1:2019
+	# Uncomment for dry runs against Let's Encrypt staging so you do not burn
+	# the production rate limit (5 failures/hour/domain) while debugging DNS.
+	# acme_ca https://acme-staging-v02.api.letsencrypt.org/directory
+	servers {
+		trusted_proxies static private_ranges
+	}
+}
+
+(nashr_security_headers) {
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "SAMEORIGIN"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=()"
+		Cross-Origin-Opener-Policy "same-origin"
+		-Server
+	}
+}
+
+{$NASHR_DOMAIN} {
+	import nashr_security_headers
+
+	encode zstd gzip
+
+	# Matches client_max_body_size in the in-container nginx.
+	request_body {
+		max_size 2GB
+	}
+
+	reverse_proxy app:5000 {
+		header_up X-Real-IP {remote_host}
+		# Publishing a long video can take minutes.
+		transport http {
+			read_timeout 300s
+			write_timeout 300s
+			dial_timeout 10s
+		}
+	}
+
+	log {
+		output file /var/log/caddy/access.log {
+			roll_size 10MiB
+			roll_keep 5
+			roll_keep_for 336h
+		}
+		format json
+		level INFO
+	}
+}
+
+# Temporal Web UI is intentionally NOT published here. It exposes every
+# workflow input, which includes post content and integration identifiers.
+# Reach it over an SSH tunnel instead:
+#   ssh -N -L 8080:127.0.0.1:8080 deploy@<host>
+# See OPERATIONS_RUNBOOK.md.

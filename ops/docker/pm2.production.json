@@ -1,0 +1,54 @@
+{
+  "apps": [
+    {
+      "name": "nginx",
+      "script": "/usr/sbin/nginx",
+      "args": ["-g", "daemon off;"],
+      "interpreter": "none",
+      "autorestart": true,
+      "max_restarts": 20,
+      "exp_backoff_restart_delay": 1000,
+      "kill_timeout": 10000,
+      "time": true
+    },
+    {
+      "name": "backend",
+      "cwd": "/app",
+      "script": "pnpm",
+      "args": ["run", "start:prod:backend"],
+      "interpreter": "none",
+      "autorestart": true,
+      "max_restarts": 20,
+      "exp_backoff_restart_delay": 2000,
+      "max_memory_restart": "900M",
+      "kill_timeout": 20000,
+      "time": true
+    },
+    {
+      "name": "orchestrator",
+      "cwd": "/app",
+      "script": "pnpm",
+      "args": ["run", "start:prod:orchestrator"],
+      "interpreter": "none",
+      "autorestart": true,
+      "max_restarts": 20,
+      "exp_backoff_restart_delay": 2000,
+      "max_memory_restart": "700M",
+      "kill_timeout": 30000,
+      "time": true
+    },
+    {
+      "name": "frontend",
+      "cwd": "/app",
+      "script": "pnpm",
+      "args": ["run", "start:prod:frontend"],
+      "interpreter": "none",
+      "autorestart": true,
+      "max_restarts": 20,
+      "exp_backoff_restart_delay": 2000,
+      "max_memory_restart": "700M",
+      "kill_timeout": 20000,
+      "time": true
+    }
+  ]
+}

@@ -1,0 +1,504 @@
+# ---------------------------------------------------------------------------
+# Nashr (نشر) — PRODUCTION stack.
+#
+# This file does NOT replace docker-compose.yaml. That one is upstream Postiz's
+# single-host developer/self-host quickstart and stays untouched. This one is
+# what runs the product.
+#
+# Differences that matter (see AUDIT_REPORT.md §17 and RISK_REGISTER.md):
+#   * App image is built by us and pinned to a version tag  ....... RISK-D3
+#   * JWT_SECRET and every other secret has NO default; compose
+#     refuses to render if one is missing  ......................... RISK-S1
+#   * Schema is applied with `prisma migrate deploy`, never
+#     `db push --accept-data-loss` (see ops/docker/entrypoint.sh) .. RISK-01
+#   * Caddy terminates TLS with automatic ACME certificates
+#   * Health checks and log rotation on every service
+#   * Postgres/Redis/Temporal sit on `internal: true` networks and
+#     publish no host ports
+#
+# Usage:
+#   ./ops/scripts/preflight.sh .env.prod
+#   docker compose --env-file .env.prod -f docker-compose.prod.yaml up -d
+#
+# `--env-file` is required: compose interpolation (${...}) reads it, and the
+# app container additionally loads the same file wholesale via `env_file`.
+# ---------------------------------------------------------------------------
+
+name: nashr-prod
+
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "5"
+    compress: "true"
+
+x-restart: &default-restart
+  restart: unless-stopped
+
+services:
+  # -------------------------------------------------------------------------
+  # Edge: TLS termination + automatic certificates
+  # -------------------------------------------------------------------------
+  caddy:
+    image: caddy:2.10-alpine@sha256:4c6e91c6ed0e2fa03efd5b44747b625fec79bc9cd06ac5235a779726618e530d
+    container_name: nashr-prod-caddy
+    <<: *default-restart
+    logging: *default-logging
+    depends_on:
+      app:
+        condition: service_started
+    environment:
+      NASHR_DOMAIN: ${NASHR_DOMAIN:?NASHR_DOMAIN must be set (e.g. app.nashr.example)}
+      ACME_EMAIL: ${ACME_EMAIL:?ACME_EMAIL must be set - Let's Encrypt needs a contact address}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./ops/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+      - caddy-logs:/var/log/caddy
+    networks:
+      - edge
+    healthcheck:
+      # The admin API only answers once the config has actually loaded, so this
+      # catches a malformed Caddyfile as well as a dead process.
+      test: ["CMD-SHELL", "wget --quiet --tries=1 --spider http://127.0.0.1:2019/config/ || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 256M
+        reservations:
+          memory: 64M
+
+  # -------------------------------------------------------------------------
+  # Application: frontend + backend + orchestrator + internal nginx
+  # -------------------------------------------------------------------------
+  app:
+    # Pinned version tag. NEVER `:latest` here — a restart must not be able to
+    # change the running code.
+    image: ${NASHR_IMAGE:-ghcr.io/nashr/nashr-app}:${NASHR_IMAGE_TAG:?NASHR_IMAGE_TAG must be set to an immutable version tag, e.g. 1.0.0 - never "latest"}
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+      args:
+        NASHR_VERSION: ${NASHR_IMAGE_TAG}
+        STORAGE_PROVIDER: ${STORAGE_PROVIDER:-local}
+        NEXT_PUBLIC_UPLOAD_STATIC_DIRECTORY: ${NEXT_PUBLIC_UPLOAD_STATIC_DIRECTORY:-/uploads}
+        NEXT_PUBLIC_BACKEND_URL: https://${NASHR_DOMAIN}/api
+        NEXT_PUBLIC_SENTRY_DSN: ${NEXT_PUBLIC_SENTRY_DSN:-}
+        NEXT_PUBLIC_POSTHOG_KEY: ${NEXT_PUBLIC_POSTHOG_KEY:-}
+        NEXT_PUBLIC_POSTHOG_HOST: ${NEXT_PUBLIC_POSTHOG_HOST:-}
+        NEXT_PUBLIC_GTM_ID: ${NEXT_PUBLIC_GTM_ID:-}
+        NEXT_PUBLIC_POLOTNO: ${NEXT_PUBLIC_POLOTNO:-}
+        NEXT_PUBLIC_DISCORD_SUPPORT: ${NEXT_PUBLIC_DISCORD_SUPPORT:-}
+        NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-https://${NASHR_DOMAIN}}
+        NEXT_PUBLIC_DOCS_URL: ${NEXT_PUBLIC_DOCS_URL:-}
+        # AGPL-3.0 s13 source offer. Baked into the client bundle at build time.
+        NEXT_PUBLIC_SOURCE_URL: ${NEXT_PUBLIC_SOURCE_URL:?NEXT_PUBLIC_SOURCE_URL must point at the public mirror of THIS deployment's source - AGPL-3.0 section 13 (RISK-L1)}
+        NEXT_PUBLIC_BRAND_LEGAL_NAME: ${NEXT_PUBLIC_BRAND_LEGAL_NAME:-}
+        NEXT_PUBLIC_BRAND_JURISDICTION: ${NEXT_PUBLIC_BRAND_JURISDICTION:-}
+        NEXT_PUBLIC_BRAND_GOVERNING_LAW: ${NEXT_PUBLIC_BRAND_GOVERNING_LAW:-}
+        NEXT_PUBLIC_SUPPORT_EMAIL: ${NEXT_PUBLIC_SUPPORT_EMAIL:-}
+        NEXT_PUBLIC_PRIVACY_EMAIL: ${NEXT_PUBLIC_PRIVACY_EMAIL:-}
+    container_name: nashr-prod-app
+    <<: *default-restart
+    logging: *default-logging
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      temporal:
+        condition: service_healthy
+    # Everything else (all ~150 optional vars: social OAuth pairs, AI keys,
+    # SMTP, Stripe, Sentry) comes from the env file verbatim.
+    env_file:
+      - ${NASHR_ENV_FILE:-.env.prod}
+    environment:
+      # --- These override anything in the env file. Single source of truth for
+      # --- values that must agree with the other containers in this stack.
+      NODE_ENV: production
+      NASHR_ENV: production
+      IS_GENERAL: "true"
+
+      # NO DEFAULT. Compose refuses to render this file if JWT_SECRET is unset,
+      # and ops/docker/entrypoint.sh refuses to boot if it is short or is a
+      # known placeholder string.                                     (RISK-S1)
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET must be set. Generate one with - openssl rand -base64 48}
+
+      DATABASE_URL: postgresql://${POSTGRES_USER:-nashr}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set. Generate one with - openssl rand -hex 24}@postgres:5432/${POSTGRES_DB:-nashr}?schema=public&connection_limit=15&pool_timeout=20
+      REDIS_URL: redis://default:${REDIS_PASSWORD:?REDIS_PASSWORD must be set. Generate one with - openssl rand -hex 24}@redis:6379
+      TEMPORAL_ADDRESS: temporal:7233
+      TEMPORAL_NAMESPACE: ${TEMPORAL_NAMESPACE:-default}
+
+      MAIN_URL: https://${NASHR_DOMAIN}
+      FRONTEND_URL: https://${NASHR_DOMAIN}
+      NEXT_PUBLIC_BACKEND_URL: https://${NASHR_DOMAIN}/api
+      BACKEND_INTERNAL_URL: http://127.0.0.1:3000
+      BACKEND_URL: https://${NASHR_DOMAIN}/api
+
+      STORAGE_PROVIDER: ${STORAGE_PROVIDER:-local}
+      UPLOAD_DIRECTORY: /uploads
+      NEXT_PUBLIC_UPLOAD_STATIC_DIRECTORY: ${NEXT_PUBLIC_UPLOAD_STATIC_DIRECTORY:-/uploads}
+
+      RUN_MIGRATIONS: ${RUN_MIGRATIONS:-true}
+    volumes:
+      - uploads:/uploads
+      - config:/config
+      # /tmp is writable-but-small: nginx temp files and Next.js scratch only.
+      # noexec/nosuid means a dropped payload cannot be executed from there.
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=512m
+    networks:
+      - edge
+      - data
+      - temporal
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/nashr-healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      # Cold Next.js + Nest start on a 4 vCPU host is ~60-90s. Anything shorter
+      # here produces a restart loop that looks like an app bug.
+      start_period: 150s
+    stop_grace_period: 60s
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 2560M
+        reservations:
+          memory: 1024M
+
+  # -------------------------------------------------------------------------
+  # Application database
+  # -------------------------------------------------------------------------
+  postgres:
+    image: postgres:17.7-alpine@sha256:bb377b7239d2774ac8cc76f481596ce96c5a6b5e9d141f6d0a0ee371a6e7c0f2
+    container_name: nashr-prod-postgres
+    <<: *default-restart
+    logging: *default-logging
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-nashr}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}
+      POSTGRES_DB: ${POSTGRES_DB:-nashr}
+      # --data-checksums turns silent page corruption into a loud error.
+      # Only applied on FIRST initialisation of the volume.
+      POSTGRES_INITDB_ARGS: "--data-checksums"
+    command:
+      - postgres
+      - -c
+      - max_connections=100
+      - -c
+      - shared_buffers=256MB
+      - -c
+      - effective_cache_size=768MB
+      - -c
+      - work_mem=8MB
+      - -c
+      - maintenance_work_mem=128MB
+      - -c
+      - wal_compression=on
+      - -c
+      - log_min_duration_statement=2000
+      - -c
+      - log_checkpoints=on
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      # Backups are written here by ops/scripts/backup-postgres.sh via
+      # `docker compose exec`, so they survive a container rebuild.
+      - backups:/backups
+    shm_size: 256mb
+    networks:
+      - data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-nashr} -d ${POSTGRES_DB:-nashr} -q"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 30s
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 1024M
+        reservations:
+          memory: 512M
+
+  # -------------------------------------------------------------------------
+  # Cache / queue
+  # -------------------------------------------------------------------------
+  redis:
+    image: redis:7.4.7-alpine@sha256:02f2cc4882f8bf87c79a220ac958f58c700bdec0dfb9b9ea61b62fb0e8f1bfcf
+    container_name: nashr-prod-redis
+    <<: *default-restart
+    logging: *default-logging
+    # The password is visible in `docker inspect` on this host, same as every
+    # other value in the env file. It is defence in depth: `redis` is on an
+    # internal network with no published port and only `app` can reach it.
+    command:
+      - redis-server
+      - --requirepass
+      - ${REDIS_PASSWORD:?REDIS_PASSWORD must be set}
+      - --appendonly
+      - "yes"
+      - --appendfsync
+      - everysec
+      - --maxmemory
+      - 192mb
+      - --maxmemory-policy
+      - noeviction
+    environment:
+      # Lets the healthcheck authenticate without putting the password on the
+      # redis-cli command line.
+      REDISCLI_AUTH: ${REDIS_PASSWORD:?REDIS_PASSWORD must be set}
+    volumes:
+      - redis-data:/data
+    networks:
+      - data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep -q PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 256M
+        reservations:
+          memory: 64M
+
+  # -------------------------------------------------------------------------
+  # Temporal stack
+  # -------------------------------------------------------------------------
+  temporal:
+    image: temporalio/auto-setup:1.28.1@sha256:607d68caa111338d754771efb876c92dfcdae06d056e4530bb31cd0f37406e6a
+    container_name: nashr-prod-temporal
+    <<: *default-restart
+    logging: *default-logging
+    depends_on:
+      temporal-postgres:
+        condition: service_healthy
+      temporal-elasticsearch:
+        condition: service_healthy
+    environment:
+      DB: postgres12
+      DB_PORT: 5432
+      POSTGRES_USER: temporal
+      POSTGRES_PWD: ${TEMPORAL_POSTGRES_PASSWORD:?TEMPORAL_POSTGRES_PASSWORD must be set. Generate one with - openssl rand -hex 24}
+      POSTGRES_SEEDS: temporal-postgres
+      DYNAMIC_CONFIG_FILE_PATH: config/dynamicconfig/production-sql.yaml
+      ENABLE_ES: "true"
+      ES_SEEDS: temporal-elasticsearch
+      ES_VERSION: v7
+      TEMPORAL_NAMESPACE: ${TEMPORAL_NAMESPACE:-default}
+    volumes:
+      # Production dynamic config: no forceSearchAttributesCacheRefreshOnRead,
+      # which the repo's development-sql.yaml itself warns against in prod.
+      - ./ops/temporal/dynamicconfig:/etc/temporal/config/dynamicconfig:ro
+    ports:
+      # Loopback only. Needed by ops/scripts/*.sh and the `temporal` CLI on the
+      # host; never reachable from the internet.
+      - "127.0.0.1:7233:7233"
+    networks:
+      - temporal
+    healthcheck:
+      test: ["CMD", "tctl", "--address", "127.0.0.1:7233", "cluster", "health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 90s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 768M
+        reservations:
+          memory: 256M
+
+  temporal-postgres:
+    image: postgres:16.11-alpine@sha256:4327b9fd295502f326f44153a1045a7170ddbfffed1c3829798328556cfd09e2
+    container_name: nashr-prod-temporal-postgres
+    <<: *default-restart
+    logging: *default-logging
+    environment:
+      POSTGRES_USER: temporal
+      POSTGRES_PASSWORD: ${TEMPORAL_POSTGRES_PASSWORD:?TEMPORAL_POSTGRES_PASSWORD must be set}
+      POSTGRES_DB: temporal
+      POSTGRES_INITDB_ARGS: "--data-checksums"
+    volumes:
+      - temporal-postgres-data:/var/lib/postgresql/data
+    shm_size: 128mb
+    networks:
+      - temporal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U temporal -q"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 30s
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "0.75"
+          memory: 512M
+        reservations:
+          memory: 192M
+
+  temporal-elasticsearch:
+    image: elasticsearch:7.17.27@sha256:9a6443f55243f6acbfeb4a112d15eb3b9aac74bf25e0e39fa19b3ddd3a6879d0
+    container_name: nashr-prod-temporal-elasticsearch
+    <<: *default-restart
+    logging: *default-logging
+    environment:
+      - cluster.routing.allocation.disk.threshold_enabled=true
+      - cluster.routing.allocation.disk.watermark.low=2gb
+      - cluster.routing.allocation.disk.watermark.high=1gb
+      - cluster.routing.allocation.disk.watermark.flood_stage=512mb
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - xpack.security.enabled=false
+      - action.destructive_requires_name=true
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      - temporal-elasticsearch-data:/usr/share/elasticsearch/data
+    networks:
+      - temporal
+    healthcheck:
+      # `yellow` is correct for a single node: replicas are unassignable, so a
+      # healthy single-node cluster never reaches `green`.
+      test: ["CMD-SHELL", "curl -fsS 'http://127.0.0.1:9200/_cluster/health?wait_for_status=yellow&timeout=5s' >/dev/null || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 6
+      start_period: 90s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 1280M
+        reservations:
+          memory: 640M
+
+  # -------------------------------------------------------------------------
+  # Operator tooling — opt-in only:  --profile admin
+  # -------------------------------------------------------------------------
+  temporal-admin-tools:
+    image: temporalio/admin-tools:1.28.1-tctl-1.18.4-cli-1.4.1@sha256:01537b62d995f27a0f0d33a01ac4caa6779622f454fb2eb36fed0dccd45c6244
+    container_name: nashr-prod-temporal-admin-tools
+    profiles: ["admin"]
+    <<: *default-restart
+    logging: *default-logging
+    depends_on:
+      temporal:
+        condition: service_healthy
+    environment:
+      TEMPORAL_ADDRESS: temporal:7233
+      TEMPORAL_CLI_ADDRESS: temporal:7233
+    networks:
+      - temporal
+    stdin_open: true
+    tty: true
+    healthcheck:
+      test: ["CMD", "tctl", "--address", "temporal:7233", "cluster", "health"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 128M
+
+  temporal-ui:
+    image: temporalio/ui:2.34.0@sha256:cb17ea423d76a8a19a269d0bcd81fc12eee1f6365acd2a56b590dafb35696a95
+    container_name: nashr-prod-temporal-ui
+    profiles: ["admin"]
+    <<: *default-restart
+    logging: *default-logging
+    depends_on:
+      temporal:
+        condition: service_healthy
+    environment:
+      TEMPORAL_ADDRESS: temporal:7233
+      TEMPORAL_CORS_ORIGINS: http://127.0.0.1:8080
+    ports:
+      # Loopback ONLY. Workflow inputs contain post content and integration
+      # identifiers, so this is never published to the internet. Reach it with:
+      #   ssh -N -L 8080:127.0.0.1:8080 deploy@<host>
+      - "127.0.0.1:8080:8080"
+    networks:
+      - temporal
+    healthcheck:
+      test: ["CMD-SHELL", "wget --quiet --tries=1 --spider http://127.0.0.1:8080/ || exit 1"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 192M
+
+volumes:
+  postgres-data:
+    name: nashr-prod-postgres-data
+  redis-data:
+    name: nashr-prod-redis-data
+  uploads:
+    name: nashr-prod-uploads
+  config:
+    name: nashr-prod-config
+  backups:
+    name: nashr-prod-backups
+  caddy-data:
+    name: nashr-prod-caddy-data
+  caddy-config:
+    name: nashr-prod-caddy-config
+  caddy-logs:
+    name: nashr-prod-caddy-logs
+  temporal-postgres-data:
+    name: nashr-prod-temporal-postgres-data
+  temporal-elasticsearch-data:
+    name: nashr-prod-temporal-elasticsearch-data
+
+networks:
+  edge:
+    name: nashr-prod-edge
+    driver: bridge
+  data:
+    name: nashr-prod-data
+    driver: bridge
+    # No route to the internet: Postgres and Redis cannot phone home and
+    # cannot be reached from outside the stack.
+    internal: true
+  temporal:
+    name: nashr-prod-temporal
+    driver: bridge
+    internal: true

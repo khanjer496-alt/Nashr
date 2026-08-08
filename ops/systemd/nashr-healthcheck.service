@@ -1,0 +1,19 @@
+# /etc/systemd/system/nashr-healthcheck.service
+
+[Unit]
+Description=Nashr health check
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/nashr
+Environment=BACKUP_DIR=/var/backups/nashr
+ExecStart=/opt/nashr/ops/scripts/healthcheck.sh docker-compose.prod.yaml .env.prod
+# Exit 1 (degraded) and 2 (down) both mark the unit failed, so
+# `systemctl --failed` and any journal-based alerting will surface it.
+StandardOutput=append:/var/log/nashr/healthcheck.log
+StandardError=append:/var/log/nashr/healthcheck.log
+
+[Install]
+WantedBy=multi-user.target

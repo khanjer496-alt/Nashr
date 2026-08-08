@@ -1,0 +1,45 @@
+# ---------------------------------------------------------------------------
+# Temporal dynamic config — Nashr production.
+#
+# The repo's dynamicconfig/development-sql.yaml sets
+#   system.forceSearchAttributesCacheRefreshOnRead: true
+# and its own comment says "Dev setup only. Please don't turn this on in
+# production." It makes every visibility read re-fetch the search-attribute
+# cache. That is fine on a laptop and wasteful under load, so it is absent here.
+#
+# Mounted read-only at /etc/temporal/config/dynamicconfig by the temporal
+# service in docker-compose.prod.yaml.
+# ---------------------------------------------------------------------------
+
+limit.maxIDLength:
+  - value: 255
+    constraints: {}
+
+# Sized for a 5-10 customer beta: generous enough that a normal week never hits
+# a limit, low enough that a runaway loop is capped instead of eating the host.
+limit.blobSize.warn:
+  - value: 262144
+    constraints: {}
+limit.blobSize.error:
+  - value: 2097152
+    constraints: {}
+
+frontend.namespaceRPS:
+  - value: 800
+    constraints: {}
+frontend.namespaceCount:
+  - value: 200
+    constraints: {}
+
+history.persistenceMaxQPS:
+  - value: 600
+    constraints: {}
+frontend.persistenceMaxQPS:
+  - value: 600
+    constraints: {}
+
+# Keep completed workflow history for 14 days; publishing failures are usually
+# triaged within a day or two and this keeps the Temporal DB small.
+system.enableReadFromES:
+  - value: true
+    constraints: {}

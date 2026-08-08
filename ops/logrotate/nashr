@@ -1,0 +1,54 @@
+# /etc/logrotate.d/nashr
+#
+# Docker container logs are already capped by the `logging:` block in
+# docker-compose.prod.yaml (json-file, max-size 10m, max-file 5, compressed) —
+# that is the primary control and it needs no logrotate.
+#
+# This file covers the logs that logrotate DOES own:
+#   * Caddy access logs (Caddy rolls them itself, this is a backstop)
+#   * Nashr ops script output written by the systemd units
+#
+# Install:
+#   sudo cp ops/logrotate/nashr /etc/logrotate.d/nashr
+#   sudo chown root:root /etc/logrotate.d/nashr
+#   sudo chmod 644 /etc/logrotate.d/nashr
+#   sudo logrotate --debug /etc/logrotate.d/nashr   # dry run, changes nothing
+
+/var/log/nashr/*.log {
+    daily
+    rotate 14
+    missingok
+    notifempty
+    compress
+    delaycompress
+    copytruncate
+    create 0640 root adm
+    dateext
+    dateformat -%Y%m%d
+    su root adm
+}
+
+# Caddy writes JSON access logs inside its container to a bind-mounted volume.
+# Caddy's own `roll_size`/`roll_keep` already bound these; this catches the
+# case where someone edits the Caddyfile and drops the roll directives.
+/var/lib/docker/volumes/nashr-prod-caddy-logs/_data/*.log {
+    weekly
+    rotate 8
+    missingok
+    notifempty
+    compress
+    delaycompress
+    copytruncate
+    su root root
+}
+
+/var/lib/docker/volumes/nashr-staging-caddy-logs/_data/*.log {
+    weekly
+    rotate 4
+    missingok
+    notifempty
+    compress
+    delaycompress
+    copytruncate
+    su root root
+}

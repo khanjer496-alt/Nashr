@@ -1,0 +1,392 @@
+# ---------------------------------------------------------------------------
+# Nashr (نشر) — STAGING stack.
+#
+# Isolation from production is structural, not conventional:
+#
+#   project name   nashr-staging          (vs nashr-prod)
+#   volumes        nashr-staging-*        (vs nashr-prod-*)
+#   networks       nashr-staging-*        (vs nashr-prod-*)
+#   env file       .env.staging           (vs .env.prod)
+#   containers     nashr-staging-*         (vs nashr-prod-*)
+#
+# Staging cannot reach production data even if someone pastes the production
+# DATABASE_URL into .env.staging: this file sets DATABASE_URL and REDIS_URL in
+# the `environment:` block, which takes precedence over `env_file`, and pins
+# them to the staging containers on an `internal: true` network.
+#
+# Ports: this defaults to 80/443 like production, which means staging wants its
+# OWN host or VM. To co-locate on the production host, set
+# NASHR_STAGING_HTTP_PORT=8080 / NASHR_STAGING_HTTPS_PORT=8443 and switch the
+# staging Caddyfile to `tls internal` — ACME cannot validate on those ports.
+# See DEPLOYMENT.md "Staging vs production".
+#
+# Usage:
+#   ./ops/scripts/preflight.sh .env.staging staging
+#   docker compose --env-file .env.staging -f docker-compose.staging.yaml up -d
+# ---------------------------------------------------------------------------
+
+name: nashr-staging
+
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "5m"
+    max-file: "3"
+    compress: "true"
+
+x-restart: &default-restart
+  restart: unless-stopped
+
+services:
+  caddy:
+    image: caddy:2.10-alpine@sha256:4c6e91c6ed0e2fa03efd5b44747b625fec79bc9cd06ac5235a779726618e530d
+    container_name: nashr-staging-caddy
+    <<: *default-restart
+    logging: *default-logging
+    depends_on:
+      app:
+        condition: service_started
+    environment:
+      NASHR_STAGING_DOMAIN: ${NASHR_STAGING_DOMAIN:?NASHR_STAGING_DOMAIN must be set (e.g. staging.nashr.example)}
+      ACME_EMAIL: ${ACME_EMAIL:?ACME_EMAIL must be set}
+      STAGING_BASIC_AUTH_USER: ${STAGING_BASIC_AUTH_USER:?STAGING_BASIC_AUTH_USER must be set - staging is never left open}
+      STAGING_BASIC_AUTH_HASH: ${STAGING_BASIC_AUTH_HASH:?STAGING_BASIC_AUTH_HASH must be set - generate with - docker run --rm caddy:2.10-alpine caddy hash-password --plaintext '<password>'}
+    ports:
+      - "${NASHR_STAGING_HTTP_PORT:-80}:80"
+      - "${NASHR_STAGING_HTTPS_PORT:-443}:443"
+    volumes:
+      - ./ops/caddy/Caddyfile.staging:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+      - caddy-logs:/var/log/caddy
+    networks:
+      - edge
+    healthcheck:
+      test: ["CMD-SHELL", "wget --quiet --tries=1 --spider http://127.0.0.1:2019/config/ || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 128M
+
+  app:
+    image: ${NASHR_IMAGE:-ghcr.io/nashr/nashr-app}:${NASHR_IMAGE_TAG:?NASHR_IMAGE_TAG must be set - staging validates the exact tag you intend to promote}
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+      args:
+        NASHR_VERSION: ${NASHR_IMAGE_TAG}
+        STORAGE_PROVIDER: ${STORAGE_PROVIDER:-local}
+        NEXT_PUBLIC_UPLOAD_STATIC_DIRECTORY: ${NEXT_PUBLIC_UPLOAD_STATIC_DIRECTORY:-/uploads}
+        NEXT_PUBLIC_BACKEND_URL: https://${NASHR_STAGING_DOMAIN}/api
+        NEXT_PUBLIC_APP_URL: https://${NASHR_STAGING_DOMAIN}
+        NEXT_PUBLIC_SOURCE_URL: ${NEXT_PUBLIC_SOURCE_URL:-}
+        NEXT_PUBLIC_BRAND_LEGAL_NAME: ${NEXT_PUBLIC_BRAND_LEGAL_NAME:-}
+        NEXT_PUBLIC_SUPPORT_EMAIL: ${NEXT_PUBLIC_SUPPORT_EMAIL:-}
+    container_name: nashr-staging-app
+    <<: *default-restart
+    logging: *default-logging
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      temporal:
+        condition: service_healthy
+    env_file:
+      - ${NASHR_ENV_FILE:-.env.staging}
+    environment:
+      NODE_ENV: production
+      NASHR_ENV: staging
+      IS_GENERAL: "true"
+
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET must be set - and it MUST DIFFER from production, so a staging token is never valid against production}
+
+      # Pinned to the staging containers. An env-file override cannot win.
+      DATABASE_URL: postgresql://${POSTGRES_USER:-nashr_staging}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}@postgres:5432/${POSTGRES_DB:-nashr_staging}?schema=public&connection_limit=8&pool_timeout=20
+      REDIS_URL: redis://default:${REDIS_PASSWORD:?REDIS_PASSWORD must be set}@redis:6379
+      TEMPORAL_ADDRESS: temporal:7233
+      TEMPORAL_NAMESPACE: ${TEMPORAL_NAMESPACE:-default}
+
+      MAIN_URL: https://${NASHR_STAGING_DOMAIN}
+      FRONTEND_URL: https://${NASHR_STAGING_DOMAIN}
+      NEXT_PUBLIC_BACKEND_URL: https://${NASHR_STAGING_DOMAIN}/api
+      BACKEND_INTERNAL_URL: http://127.0.0.1:3000
+      BACKEND_URL: https://${NASHR_STAGING_DOMAIN}/api
+
+      STORAGE_PROVIDER: ${STORAGE_PROVIDER:-local}
+      UPLOAD_DIRECTORY: /uploads
+      NEXT_PUBLIC_UPLOAD_STATIC_DIRECTORY: ${NEXT_PUBLIC_UPLOAD_STATIC_DIRECTORY:-/uploads}
+
+      # Nobody self-registers on staging.
+      DISABLE_REGISTRATION: "true"
+      RUN_MIGRATIONS: ${RUN_MIGRATIONS:-true}
+    volumes:
+      - uploads:/uploads
+      - config:/config
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=256m
+    networks:
+      - edge
+      - data
+      - temporal
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/nashr-healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 150s
+    stop_grace_period: 45s
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "1.50"
+          memory: 2048M
+        reservations:
+          memory: 768M
+
+  postgres:
+    image: postgres:17.7-alpine@sha256:bb377b7239d2774ac8cc76f481596ce96c5a6b5e9d141f6d0a0ee371a6e7c0f2
+    container_name: nashr-staging-postgres
+    <<: *default-restart
+    logging: *default-logging
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-nashr_staging}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}
+      POSTGRES_DB: ${POSTGRES_DB:-nashr_staging}
+      POSTGRES_INITDB_ARGS: "--data-checksums"
+    command:
+      - postgres
+      - -c
+      - max_connections=50
+      - -c
+      - shared_buffers=128MB
+      - -c
+      - effective_cache_size=384MB
+      - -c
+      - log_min_duration_statement=2000
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - backups:/backups
+    shm_size: 128mb
+    networks:
+      - data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-nashr_staging} -d ${POSTGRES_DB:-nashr_staging} -q"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 30s
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "0.75"
+          memory: 512M
+
+  redis:
+    image: redis:7.4.7-alpine@sha256:02f2cc4882f8bf87c79a220ac958f58c700bdec0dfb9b9ea61b62fb0e8f1bfcf
+    container_name: nashr-staging-redis
+    <<: *default-restart
+    logging: *default-logging
+    command:
+      - redis-server
+      - --requirepass
+      - ${REDIS_PASSWORD:?REDIS_PASSWORD must be set}
+      - --appendonly
+      - "yes"
+      - --maxmemory
+      - 96mb
+      - --maxmemory-policy
+      - noeviction
+    environment:
+      REDISCLI_AUTH: ${REDIS_PASSWORD:?REDIS_PASSWORD must be set}
+    volumes:
+      - redis-data:/data
+    networks:
+      - data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep -q PONG"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 128M
+
+  temporal:
+    image: temporalio/auto-setup:1.28.1@sha256:607d68caa111338d754771efb876c92dfcdae06d056e4530bb31cd0f37406e6a
+    container_name: nashr-staging-temporal
+    <<: *default-restart
+    logging: *default-logging
+    depends_on:
+      temporal-postgres:
+        condition: service_healthy
+      temporal-elasticsearch:
+        condition: service_healthy
+    environment:
+      DB: postgres12
+      DB_PORT: 5432
+      POSTGRES_USER: temporal
+      POSTGRES_PWD: ${TEMPORAL_POSTGRES_PASSWORD:?TEMPORAL_POSTGRES_PASSWORD must be set}
+      POSTGRES_SEEDS: temporal-postgres
+      DYNAMIC_CONFIG_FILE_PATH: config/dynamicconfig/staging-sql.yaml
+      ENABLE_ES: "true"
+      ES_SEEDS: temporal-elasticsearch
+      ES_VERSION: v7
+      TEMPORAL_NAMESPACE: ${TEMPORAL_NAMESPACE:-default}
+    volumes:
+      - ./ops/temporal/dynamicconfig:/etc/temporal/config/dynamicconfig:ro
+    ports:
+      - "127.0.0.1:${NASHR_STAGING_TEMPORAL_PORT:-7333}:7233"
+    networks:
+      - temporal
+    healthcheck:
+      test: ["CMD", "tctl", "--address", "127.0.0.1:7233", "cluster", "health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 90s
+    deploy:
+      resources:
+        limits:
+          cpus: "0.75"
+          memory: 512M
+
+  temporal-postgres:
+    image: postgres:16.11-alpine@sha256:4327b9fd295502f326f44153a1045a7170ddbfffed1c3829798328556cfd09e2
+    container_name: nashr-staging-temporal-postgres
+    <<: *default-restart
+    logging: *default-logging
+    environment:
+      POSTGRES_USER: temporal
+      POSTGRES_PASSWORD: ${TEMPORAL_POSTGRES_PASSWORD:?TEMPORAL_POSTGRES_PASSWORD must be set}
+      POSTGRES_DB: temporal
+    volumes:
+      - temporal-postgres-data:/var/lib/postgresql/data
+    networks:
+      - temporal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U temporal -q"]
+      interval: 15s
+      timeout: 5s
+      retries: 6
+      start_period: 30s
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 384M
+
+  temporal-elasticsearch:
+    image: elasticsearch:7.17.27@sha256:9a6443f55243f6acbfeb4a112d15eb3b9aac74bf25e0e39fa19b3ddd3a6879d0
+    container_name: nashr-staging-temporal-elasticsearch
+    <<: *default-restart
+    logging: *default-logging
+    environment:
+      - cluster.routing.allocation.disk.threshold_enabled=true
+      - cluster.routing.allocation.disk.watermark.low=1gb
+      - cluster.routing.allocation.disk.watermark.high=512mb
+      - cluster.routing.allocation.disk.watermark.flood_stage=256mb
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms256m -Xmx256m
+      - xpack.security.enabled=false
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      - temporal-elasticsearch-data:/usr/share/elasticsearch/data
+    networks:
+      - temporal
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS 'http://127.0.0.1:9200/_cluster/health?wait_for_status=yellow&timeout=5s' >/dev/null || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 6
+      start_period: 90s
+    deploy:
+      resources:
+        limits:
+          cpus: "0.75"
+          memory: 768M
+
+  temporal-ui:
+    image: temporalio/ui:2.34.0@sha256:cb17ea423d76a8a19a269d0bcd81fc12eee1f6365acd2a56b590dafb35696a95
+    container_name: nashr-staging-temporal-ui
+    profiles: ["admin"]
+    <<: *default-restart
+    logging: *default-logging
+    depends_on:
+      temporal:
+        condition: service_healthy
+    environment:
+      TEMPORAL_ADDRESS: temporal:7233
+      TEMPORAL_CORS_ORIGINS: http://127.0.0.1:${NASHR_STAGING_TEMPORAL_UI_PORT:-8180}
+    ports:
+      - "127.0.0.1:${NASHR_STAGING_TEMPORAL_UI_PORT:-8180}:8080"
+    networks:
+      - temporal
+    healthcheck:
+      test: ["CMD-SHELL", "wget --quiet --tries=1 --spider http://127.0.0.1:8080/ || exit 1"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 192M
+
+volumes:
+  postgres-data:
+    name: nashr-staging-postgres-data
+  redis-data:
+    name: nashr-staging-redis-data
+  uploads:
+    name: nashr-staging-uploads
+  config:
+    name: nashr-staging-config
+  backups:
+    name: nashr-staging-backups
+  caddy-data:
+    name: nashr-staging-caddy-data
+  caddy-config:
+    name: nashr-staging-caddy-config
+  caddy-logs:
+    name: nashr-staging-caddy-logs
+  temporal-postgres-data:
+    name: nashr-staging-temporal-postgres-data
+  temporal-elasticsearch-data:
+    name: nashr-staging-temporal-elasticsearch-data
+
+networks:
+  edge:
+    name: nashr-staging-edge
+    driver: bridge
+  data:
+    name: nashr-staging-data
+    driver: bridge
+    internal: true
+  temporal:
+    name: nashr-staging-temporal
+    driver: bridge
+    internal: true
