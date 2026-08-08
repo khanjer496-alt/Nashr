@@ -93,6 +93,42 @@ instead. See `AUDIT_REPORT.md` §0.
 **Brand:** initially drafted as "Manara"; changed to **Nashr / نشر** by the owner before
 any code was written. No stale references remain.
 
+### 2026-08-08 — Migration baseline + Nashr schema (RISK-01)
+
+**Added**
+| Path | Purpose |
+|---|---|
+| `.../prisma/migrations/20260808000000_baseline_postiz_v1_47_0/migration.sql` | 1 319-line baseline of pristine upstream schema |
+| `.../prisma/migrations/20260808000100_nashr_mena_foundation/migration.sql` | 127-line Nashr additions |
+
+**Reason:** upstream had **no migration history at all**; the only schema mechanism was
+`prisma db push --accept-data-loss`, which destroys production data (RISK-01). Both
+migrations were generated offline with `prisma migrate diff`. Production deploys must
+use `prisma migrate deploy`.
+
+**Modified:** `libraries/nestjs-libraries/src/database/prisma/schema.prisma`
+
+Added namespaced `Nashr*` enums and models — `NashrRole`, `NashrApprovalStage`,
+`NashrApprovalDecision`, `NashrAgentStatus`, `NashrMarket`, `NashrBrandProfile`,
+`NashrPostApproval`, `NashrAgentActionLog`.
+
+Four upstream models gained back-relation fields (one to three lines each):
+`Organization`, `UserOrganization` (+ `nashrRole`), `Customer`, `Post`.
+
+**Why upstream models were touched at all:** Prisma requires both sides of a relation to
+be declared. The alternative — storing bare IDs with no foreign keys — would drop
+referential integrity on tenant-scoped data, which is unacceptable given cross-tenant
+leakage is a critical risk (RISK-02). The edits are deliberately minimal and additive to
+keep the merge surface small.
+
+**Why `State` and `Role` were NOT modified:** upstream `State` is consumed by six
+versioned Temporal workflows (`post.workflow.v1.0.1`–`v1.0.6`); changing it would break
+in-flight workflows and conflict with every future upstream schema change. Approval is
+therefore tracked in a separate append-only `NashrPostApproval` table, and `NashrRole`
+sits alongside upstream `Role` rather than replacing it.
+
+Verified: `prisma validate` → "The schema is valid 🚀".
+
 ---
 
 ## Planned changes (not yet made)

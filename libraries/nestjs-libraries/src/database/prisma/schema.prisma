@@ -47,6 +47,9 @@ model Organization {
   @@index([apiKey])
   @@index([streakSince])
   @@index([paymentId])
+  nashrBrandProfiles  NashrBrandProfile[]
+  nashrApprovals      NashrPostApproval[]
+  nashrAgentActions   NashrAgentActionLog[]
 }
 
 model Tags {
@@ -146,6 +149,8 @@ model UserOrganization {
 
   @@unique([userId, organizationId])
   @@index([disabled])
+  nashrRole            NashrRole            @default(VIEWER)
+  nashrAgentActions    NashrAgentActionLog[]
 }
 
 model GitHub {
@@ -309,6 +314,7 @@ model Customer {
   integrations Integration[]
 
   @@unique([orgId, name, deletedAt])
+  nashrBrandProfile NashrBrandProfile?
 }
 
 model Integration {
@@ -443,6 +449,7 @@ model Post {
   @@index([updatedAt])
   @@index([releaseURL])
   @@index([integrationId])
+  nashrApprovals             NashrPostApproval[]
 }
 
 model Notifications {
@@ -967,4 +974,138 @@ model Announcement {
   description String
   color       AnnouncementColor @default(INFO)
   createdAt   DateTime          @default(now())
+}
+
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Nashr (نشر) — MENA additions.
+// Namespaced `Nashr*` so upstream Postiz models are never shadowed and
+// `git merge upstream/main` stays clean. See MENA_CUSTOMIZATIONS.md.
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Roles enforced by Nashr's permission matrix. Upstream `Role`
+/// (SUPERADMIN/ADMIN/USER) is left untouched and still gates upstream code.
+enum NashrRole {
+  OWNER
+  ADMIN
+  EDITOR
+  APPROVER
+  CLIENT
+  VIEWER
+}
+
+/// Draft → Internal review → Client approval → Schedule → Publish
+enum NashrApprovalStage {
+  DRAFT
+  INTERNAL_REVIEW
+  CLIENT_APPROVAL
+  APPROVED
+  CHANGES_REQUESTED
+  REJECTED
+}
+
+enum NashrApprovalDecision {
+  SUBMITTED
+  APPROVED
+  CHANGES_REQUESTED
+  REJECTED
+  WITHDRAWN
+}
+
+enum NashrAgentStatus {
+  PROPOSED
+  AWAITING_APPROVAL
+  APPROVED
+  EXECUTED
+  REJECTED
+  FAILED
+  TIMED_OUT
+}
+
+enum NashrMarket {
+  AE
+  SA
+  KW
+  QA
+  BH
+  OM
+  EG
+  JO
+}
+
+/// Brand voice and compliance rules used to ground AI generation.
+/// `prohibitedClaims` matters for UAE/KSA advertising and health-claim rules.
+model NashrBrandProfile {
+  id               String       @id @default(uuid())
+  organizationId   String
+  customerId       String?      @unique
+  brandName        String
+  brandNameAr      String?
+  industry         String
+  market           NashrMarket  @default(AE)
+  timezone         String       @default("Asia/Dubai")
+  toneOfVoice      String?
+  targetAudience   String?
+  products         String?
+  offers           String?
+  /// Newline-separated claims the agents must never make.
+  prohibitedClaims String?
+  keywords         String?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  deletedAt        DateTime?
+  organization     Organization @relation(fields: [organizationId], references: [id])
+  customer         Customer?    @relation(fields: [customerId], references: [id])
+
+  @@index([organizationId])
+  @@index([deletedAt])
+}
+
+/// Append-only approval trail. A post may not publish without a row at
+/// stage APPROVED — enforced in the Temporal publish activity, which is the
+/// single chokepoint every CreationMethod (WEB/API/MCP/AUTOPOST/CLI) traverses.
+model NashrPostApproval {
+  id             String                @id @default(uuid())
+  postId         String
+  organizationId String
+  stage          NashrApprovalStage    @default(DRAFT)
+  decision       NashrApprovalDecision @default(SUBMITTED)
+  actorId        String?
+  actorRole      NashrRole?
+  note           String?
+  createdAt      DateTime              @default(now())
+  post           Post                  @relation(fields: [postId], references: [id])
+  organization   Organization          @relation(fields: [organizationId], references: [id])
+
+  @@index([postId])
+  @@index([organizationId])
+  @@index([stage])
+  @@index([createdAt])
+}
+
+/// Audit log for every agent action. Arguments are stored as a redacted
+/// digest, never raw — see libraries/nashr-agents/src/redaction.ts.
+model NashrAgentActionLog {
+  id             String            @id @default(uuid())
+  organizationId String
+  userOrgId      String?
+  agentKey       String
+  toolName       String
+  sensitive      Boolean           @default(false)
+  status         NashrAgentStatus  @default(PROPOSED)
+  /// Redacted JSON summary of tool arguments. Never contains secrets or PII.
+  argsDigest     String?
+  resultSummary  String?
+  errorMessage   String?
+  attempts       Int               @default(0)
+  durationMs     Int?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  organization   Organization      @relation(fields: [organizationId], references: [id])
+  userOrg        UserOrganization? @relation(fields: [userOrgId], references: [id])
+
+  @@index([organizationId])
+  @@index([agentKey])
+  @@index([status])
+  @@index([createdAt])
 }
