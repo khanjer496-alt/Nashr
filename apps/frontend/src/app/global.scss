@@ -550,8 +550,12 @@ html[dir='rtl'] [dir='ltr'] {
   // next/font in (app)/layout.tsx. It must come first: the named fallbacks
   // below are only installed on some client machines, so without it Arabic
   // rendered in a default system face.
-  --nashr-font-arabic: var(--nashr-font-arabic-loaded), 'IBM Plex Sans Arabic',
-    'Noto Kufi Arabic',
+  // The fallback inside var() is load-bearing. next/font defines
+  // `--nashr-font-arabic-loaded` on <body>, not <html>, so at :root it is
+  // undefined -- and a custom property referencing an undefined var becomes
+  // "invalid at computed-value time", collapsing this whole stack to nothing.
+  --nashr-font-arabic: var(--nashr-font-arabic-loaded, 'IBM Plex Sans Arabic'),
+    'IBM Plex Sans Arabic', 'Noto Kufi Arabic',
     'Noto Sans Arabic', 'SF Arabic', 'Geeza Pro', 'Segoe UI', 'Dubai', Tahoma,
     sans-serif;
   --nashr-font-arabic-display: 'Noto Kufi Arabic', 'IBM Plex Sans Arabic',
@@ -563,7 +567,12 @@ html[dir='rtl'] {
 }
 
 html[dir='rtl'],
-:lang(ar) {
+:lang(ar),
+/* <body> carries next/font's generated className, and its font-family beats an
+   html-level rule for every descendant through inheritance. These two raise
+   specificity above that class so Arabic text actually gets the Arabic face. */
+html[dir='rtl'] body,
+html:lang(ar) body {
   font-family: var(--nashr-font-arabic);
   /* Arabic ascenders/descenders and optional diacritics clip at the 1.2–1.3
      line-height that suits Latin UI. */

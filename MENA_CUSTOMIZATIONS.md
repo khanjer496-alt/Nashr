@@ -386,7 +386,7 @@ Three new bugs found, two fixed:
    `":You can obtain the complete source code of Nashr at"`. This is the page carrying
    the **AGPL §13 source offer**, so legibility is a compliance concern, not a cosmetic
    one. Fixed with `dir="ltr"` on the shared `LegalPage` container.
-2. **FIXED — no Arabic typeface was ever shipped.** `--nashr-font-arabic` named families
+2. **FIXED (in two passes) — no Arabic typeface was ever shipped.** `--nashr-font-arabic` named families
    with no `@font-face` behind them; CDP reported Arabic rasterised by DejaVu Sans
    (`isCustomFont: false`) while Latin was correctly self-hosted. Now self-hosted via
    `next/font/google` (`IBM_Plex_Sans_Arabic`). Verified in build output: an
