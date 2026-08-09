@@ -34,6 +34,13 @@ LOCK_DIR="${LOCK_DIR:-/var/lock/nashr-backup.lock}"
 log()  { printf '%s [backup] %s\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')" "$*"; }
 fail() { printf '%s [backup] ERROR: %s\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')" "$*" >&2; exit 1; }
 
+# GNU and BSD/macOS spell stat's size flag differently. Keeping this portable
+# lets operators verify the backup tooling from a Mac before it reaches the
+# Linux production host, and prevents a valid archive being reported as 0 B.
+file_size() {
+  stat -c '%s' "$1" 2>/dev/null || stat -f '%z' "$1" 2>/dev/null
+}
+
 [ -f "${COMPOSE_FILE}" ] || fail "compose file '${COMPOSE_FILE}' not found"
 [ -f "${ENV_FILE}" ]     || fail "env file '${ENV_FILE}' not found"
 
@@ -91,7 +98,7 @@ if ! compose exec -T postgres \
   fail "pg_dump failed. Is the ${LABEL} stack running?  docker compose -f ${COMPOSE_FILE} ps"
 fi
 
-SIZE="$(stat -c '%s' "${TMP_FILE}" 2>/dev/null || echo 0)"
+SIZE="$(file_size "${TMP_FILE}" || echo 0)"
 if [ "${SIZE}" -lt 1024 ]; then
   rm -f "${TMP_FILE}"
   fail "dump is only ${SIZE} bytes — refusing to keep a backup that is almost certainly empty"

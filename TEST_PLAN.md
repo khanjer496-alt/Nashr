@@ -4,6 +4,16 @@
 container: anything needing a browser, a real social network, a real Docker host, or a
 human judgement about Arabic.
 
+> **Verified baseline — 2026-08-09 (`codex/finish-project`).** The repository now
+> exposes `pnpm run test:nashr`, `verify:nashr:migrations`, and
+> `verify:nashr:backups`; CI runs them with PostgreSQL 16 and Redis 7. Current
+> result: **503 tests pass** (286 unit + 217 integration), all three migrations
+> pass empty-database/idempotency/zero-drift verification, and the backup drill
+> passes plain and encrypted restore plus all documented negative paths. The
+> restore cleanup/exit-status defect formerly described in §9.1 is fixed and
+> regression-tested. Claims below about Docker or browser availability describe
+> the original Phase 7 environment, not the current verified baseline.
+
 **Who can run this:** anyone who can use a web browser and copy-paste a terminal command.
 No programming knowledge is needed. Where a command is required it is written out in full.
 
@@ -244,7 +254,7 @@ What remains is everything involving a real Docker host and a real bucket.
 | 4 | `caddy validate` against the production Caddyfile. | No errors. |
 | 5 | Run `ops/scripts/backup-postgres.sh` on the real host. | A dump appears **and** is uploaded to R2. |
 | 6 | Delete the local dump, download from R2, run `ops/scripts/restore-postgres.sh` into **staging**. | Data comes back. |
-| 7 | Confirm the restore's exit code. | See the ⚠ defect in §9.1 — currently exits 1 on success. |
+| 7 | Confirm the restore's exit code. | Exits 0 on success; the automated drill pins this regression. |
 | 8 | Log in to staging after the restore, open the calendar, confirm a channel is still connected. | All present. |
 | 9 | Reboot the host. | Everything comes back automatically. |
 | 10 | Check the backup timer fired overnight. | A dated dump exists the next morning. |
@@ -271,7 +281,7 @@ Stated plainly so nobody assumes coverage that does not exist.
 
 ## 9. Defects found in Phase 7 — status
 
-### 9.1 ⚠ OPEN — `ops/scripts/restore-postgres.sh` exits 1 on a successful restore
+### 9.1 ✅ FIXED — `ops/scripts/restore-postgres.sh` exits 0 on a successful restore
 
 **Severity: high (operational).** A correct, verified, unencrypted restore reports
 failure.
@@ -308,9 +318,9 @@ cleanup() {
 ```
 An `if` with a false condition returns 0.
 
-**Not applied by Phase 7** — `ops/**` is outside this phase's file ownership.
-`tests/scripts/backup-restore-drill.sh` detects it and prints a warning; when the fix
-lands, the drill's step 7b flips to "FIXED".
+The cleanup function now uses the safe conditional form above. The automated
+backup/restore drill asserts the successful restore exit code and passes for both
+plain and encrypted archives.
 
 ### 9.2 ✅ FIXED — four cross-tenant leaks (RISK-02)
 

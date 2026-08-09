@@ -37,6 +37,11 @@
     "docker-build": "./var/docker/docker-build.sh",
     "docker-create": "./var/docker/docker-create.sh",
     "postinstall": "pnpm run prisma-generate",
+    "test:nashr:unit": "pnpm exec jest -c libraries/nashr-permissions/jest.config.js --runInBand && pnpm exec jest -c libraries/nashr-approval/jest.config.js --runInBand && pnpm exec jest -c libraries/nashr-agents/jest.config.ts --runInBand && pnpm exec jest -c libraries/nashr-i18n/jest.config.js --runInBand",
+    "test:nashr:integration": "pnpm exec jest -c tests/integration/jest.config.js --runInBand",
+    "test:nashr": "pnpm run test:nashr:unit && pnpm run test:nashr:integration",
+    "verify:nashr:migrations": "tests/scripts/verify-migrations.sh",
+    "verify:nashr:backups": "tests/scripts/backup-restore-drill.sh",
     "test": "jest --coverage --detectOpenHandles --reporters=default --reporters=jest-junit"
   },
   "dependencies": {

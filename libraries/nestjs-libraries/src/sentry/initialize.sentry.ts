@@ -1,6 +1,5 @@
 import { brand } from '@gitroom/nashr-brand/brand.config';
 import * as Sentry from '@sentry/nestjs';
-import { nodeProfilingIntegration } from '@sentry/profiling-node';
 import { capitalize } from 'lodash';
 
 export const setSentryUserContext = (params: {
@@ -32,6 +31,13 @@ export const initializeSentry = (appName: string, allowLogs = false) => {
   }
 
   try {
+    // The profiling package loads a native addon as soon as it is imported.
+    // Loading it at module scope made every process pay that cost even when
+    // Sentry was disabled, and could block startup/test discovery on hosts
+    // where the native profiler is unavailable. Keep it behind the DSN guard.
+    const { nodeProfilingIntegration } = require('@sentry/profiling-node') as
+      typeof import('@sentry/profiling-node');
+
     Sentry.init({
       initialScope: {
         tags: {

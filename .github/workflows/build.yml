@@ -56,7 +56,79 @@ jobs:
 #            ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}-
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: Build
         run: pnpm run build
+
+  verify:
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: --max-old-space-size=5120
+      NASHR_TEST_PGHOST: 127.0.0.1
+      NASHR_TEST_PGPORT: 5433
+      NASHR_TEST_PGUSER: postgres
+      NASHR_TEST_REDIS_URL: redis://127.0.0.1:6399
+      PGHOST: 127.0.0.1
+      PGPORT: 5433
+      PGUSER: postgres
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6399:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Use Node.js 22.12.0
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.12.0
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10.6.1
+          run_install: false
+
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Nashr unit tests
+        run: pnpm run test:nashr:unit
+
+      - name: Nashr integration tests
+        run: pnpm run test:nashr:integration
+
+      - name: Migration drift verification
+        run: pnpm run verify:nashr:migrations
+
+      - name: Backup and restore drill
+        run: pnpm run verify:nashr:backups
+        env:
+          # Run dump/restore with the same PostgreSQL major as the service.
+          NASHR_TEST_PG_CONTAINER: ${{ job.services.postgres.id }}
+          NASHR_REAL_DOCKER: /usr/bin/docker
