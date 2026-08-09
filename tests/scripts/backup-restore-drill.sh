@@ -18,6 +18,8 @@
 # into
 #     <cmd> <args...>            (against the local Postgres, over its socket)
 # and makes the pure-orchestration verbs (up/stop/ps, docker inspect) no-ops.
+# When NASHR_TEST_PG_CONTAINER is set, database commands instead run inside
+# that container so pg_dump/pg_restore always match the server's major version.
 #
 # So this exercises, for real: pg_dump, the >1 KiB sanity check, the
 # `pg_restore --list` readability verification, optional openssl encryption,
@@ -48,6 +50,14 @@ PRISMA="${REPO_ROOT}/node_modules/.bin/prisma"
 
 log()  { printf '\n=== %s\n' "$*"; }
 fail() { printf '\n!!! DRILL FAILED: %s\n' "$*" >&2; exit 1; }
+
+file_size() {
+  stat -c '%s' "$1" 2>/dev/null || stat -f '%z' "$1" 2>/dev/null
+}
+
+file_mode() {
+  stat -c '%a' "$1" 2>/dev/null || stat -f '%Lp' "$1" 2>/dev/null
+}
 
 cleanup() {
   dropdb --if-exists "${DB_NAME}" >/dev/null 2>&1 || true
@@ -102,6 +112,10 @@ case "${verb}" in
     done
     shift   # service name (postgres)
     [ $# -gt 0 ] || { echo "docker-shim: no command after service" >&2; exit 2; }
+    if [ -n "${NASHR_TEST_PG_CONTAINER:-}" ]; then
+      exec "${NASHR_REAL_DOCKER:-/usr/local/bin/docker}" exec -i \
+        "${NASHR_TEST_PG_CONTAINER}" "$@"
+    fi
     exec "$@"
     ;;
   up|stop|start|down|restart|pull)
@@ -236,9 +250,9 @@ DUMP="$(find "${BACKUP_DIR}/daily" -maxdepth 1 -type f -name '*.dump' | head -n 
 [ -n "${DUMP}" ] || fail "no dump file was produced"
 [ -f "${DUMP}.sha256" ] || fail "no sha256 sidecar was produced"
 log "5. Verifying the artefact the script produced"
-echo "    dump    : ${DUMP} ($(stat -c '%s' "${DUMP}") bytes)"
-echo "    perms   : $(stat -c '%a' "${DUMP}") (expect 600)"
-[ "$(stat -c '%a' "${DUMP}")" = "600" ] || fail "dump is not mode 600"
+echo "    dump    : ${DUMP} ($(file_size "${DUMP}") bytes)"
+echo "    perms   : $(file_mode "${DUMP}") (expect 600)"
+[ "$(file_mode "${DUMP}")" = "600" ] || fail "dump is not mode 600"
 ( cd "$(dirname "${DUMP}")" && sha256sum --check --status "$(basename "${DUMP}").sha256" ) \
   || fail "the script's own checksum does not verify"
 echo "    checksum: verified"
@@ -374,7 +388,11 @@ echo "    encrypted dump: ${ENC}"
 [ -z "$(find "${BACKUP_DIR}/daily" -maxdepth 1 -type f -name '*.dump' 2>/dev/null)" ] \
   || fail "the plaintext dump was left on disk next to the encrypted one"
 echo "    plaintext dump was shredded"
-head -c 16 "${ENC}" | grep -q "Salted__" || fail "encrypted file has no openssl salt header"
+# The bytes after the ASCII header are arbitrary ciphertext and may not be
+# valid in the caller's locale. Force byte-oriented grep so BSD/macOS grep
+# does not reject the stream as malformed text.
+head -c 16 "${ENC}" | LC_ALL=C grep -a -q "Salted__" \
+  || fail "encrypted file has no openssl salt header"
 pg_restore --list "${ENC}" >/dev/null 2>&1 \
   && fail "the 'encrypted' file is readable as a plain dump — it is not encrypted"
 echo "    ciphertext is not readable as a dump"
@@ -426,8 +444,9 @@ rm -rf "${BACKUP_DIR}"
 PLAIN="$(find "${BACKUP_DIR}/daily" -maxdepth 1 -type f -name '*.dump' | head -n 1)"
 cp "${PLAIN}" "${TAMPER_DIR}/"
 cp "${PLAIN}.sha256" "${TAMPER_DIR}/"
-# flip the recorded hash
-sed -i "s/^[0-9a-f]\{64\}/$(printf '0%.0s' {1..64})/" "${TAMPER_DIR}/$(basename "${PLAIN}").sha256"
+# Replace the recorded hash without GNU/BSD `sed -i` differences.
+printf '%064d  %s\n' 0 "$(basename "${PLAIN}")" \
+  > "${TAMPER_DIR}/$(basename "${PLAIN}").sha256"
 if ./ops/scripts/restore-postgres.sh "${TAMPER_DIR}/$(basename "${PLAIN}")" "${COMPOSE}" "${ENVFILE}" >/dev/null 2>&1; then
   fail "restore accepted a dump whose checksum did not match"
 fi

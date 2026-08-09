@@ -5,6 +5,15 @@
 `next start` of `apps/frontend` on `http://localhost:4200`.
 **Suite:** `tests/e2e/` · **Screenshots:** `docs/screenshots/` (28 PNGs, all real captures)
 
+> **Status update — 2026-08-09.** This file records the earlier browser run and
+> remains useful as historical evidence. Two defects it reports are now fixed:
+> IBM Plex Sans Arabic is loaded by `next/font/google` and applied through the
+> Nashr typography variable, and untranslated legal pages have an explicit LTR
+> wrapper. The repository's production build passes. Authenticated RTL surfaces
+> and server-rendered Arabic copy still require a full-stack browser pass; the
+> latter can still flash English until hydration. The old intentional font-test
+> failures described in §§5.2 and 8 are therefore no longer current.
+
 ---
 
 ## 0. What this document is, and what it is not

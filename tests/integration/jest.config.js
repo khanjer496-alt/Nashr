@@ -30,7 +30,6 @@ module.exports = {
       'ts-jest',
       {
         tsconfig: path.join(__dirname, 'tsconfig.spec.json'),
-        isolatedModules: true,
       },
     ],
   },

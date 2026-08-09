@@ -4,6 +4,27 @@
 `claude/mena-saas-postiz-conversion-7el9fk`.
 Base: [Postiz](https://github.com/gitroomhq/postiz-app) v1.47.0, AGPL-3.0.
 
+> **Verification update — 2026-08-09 (`codex/finish-project`).** This document
+> preserves the original Phase 8 launch assessment, but several repository-side
+> gaps described below are now closed. The complete frontend, backend and
+> orchestrator production build succeeds on Node 22. The automated baseline is
+> **503 passing tests** (286 unit + 217 integration), backed by PostgreSQL 16 and
+> Redis 7. All three migrations apply from an empty database, re-apply
+> idempotently, and produce zero Prisma drift. The portable disaster-recovery
+> drill now proves plain and encrypted backup/restore, matching data
+> fingerprints, rejection of a wrong passphrase, corrupt archives and tampered
+> checksums, and a zero exit status after restore. CI runs this entire baseline.
+> The 16 customer-facing locale source links were also removed and are pinned by
+> regression tests; IBM Plex Sans Arabic is shipped through `next/font`; legal
+> pages explicitly retain LTR direction until translated. Historical statements
+> below saying these items are still open are superseded by this update.
+>
+> The launch verdict remains **not ready for external customers** because the
+> remaining blockers require external evidence or owner decisions: a live
+> domain/TLS deployment, a Nashr Corresponding Source mirror and final source
+> URL, real social OAuth apps and publish tests, R2 credentials plus a restore
+> from the live backup path, native-Arabic review, and legal/commercial details.
+
 ---
 
 # VERDICT: 🔴 NOT READY TO LAUNCH

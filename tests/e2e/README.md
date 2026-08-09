@@ -99,11 +99,10 @@ one carries, so the coverage gap is legible from source.
 
 ---
 
-## Known failing test
+## Arabic font regression
 
 `rtl.layout.spec.ts › Arabic glyphs are drawn by a font the product actually ships`
-fails on any host that does not have IBM Plex Sans Arabic, Noto Kufi Arabic,
-Noto Sans Arabic, SF Arabic, Geeza Pro, Dubai or Tahoma installed. That is not a
-flake — the Arabic stack in `global.scss` is a bare `font-family` list with no
-`@font-face` behind it, so nothing is ever downloaded. See
-`RTL_VERIFICATION.md` §"Arabic typeface is never shipped".
+guards the bundled Arabic typeface. IBM Plex Sans Arabic is loaded through
+`next/font/google`; the test must pass even when the host operating system has no
+Arabic font installed. See the 2026-08-09 update at the top of
+`RTL_VERIFICATION.md` for the earlier finding and its resolution.
