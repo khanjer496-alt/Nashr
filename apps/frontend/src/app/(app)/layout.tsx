@@ -1,4 +1,6 @@
 import { SentryComponent } from '@gitroom/frontend/components/layout/sentry.component';
+import { brand } from '@gitroom/nashr-brand/brand.config';
+import type { Metadata } from 'next';
 
 export const dynamic = 'force-dynamic';
 import '../global.scss';
@@ -6,7 +8,7 @@ import 'react-tooltip/dist/react-tooltip.css';
 import '@copilotkit/react-ui/styles.css';
 import LayoutContext from '@gitroom/frontend/components/layout/layout.context';
 import { ReactNode } from 'react';
-import { Plus_Jakarta_Sans } from 'next/font/google';
+import { Plus_Jakarta_Sans, IBM_Plex_Sans_Arabic } from 'next/font/google';
 import PlausibleProvider from 'next-plausible';
 import clsx from 'clsx';
 import { VariableContextComponent } from '@gitroom/react/helpers/variable.context';
@@ -20,10 +22,42 @@ import { cookies } from 'next/headers';
 import {
   cookieName,
   fallbackLng,
+  dirOfLanguage,
+  resolveSupportedLanguage,
 } from '@gitroom/react/translation/i18n.config';
 import { HtmlComponent } from '@gitroom/frontend/components/layout/html.component';
 import Script from 'next/script';
 import { ChangeDirClient } from '@gitroom/frontend/components/new-layout/change.dir.client';
+
+export const metadata: Metadata = {
+  metadataBase: new URL(brand.appUrl),
+  // Pages set their own full title via `brandTitle()`, matching the upstream
+  // "<Product> <Page>" convention — so no template here, it would double up.
+  title: `${brand.name} — ${brand.tagline}`,
+  description: brand.description,
+  applicationName: brand.name,
+  icons: {
+    icon: [
+      { url: brand.logo.favicon, type: 'image/svg+xml' },
+      { url: brand.logo.faviconIco, sizes: 'any' },
+    ],
+    apple: brand.logo.appleTouchIcon,
+  },
+  openGraph: {
+    type: 'website',
+    siteName: brand.name,
+    title: `${brand.name} — ${brand.tagline}`,
+    description: brand.description,
+    url: brand.appUrl,
+    images: [{ url: brand.logo.ogImage, width: 1200, height: 630, alt: brand.name }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: `${brand.name} — ${brand.tagline}`,
+    description: brand.description,
+    images: [brand.logo.ogImage],
+  },
+};
 
 const jakartaSans = Plus_Jakarta_Sans({
   weight: ['600', '500'],
@@ -31,20 +65,39 @@ const jakartaSans = Plus_Jakarta_Sans({
   subsets: ['latin'],
 });
 
+// Nashr: without this, no Arabic @font-face is ever shipped and Arabic glyphs
+// fall back to whatever the client OS provides (verified in-browser: rasterised
+// by DejaVu Sans, isCustomFont=false) while Latin was correctly self-hosted.
+// next/font self-hosts at build time, so this adds no third-party request.
+const plexArabic = IBM_Plex_Sans_Arabic({
+  weight: ['400', '500', '600'],
+  subsets: ['arabic'],
+  display: 'swap',
+  variable: '--nashr-font-arabic-loaded',
+});
+
 export default async function AppLayout({ children }: { children: ReactNode }) {
   const cookieStore = await cookies();
-  const language = cookieStore.get(cookieName)?.value || fallbackLng;
+  // Resolve the cookie onto a locale we actually ship (e.g. `ar-AE` -> `ar-AE`,
+  // `ar-QA` -> `ar`, junk -> `en`) so `lang`/`dir` are always valid.
+  const language = resolveSupportedLanguage(
+    cookieStore.get(cookieName)?.value || fallbackLng
+  );
+  // Direction is emitted server-side. Setting it only from a client effect
+  // (as ChangeDir/HtmlComponent do) means the first paint of an Arabic session
+  // is laid out left-to-right and visibly snaps after hydration.
+  const dir = dirOfLanguage(language);
   const Plausible = !!process.env.STRIPE_PUBLISHABLE_KEY
     ? PlausibleProvider
     : Fragment;
   return (
-    <html>
+    <html lang={language} dir={dir}>
       <head>
-        <link rel="icon" href="/favicon.ico" sizes="any" />
+        {/* Icons come from the `metadata.icons` export above. */}
         {!!process.env.DATAFAST_WEBSITE_ID && (
           <Script
             data-website-id={process.env.DATAFAST_WEBSITE_ID}
-            data-domain="postiz.com"
+            data-domain={brand.domain}
             src="https://datafa.st/js/script.js"
             strategy="afterInteractive"
           />
@@ -52,7 +105,11 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
       </head>
       <ChangeDirClient />
       <body
-        className={clsx(jakartaSans.className, 'dark text-primary !bg-primary')}
+        className={clsx(
+          jakartaSans.className,
+          plexArabic.variable,
+          'dark text-primary !bg-primary'
+        )}
       >
         <VariableContextComponent
           storageProvider={
@@ -102,7 +159,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
             <FacebookComponent />
             <GoogleTagManagerComponent gtmId={process.env.NEXT_PUBLIC_GTM_ID} />
             <Plausible
-              domain={!!process.env.IS_GENERAL ? 'postiz.com' : 'gitroom.com'}
+              domain={brand.domain}
             >
               <PHProvider
                 phkey={process.env.NEXT_PUBLIC_POSTHOG_KEY}

@@ -9,7 +9,15 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
+    # Nashr modification: `nest build` for apps/backend OOMs at Node's default
+    # ~2 GB heap on GitHub-hosted runners. This reproduces on pristine upstream
+    # Postiz v1.47.0, so it is not caused by Nashr changes. Private-repo runners
+    # have 7 GB RAM and `pnpm run build` uses --workspace-concurrency=1, so a
+    # 5 GB heap leaves ample headroom.
+    env:
+      NODE_OPTIONS: --max-old-space-size=5120
+
 
     strategy:
       matrix:

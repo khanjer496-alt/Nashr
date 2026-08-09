@@ -1,3 +1,4 @@
+import { brand } from '@gitroom/nashr-brand/brand.config';
 import { INestApplication } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { MastraService } from '@gitroom/nestjs-libraries/chat/mastra.service';
@@ -36,7 +37,7 @@ export const startMcp = async (app: INestApplication) => {
   const tools = await agent.listTools();
 
   const serverConfig = {
-    name: 'Postiz MCP',
+    name: `${brand.name} MCP`,
     version: '1.0.0',
     tools,
     agents: { postiz: agent },

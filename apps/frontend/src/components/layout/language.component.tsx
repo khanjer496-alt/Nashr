@@ -5,6 +5,7 @@ import {
   cookieName,
   fallbackLng,
   languages,
+  dirOfLanguage,
 } from '@gitroom/react/translation/i18n.config';
 import i18next from 'i18next';
 import useCookie from 'react-use-cookie';
@@ -72,9 +73,9 @@ export const ChangeLanguageComponent = () => {
     setCookie(language);
     i18next.changeLanguage(language);
     modals.closeCurrent();
-    const rtlLanguages = ['he', 'ar'];
-    const dir = rtlLanguages.includes(language) ? 'rtl' : 'ltr';
-    document.documentElement.setAttribute('dir', dir);
+    const root = document.documentElement;
+    root.setAttribute('dir', dirOfLanguage(language));
+    root.setAttribute('lang', language);
   };
 
   // Function to get language name in its native script
@@ -144,9 +145,11 @@ export const LanguageComponent = () => {
           width: '22px',
           height: '22px',
           position: 'absolute',
-          left: '50%',
+          insetInlineStart: '50%',
           top: '50%',
-          transform: 'translate(-50%, -50%)',
+          // `translate` is physical, so the horizontal half-step must flip with
+          // the document direction or the badge lands a full width off-centre.
+          transform: 'translate(var(--nashr-center-x, -50%), -50%)',
           objectFit: 'cover',
         }}
         title={currentLanguage}

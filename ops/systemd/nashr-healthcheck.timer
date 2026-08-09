@@ -1,0 +1,13 @@
+# /etc/systemd/system/nashr-healthcheck.timer
+
+[Unit]
+Description=Run the Nashr health check every 15 minutes
+
+[Timer]
+OnBootSec=10min
+OnUnitActiveSec=15min
+RandomizedDelaySec=60
+Unit=nashr-healthcheck.service
+
+[Install]
+WantedBy=timers.target

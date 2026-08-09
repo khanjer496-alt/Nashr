@@ -1,5 +1,6 @@
 'use client';
 
+import { brand } from '@gitroom/nashr-brand/brand.config';
 import { useModals } from '@gitroom/frontend/components/layout/new-modal';
 import React, { FC, useCallback, useMemo } from 'react';
 import { useFetch } from '@gitroom/helpers/utils/custom.fetch';
@@ -272,6 +273,13 @@ export const CustomVariables: FC<{
     </div>
   );
 };
+// Store listing for the browser extension. Supply your own with
+// NEXT_PUBLIC_EXTENSION_STORE_URL; falls back to the upstream Postiz listing,
+// which is the extension this integration actually talks to.
+const extensionStoreUrl =
+  process.env.NEXT_PUBLIC_EXTENSION_STORE_URL ||
+  'https://chromewebstore.google.com/detail/postiz/cidhffagahknaeodkplfbcpfeielnkjl?hl=en';
+
 const ExtensionNotFound: FC = () => {
   const modals = useModals();
   const t = useT();
@@ -280,7 +288,7 @@ const ExtensionNotFound: FC = () => {
       <p className="text-[14px] text-textColor/80">
         {t(
           'extension_not_available',
-          'The Postiz browser extension is not installed. You need to install it before connecting this channel.'
+          `The ${brand.name} browser extension is not installed. You need to install it before connecting this channel.`
         )}
       </p>
       <div className="flex gap-[10px]">
@@ -288,10 +296,7 @@ const ExtensionNotFound: FC = () => {
           type="button"
           className="flex-1"
           onClick={() => {
-            window.open(
-              'https://chromewebstore.google.com/detail/postiz/cidhffagahknaeodkplfbcpfeielnkjl?hl=en',
-              '_blank'
-            );
+            window.open(extensionStoreUrl, '_blank');
             modals.closeCurrent();
           }}
         >
@@ -346,8 +351,7 @@ const ChromeExtensionWarning: FC<{
           We will store your cookies securely to facilitate the connection.
         </li>
         <li>
-          Postiz does not take responsibility for any issues arising or account
-          termination due to the use of this method.
+          {`${brand.name} does not take responsibility for any issues arising or account termination due to the use of this method.`}
         </li>
       </ul>
       <div className="flex gap-[10px] mt-[8px]">
@@ -574,7 +578,7 @@ export const AddProviderComponent: FC<{
             toaster.show(
               t(
                 'extension_not_installed',
-                'Postiz browser extension is not installed or not reachable.'
+                `${brand.name} browser extension is not installed or not reachable.`
               ),
               'warning'
             );

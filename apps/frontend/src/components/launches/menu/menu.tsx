@@ -64,7 +64,9 @@ export const Menu: FC<{
   const { integrations, reloadCalendarView } = useCalendar();
   const toast = useToaster();
   const modal = useModals();
-  const [show, setShow] = useState<false | { x: number; y: number }>(false);
+  const [show, setShow] = useState<
+    false | { x: number; y: number; rtl?: boolean }
+  >(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const ref = useClickOutside<HTMLDivElement>(() => {
     setShow(false);
@@ -99,10 +101,24 @@ export const Menu: FC<{
       e.stopPropagation();
       // @ts-ignore
       const boundBox = showRef?.current?.getBoundingClientRect();
+      // The menu is `fixed` and was always anchored by its LEFT edge to the
+      // trigger's left coordinate. In RTL the trigger sits near the right edge
+      // of the viewport, so the menu opened rightwards and off-screen. Anchor
+      // by the inline-start edge instead: distance from the right in RTL,
+      // distance from the left in LTR.
+      const isRtl =
+        typeof document !== 'undefined' &&
+        document.documentElement.getAttribute('dir') === 'rtl';
       setShow(
         show
           ? false
-          : { x: boundBox?.left, y: boundBox?.top + boundBox?.height }
+          : {
+              x: isRtl
+                ? window.innerWidth - (boundBox?.right ?? 0)
+                : boundBox?.left,
+              y: boundBox?.top + boundBox?.height,
+              rtl: isRtl,
+            }
       );
     },
     [show]
@@ -355,7 +371,11 @@ export const Menu: FC<{
         <div
           ref={menuRef}
           onClick={(e) => e.stopPropagation()}
-          style={{ left: show.x, top: show.y }}
+          style={
+            show.rtl
+              ? { right: show.x, top: show.y }
+              : { left: show.x, top: show.y }
+          }
           className={`fixed p-[12px] bg-newBgColorInner shadow-menu flex flex-col gap-[16px] z-[100] rounded-[8px] border border-tableBorder text-nowrap`}
         >
           {canDisable && !findIntegration?.refreshNeeded && (

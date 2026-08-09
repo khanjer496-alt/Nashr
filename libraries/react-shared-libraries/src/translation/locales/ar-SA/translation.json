@@ -1,0 +1,12 @@
+{
+  "market_name": "المملكة العربية السعودية",
+  "market_short_name": "السعودية",
+  "currency_code": "SAR",
+  "currency_name": "ريال سعودي",
+  "currency_symbol": "ر.س",
+  "national_day": "اليوم الوطني السعودي",
+  "founding_day": "يوم التأسيس",
+  "weekend_days_label": "الجمعة والسبت",
+  "working_week_label": "من الأحد إلى الخميس",
+  "best_time_hint": "غالبية الجمهور في المنطقة نشط بعد صلاة المغرب ثم في وقت متأخر من المساء."
+}

@@ -64,10 +64,21 @@ extend(isSameOrAfter);
 extend(isSameOrBefore);
 extend(localizedFormat);
 
+/**
+ * Only base-language dayjs locale bundles are imported above, so a regional tag
+ * such as `ar-AE` must be narrowed to `ar` before being handed to dayjs.
+ * `dayjs.locale()` fails silently on an unloaded locale and keeps whatever was
+ * set previously — which would have left an Arabic (UAE) calendar rendering
+ * English month and weekday names.
+ */
+const dayjsLocaleFor = (language?: string | null) => {
+  const base = (language || 'en').split(/[-_]/)[0].toLowerCase();
+  return base in dayjs.Ls ? base : 'en';
+};
+
 // Initialize language
 const updateDayjsLocale = () => {
-  const currentLanguage = i18next.resolvedLanguage || 'en';
-  dayjs.locale(currentLanguage);
+  dayjs.locale(dayjsLocaleFor(i18next.resolvedLanguage));
 };
 
 // Set dayjs locale whenever i18next language changes
@@ -261,7 +272,7 @@ export const DayView = () => {
 
   // Set dayjs locale based on current language
   const currentLanguage = i18next.resolvedLanguage || 'en';
-  dayjs.locale(currentLanguage);
+  dayjs.locale(dayjsLocaleFor(currentLanguage));
 
   const currentDay = dayjs.utc(startDate);
 
@@ -343,7 +354,7 @@ export const WeekView = () => {
   // Use dayjs to get localized day names
   const localizedDays = useMemo(() => {
     const currentLanguage = i18next.resolvedLanguage || 'en';
-    dayjs.locale(currentLanguage);
+    dayjs.locale(dayjsLocaleFor(currentLanguage));
 
     const days = [];
     const weekStart = newDayjs(startDate);
@@ -415,7 +426,7 @@ export const MonthView = () => {
   // Use dayjs to get localized day names
   const localizedDays = useMemo(() => {
     const currentLanguage = i18next.resolvedLanguage || 'en';
-    dayjs.locale(currentLanguage);
+    dayjs.locale(dayjsLocaleFor(currentLanguage));
 
     const days = [];
     // Starting from Monday (1) to Sunday (7)
@@ -851,7 +862,7 @@ export const CalendarColumn: FC<{
       <div
         className={clsx(
           'relative flex flex-col flex-1 text-white rounded-[8px] min-h-[70px]',
-          canDrop && 'border border-[#612BD3]'
+          canDrop && 'border border-[#0E7C74]'
         )}
       >
         <div
@@ -862,7 +873,7 @@ export const CalendarColumn: FC<{
           )}
         >
           {loading && (
-            <div className="h-full w-full p-[5px] animate-pulse absolute left-0 top-0 z-[50]">
+            <div className="h-full w-full p-[5px] animate-pulse absolute start-0 top-0 z-[50]">
               <div className="h-full w-full bg-newSettings rounded-[10px]" />
             </div>
           )}
@@ -1057,7 +1068,7 @@ const CalendarItem: FC<{
     >
       {state === 'ERROR' && (
         <div
-          className="absolute -top-[6px] -left-[6px] z-20 w-[18px] h-[18px] rounded-full bg-red-500 flex items-center justify-center text-white text-[11px] font-bold cursor-pointer"
+          className="absolute -top-[6px] -start-[6px] z-20 w-[18px] h-[18px] rounded-full bg-red-500 flex items-center justify-center text-white text-[11px] font-bold cursor-pointer"
           data-tooltip-id="tooltip"
           data-tooltip-content={post.error || 'An error occurred while publishing this post'}
         >
@@ -1065,7 +1076,7 @@ const CalendarItem: FC<{
         </div>
       )}
       {showCreationMethodBadge && (
-        <div className="absolute -bottom-[4px] -right-[4px] z-10">
+        <div className="absolute -bottom-[4px] -end-[4px] z-10">
           <CreationMethodBadge
             creationMethod={post.creationMethod}
             ringColor="var(--new-bgColor)"

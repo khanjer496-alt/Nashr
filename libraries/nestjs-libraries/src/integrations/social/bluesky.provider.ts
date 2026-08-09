@@ -771,14 +771,24 @@ export class BlueskyProvider extends SocialAbstract implements SocialProvider {
       depth: 0,
     });
 
-    // @ts-ignore
-    const parentCid = parentThread.data.thread.post?.cid;
-    // @ts-ignore
-    const rootUri =
-      parentThread.data.thread.post?.record?.reply?.root?.uri || postId;
-    // @ts-ignore
-    const rootCid =
-      parentThread.data.thread.post?.record?.reply?.root?.cid || parentCid;
+    // Nashr fix: `getPostThread` returns a union of ThreadViewPost |
+    // NotFoundPost | BlockedPost, none of which is narrowed here. Upstream
+    // relied on `@ts-ignore`, but that only suppresses the line immediately
+    // after it, so the two multi-line expressions below still failed to
+    // compile (TS2339). Narrowing the union once is both correct and keeps
+    // the runtime behaviour identical - every access stays optional.
+    const threadPost = (
+      parentThread.data.thread as {
+        post?: {
+          cid?: string;
+          record?: { reply?: { root?: { uri?: string; cid?: string } } };
+        };
+      }
+    ).post;
+
+    const parentCid = threadPost?.cid;
+    const rootUri = threadPost?.record?.reply?.root?.uri || postId;
+    const rootCid = threadPost?.record?.reply?.root?.cid || parentCid;
 
     // @ts-ignore
     const { cid, uri, commit } = await agent.post({

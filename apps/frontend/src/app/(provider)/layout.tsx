@@ -1,3 +1,4 @@
+import { brand } from '@gitroom/nashr-brand/brand.config';
 import { MantineWrapper } from '@gitroom/react/helpers/mantine.wrapper';
 
 export const dynamic = 'force-dynamic';
@@ -19,9 +20,10 @@ const jakartaSans = Plus_Jakarta_Sans({
 
 export default async function AppLayout({ children }: { children: ReactNode }) {
   return (
-    <html>
+    <html lang="en" dir="ltr">
       <head>
-        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href={brand.logo.favicon} type="image/svg+xml" />
+        <link rel="icon" href={brand.logo.faviconIco} sizes="any" />
       </head>
       <body
         className={clsx(jakartaSans.className, 'dark text-primary !bg-primary')}

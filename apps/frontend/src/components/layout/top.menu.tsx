@@ -18,6 +18,10 @@ interface MenuItemInterface {
   onClick?: () => void;
 }
 
+// Affiliate programme entry point. Empty by default: set
+// NEXT_PUBLIC_AFFILIATE_URL to surface the menu item.
+const affiliateUrl = process.env.NEXT_PUBLIC_AFFILIATE_URL || '';
+
 export const useMenuItem = () => {
   const { isGeneral } = useVariables();
   const t = useT();
@@ -246,9 +250,12 @@ export const useMenuItem = () => {
           />
         </svg>
       ),
-      path: 'https://affiliate.postiz.com',
+      path: affiliateUrl,
       role: ['ADMIN', 'SUPERADMIN', 'USER'],
       requireBilling: true,
+      // Hidden until an affiliate programme exists for this deployment. The menu
+      // entry is kept intact so enabling it is a config change, not a code change.
+      hide: !affiliateUrl,
     },
     {
       name: t('billing', 'Billing'),

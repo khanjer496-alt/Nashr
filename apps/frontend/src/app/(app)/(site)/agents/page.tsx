@@ -1,8 +1,9 @@
+import { brandTitle } from '@gitroom/nashr-brand/brand.config';
 import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 
 export const metadata: Metadata = {
-  title: 'Postiz - Agent',
+  title: brandTitle('- Agent'),
   description: '',
 };
 

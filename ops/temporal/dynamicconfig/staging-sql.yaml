@@ -1,0 +1,29 @@
+# Temporal dynamic config — Nashr staging.
+# Smaller limits than production; staging shares a host and must not be able to
+# starve production of CPU or disk.
+
+limit.maxIDLength:
+  - value: 255
+    constraints: {}
+
+limit.blobSize.warn:
+  - value: 262144
+    constraints: {}
+limit.blobSize.error:
+  - value: 2097152
+    constraints: {}
+
+frontend.namespaceRPS:
+  - value: 200
+    constraints: {}
+
+history.persistenceMaxQPS:
+  - value: 200
+    constraints: {}
+frontend.persistenceMaxQPS:
+  - value: 200
+    constraints: {}
+
+system.enableReadFromES:
+  - value: true
+    constraints: {}

@@ -1,0 +1,20 @@
+# Cron alternative to the systemd timers, for hosts without systemd.
+#   sudo cp ops/scripts/nashr-backup.cron /etc/cron.d/nashr
+#   sudo chown root:root /etc/cron.d/nashr && sudo chmod 644 /etc/cron.d/nashr
+#
+# NOTE: cron gives you no `Persistent=true`. If the host is off at 22:00 UTC
+# that night's backup is simply missed — the systemd timer is preferred.
+
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+MAILTO=""
+
+# 22:00 UTC = 02:00 Asia/Dubai
+0 22 * * * root cd /opt/nashr && BACKUP_DIR=/var/backups/nashr ./ops/scripts/backup-postgres.sh docker-compose.prod.yaml .env.prod >> /var/log/nashr/backup.log 2>&1
+20 22 * * * root cd /opt/nashr && BACKUP_DIR=/var/backups/nashr ./ops/scripts/backup-uploads.sh docker-compose.prod.yaml .env.prod >> /var/log/nashr/backup.log 2>&1
+
+# Health check every 15 minutes
+*/15 * * * * root cd /opt/nashr && BACKUP_DIR=/var/backups/nashr ./ops/scripts/healthcheck.sh docker-compose.prod.yaml .env.prod >> /var/log/nashr/healthcheck.log 2>&1
+
+# Monthly restore drill, 03:00 UTC on the 2nd (after the 1st-of-month backup)
+0 3 2 * * root cd /opt/nashr && BACKUP_DIR=/var/backups/nashr ./ops/scripts/restore-drill.sh >> /var/log/nashr/restore-drill.log 2>&1

@@ -3,7 +3,7 @@
   "provider": {
     "id": "openai",
     "model": "gpt-4.1",
-    "prompt": "Translate accurately from {source} to {target}, maintaining the original meaning.",
+    "prompt": "Translate accurately from {source} to {target}, maintaining the original meaning. Nashr is a product name: never translate it, and never substitute any other product name. For Arabic targets produce Modern Standard Arabic suitable for a professional business audience in the Gulf; do not transliterate English UI jargon that has an established Arabic term. Machine output for Arabic is a DRAFT ONLY and must be reviewed by a native speaker before release.",
     "baseUrl": "https://api.openai.com/v1"
   },
   "locale": {
@@ -22,12 +22,24 @@
       "ko",
       "ar",
       "tr",
-      "vi"
+      "vi",
+      "ar-AE",
+      "ar-SA",
+      "en-AE",
+      "en-SA"
     ]
   },
   "buckets": {
     "json": {
-      "include": ["libraries/react-shared-libraries/src/translation/locales/[locale]/translation.json"]
+      "include": [
+        "libraries/react-shared-libraries/src/translation/locales/[locale]/translation.json"
+      ],
+      "exclude": [
+        "libraries/react-shared-libraries/src/translation/locales/ar-AE/translation.json",
+        "libraries/react-shared-libraries/src/translation/locales/ar-SA/translation.json",
+        "libraries/react-shared-libraries/src/translation/locales/en-AE/translation.json",
+        "libraries/react-shared-libraries/src/translation/locales/en-SA/translation.json"
+      ]
     }
   },
   "$schema": "https://lingo.dev/schema/i18n.json"

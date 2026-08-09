@@ -1,0 +1,15 @@
+# Fake, local-only values for rendering the Nashr frontend in a browser test.
+# NOTHING HERE IS A SECRET. Do not reuse outside a throwaway local box.
+export NOT_SECURED="true"
+export IS_GENERAL="true"
+export STORAGE_PROVIDER="local"
+export NODE_ENV="production"
+export FRONTEND_URL="http://localhost:4200"
+export MAIN_URL="http://localhost:4200"
+export NEXT_PUBLIC_BACKEND_URL="http://localhost:3000/api"
+export BACKEND_INTERNAL_URL="http://localhost:3000"
+export NEXT_PUBLIC_UPLOAD_STATIC_DIRECTORY="/uploads"
+export JWT_SECRET="e2e-fake-not-a-secret-0000000000000000000000"
+export DATABASE_URL="postgresql://postgres@localhost:5433/nashr?host=/tmp"
+export REDIS_URL="redis://localhost:6379"
+export NODE_OPTIONS="--max-old-space-size=5120"

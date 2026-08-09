@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Nashr">
+  <title>Nashr</title>
+  <defs>
+    <linearGradient id="nashrTile" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#14A79B"/>
+      <stop offset="1" stop-color="#0B655E"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="15" fill="url(#nashrTile)"/>
+  <!-- Radially symmetric "publish / broadcast" mark: identical in LTR and RTL. -->
+  <g fill="none" stroke="#FFFFFF" stroke-linecap="round">
+    <circle cx="32" cy="32" r="21" stroke-width="3" opacity="0.45"/>
+    <circle cx="32" cy="32" r="13.5" stroke-width="3.5" opacity="0.8"/>
+  </g>
+  <circle cx="32" cy="32" r="5.5" fill="#FFFFFF"/>
+</svg>

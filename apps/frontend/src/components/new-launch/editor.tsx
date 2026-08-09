@@ -407,7 +407,7 @@ export const EditorWrapper: FC<{
               )}
             </div>
             <div>
-              <div className="text-white rounded-[8px] h-[44px] px-[20px] bg-[#D82D7E] cursor-pointer flex justify-center items-center">
+              <div className="text-white rounded-[8px] h-[44px] px-[20px] bg-[#B4552D] cursor-pointer flex justify-center items-center">
                 {t('edit_content', 'Edit content')}
               </div>
             </div>
@@ -429,7 +429,7 @@ export const EditorWrapper: FC<{
           <div className="flex gap-[5px] flex-1 w-full">
             <div className="flex-1 flex w-full">
               {index > 0 && (
-                <div className="flex justify-center pl-[12px] text-newSep">
+                <div className="flex justify-center ps-[12px] text-newSep">
                   <ConnectionLineIcon />
                 </div>
               )}
@@ -471,7 +471,7 @@ export const EditorWrapper: FC<{
                             onClick={goBackToGlobal}
                           >
                             <div className="flex gap-[6px] items-center">
-                              <div className="w-[8px] h-[8px] rounded-full bg-[#FC69FF]" />
+                              <div className="w-[8px] h-[8px] rounded-full bg-[#14A79B]" />
                               <div className="text-[14px] font-[600]">
                                 {t(
                                   'editing_a_specific_network',

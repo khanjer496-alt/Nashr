@@ -1,5 +1,18 @@
 :root {
   .dark {
+    /* Nashr brand design tokens — single source of truth is
+       libraries/nashr-brand/src/brand.config.ts (`brand.colors`).
+       Keep the two in sync. */
+    --brand-primary: #0E7C74;
+    --brand-primary-hover: #0B655E;
+    --brand-primary-soft: #14A79B;
+    --brand-accent: #B4552D;
+    --brand-accent-hover: #96431F;
+    --brand-gold: #C8912F;
+    --brand-success: #2E9E6B;
+    --brand-warning: #D99A2B;
+    --brand-danger: #D6453D;
+    --brand-info: #2F80ED;
     --new-back-drop: #000;
     --new-settings: #242323;
     --new-border: #252525;
@@ -14,13 +27,13 @@
     --new-blockSeparator: #272626;
     --new-btn-simple: #313030;
     --new-btn-text: #ffffff;
-    --new-btn-primary: #612bd3;
-    --new-ai-btn: #d82d7e;
+    --new-btn-primary: #0e7c74;
+    --new-ai-btn: #b4552d;
     --new-box-hover: #201f1f;
     --new-table-border: #2b2b2b;
     --new-table-header: #1e1d1d;
     --new-table-text: #9c9c9c;
-    --new-table-text-focused: #fc69ff;
+    --new-table-text-focused: #14a79b;
     --new-small-strips: #191818;
     --new-big-strips: #161515;
     --new-col-color: #2c2b2b;
@@ -44,6 +57,19 @@
     --youtube-svg-border: #A0A0A0;
   }
   .light {
+    /* Nashr brand design tokens — single source of truth is
+       libraries/nashr-brand/src/brand.config.ts (`brand.colors`).
+       Keep the two in sync. */
+    --brand-primary: #0E7C74;
+    --brand-primary-hover: #0B655E;
+    --brand-primary-soft: #14A79B;
+    --brand-accent: #B4552D;
+    --brand-accent-hover: #96431F;
+    --brand-gold: #C8912F;
+    --brand-success: #2E9E6B;
+    --brand-warning: #D99A2B;
+    --brand-danger: #D6453D;
+    --brand-info: #2F80ED;
     --new-back-drop: #2d1b57;
     --new-settings: #eceef1;
     --new-sep: #d5d9dd;
@@ -58,13 +84,13 @@
     --new-blockSeparator: #f2f2f4;
     --new-btn-simple: #eceef1;
     --new-btn-text: #0e0e0e;
-    --new-btn-primary: #612bd3;
-    --new-ai-btn: #d82d7e;
+    --new-btn-primary: #0e7c74;
+    --new-ai-btn: #b4552d;
     --new-box-hover: #f4f6f8;
     --new-table-border: #e7e9eb;
     --new-table-header: #f5f7f9;
     --new-table-text: #777b7f;
-    --new-table-text-focused: #fc69ff;
+    --new-table-text-focused: #14a79b;
     --new-small-strips: #191818;
     --new-big-strips: #f5f7f9;
     --new-col-color: #eff1f3;
@@ -102,7 +128,7 @@
     --color-secondary: #090b13;
     --color-text: #ffffff;
     --color-third: #080b13;
-    --color-forth: #612ad5;
+    --color-forth: #0e7c74;
     --color-fifth: var(--new-bgLineColor);
     --color-sixth: var(--new-table-header);
     --color-seventh: #7236f1;
@@ -172,7 +198,7 @@
     --color-secondary: #fff;
     --color-text: #000;
     --color-third: white;
-    --color-forth: #612ad5;
+    --color-forth: #0e7c74;
     --color-fifth: var(--new-bgLineColor);
     --color-sixth: var(--new-table-header);
     --color-seventh: #7236f1;
