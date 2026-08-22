@@ -18,8 +18,6 @@ describe('public product copy', () => {
     expect(landing).toMatch(/API/);
     expect(landing).toMatch(/MCP/);
     expect(landing).toMatch(/CLI/);
-    expect(landing).toMatch(/Arabic/);
-    expect(landing).toMatch(/RTL/);
     expect(landing).not.toMatch(/\$\d+|\d+[,+] users|trusted by \d+/i);
   });
 
@@ -34,6 +32,27 @@ describe('public product copy', () => {
     expect(shell).not.toMatch(/open source/i);
     expect(footer).toContain('Proudly open source');
     expect(footer).toContain('brand.sourceUrl');
+  });
+
+  it('leads with product proof in a Postiz-style marketing rhythm', () => {
+    const landing = read(
+      'apps/frontend/src/components/marketing/landing.page.tsx'
+    );
+    const previewPath =
+      'apps/frontend/src/components/marketing/product.preview.tsx';
+    const preview = fs.existsSync(path.join(root, previewPath))
+      ? read(previewPath)
+      : '';
+
+    expect(landing).toContain('ProductPreview');
+    expect(landing).toContain('Who is Orbiloom for?');
+    expect(landing).toContain('See Orbiloom in action');
+    expect(landing).toContain('Power your content with AI and automation');
+    expect(fs.existsSync(path.join(root, previewPath))).toBe(true);
+    expect(preview).toContain('Create a post');
+    expect(preview).toContain('Approval requested');
+    expect(landing).not.toContain('GLOBAL BY DEFAULT');
+    expect(landing).not.toContain('localizationSection');
   });
 
   it('presents a global product with first-class interfaces', () => {

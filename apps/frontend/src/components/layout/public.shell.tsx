@@ -20,7 +20,6 @@ export const PublicShell = ({ children }: { children: ReactNode }) => {
             <Link className="hover:text-[#F7F7F2]" href="/#product">Product</Link>
             <Link className="hover:text-[#F7F7F2]" href="/#interfaces">Interfaces</Link>
             <Link className="hover:text-[#F7F7F2]" href="/#capabilities">Capabilities</Link>
-            <Link className="hover:text-[#F7F7F2]" href="/#global">Global</Link>
             <Link className="hover:text-[#F7F7F2]" href="/#pricing">Pricing</Link>
           </nav>
           <div className="hidden sm:flex items-center gap-[10px]">
@@ -40,7 +39,6 @@ export const PublicShell = ({ children }: { children: ReactNode }) => {
                 ['Product', '/#product'],
                 ['Interfaces', '/#interfaces'],
                 ['Capabilities', '/#capabilities'],
-                ['Global', '/#global'],
                 ['Pricing', '/#pricing'],
               ].map(([label, href]) => (
                 <Link key={label} href={href} className="min-h-[44px] flex items-center rounded-[12px] px-[14px] text-[14px] font-[600] hover:bg-[#191D27]">
