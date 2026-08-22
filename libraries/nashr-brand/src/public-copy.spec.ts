@@ -37,3 +37,21 @@ describe('public product copy', () => {
     expect(licenses).not.toContain('MENA_CUSTOMIZATIONS.md');
   });
 });
+
+describe('global framework defaults', () => {
+  it('uses UTC for browser tests unless a test overrides it', () => {
+    const config = read('tests/e2e/playwright.config.ts');
+    expect(config).toContain("process.env.E2E_TZ || 'UTC'");
+    expect(config).not.toContain("process.env.E2E_TZ || 'Asia/Dubai'");
+  });
+
+  it('retains regional locale overlays without describing them as primary', () => {
+    const config = read(
+      'libraries/react-shared-libraries/src/translation/i18n.config.ts'
+    );
+    expect(config).toMatch(/en-AE/);
+    expect(config).toMatch(/ar-AE/);
+    expect(config).toMatch(/optional regional locale overlays/i);
+    expect(config).not.toMatch(/Nashr MENA regional locales/i);
+  });
+});

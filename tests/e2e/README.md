@@ -46,7 +46,7 @@ npx playwright test -c tests/e2e/playwright.config.ts --project=desktop-ar
 | `PW_CHROMIUM_PATH` | situational | unset | Absolute path to a Chromium binary. Needed only when the sandbox ships a browser revision older than the one this Playwright expects and `playwright install` is unavailable. Leave unset on a normal machine. |
 | `NODE_OPTIONS` | yes for builds | — | Must include `--max-old-space-size=5120`; the Next build OOMs otherwise. |
 | `E2E_MANAGE_SERVER` | no | unset | Set to `1` to let Playwright start `next start` itself. |
-| `E2E_TZ` | no | `Asia/Dubai` | Browser timezone; UAE-first default keeps date rendering deterministic. |
+| `E2E_TZ` | no | `UTC` | Browser timezone; the neutral default keeps date rendering deterministic. Use `E2E_TZ=Asia/Dubai` for a UAE localization run. |
 | `E2E_AUTH_COOKIE` | no | unset | Value of the app's `auth` cookie. **Unlocks the authenticated specs.** Without it, everything behind the auth gate is skipped and reported as unverified. |
 
 `tests/e2e/env.e2e.sh` holds the frontend's own environment. Every value in it
