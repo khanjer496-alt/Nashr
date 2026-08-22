@@ -1,8 +1,16 @@
 # DEPLOYMENT.md — Nashr (نشر)
 
-Production deployment of Nashr, a MENA social media management SaaS derived from
-[Postiz](https://github.com/gitroomhq/postiz-app) v1.47.0 (AGPL-3.0). Target
-market UAE; first launch is a closed beta of 5–10 businesses.
+Production deployment of Nashr, the temporary name for a global social
+publishing platform derived from
+[Postiz](https://github.com/gitroomhq/postiz-app) v1.47.0 (AGPL-3.0). The first
+launch is a controlled global beta.
+
+**Approved production topology:** run the Postiz application services,
+PostgreSQL, Redis and Temporal on a conventional Docker host. Put Cloudflare in
+front for DNS, CDN, WAF and TLS, and use Cloudflare R2 for media and encrypted
+database backups. This is deliberately not a Cloudflare Workers-only rewrite:
+the stateful Node.js and Temporal stack stays on the topology it was designed
+for, while Cloudflare provides the edge and object storage.
 
 Read alongside:
 [`SECURITY_CHECKLIST.md`](SECURITY_CHECKLIST.md) ·
@@ -11,7 +19,8 @@ Read alongside:
 [`AUDIT_REPORT.md`](AUDIT_REPORT.md) · [`RISK_REGISTER.md`](RISK_REGISTER.md)
 
 Throughout, `nashr.example` is a placeholder. Every real hostname comes from
-`NASHR_DOMAIN` in your env file.
+`NASHR_DOMAIN` in your env file. In production the public DNS record is proxied
+through Cloudflare and the origin accepts Cloudflare traffic over HTTPS.
 
 ---
 

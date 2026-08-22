@@ -1,5 +1,13 @@
 # FEATURES.md — Nashr (نشر)
 
+> **Global-first direction — 2026-08-22.** Nashr is the temporary name for
+> social publishing infrastructure for humans and AI agents. The existing
+> Postiz web product remains the engine. Capabilities below now fall into six
+> product groups: publishing core, human collaboration, programmable
+> interfaces, agent workflows, optional localization, and operations. API,
+> MCP, SDK, CLI, agent and R2 items must retain their explicit shipped/planned
+> status; this inventory does not turn roadmap work into a production claim.
+
 **Phase 8 deliverable.** What Nashr does today, and — with equal prominence —
 what it does not. Compiled 2026-08-08 against
 `claude/mena-saas-postiz-conversion-7el9fk`.
@@ -31,7 +39,7 @@ scraping, no headless browser, and no password storage for any social account �
 verified across all provider files during the Phase 1 audit
 (`AUDIT_REPORT.md` §5).
 
-### 1.1 The MENA-relevant subset (what a UAE business actually wants)
+### 1.1 Common launch channels
 
 | Platform | Provider | Analytics | Notes for the beta |
 |---|---|---|---|

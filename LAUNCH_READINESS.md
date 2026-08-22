@@ -1,5 +1,12 @@
 # LAUNCH_READINESS.md — Nashr (نشر)
 
+> **Global-first pivot — 2026-08-22.** The approved direction is documented in
+> [`docs/superpowers/specs/2026-08-22-global-first-postiz-direction-design.md`](docs/superpowers/specs/2026-08-22-global-first-postiz-direction-design.md).
+> Earlier regional verification remains useful engineering evidence, but it is
+> not approval to launch under the new global scope. Production now requires
+> the approved Docker origin plus Cloudflare edge and R2 topology, global
+> onboarding/pricing, and end-to-end validation of the public deployment.
+
 **Phase 8 master document.** Compiled 2026-08-08 against
 `claude/mena-saas-postiz-conversion-7el9fk`.
 Base: [Postiz](https://github.com/gitroomhq/postiz-app) v1.47.0, AGPL-3.0.

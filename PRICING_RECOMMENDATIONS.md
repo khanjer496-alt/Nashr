@@ -1,5 +1,11 @@
 # PRICING_RECOMMENDATIONS.md — Nashr (نشر)
 
+> **Historical analysis — superseded 2026-08-22.** The AED/SAR and MENA-first
+> recommendations below are retained as research, not as executable pricing.
+> The approved direction is global USD pricing and onboarding. Final tiers,
+> entitlements, tax handling and billing copy require the dedicated global
+> pricing/onboarding plan before they may be published.
+
 **Phase 8 deliverable.** A recommendation, not a decision. Compiled 2026-08-08.
 
 > **Nothing here has been agreed by anyone.** No price in this document is a
