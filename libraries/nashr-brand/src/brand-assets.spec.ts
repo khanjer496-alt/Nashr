@@ -49,4 +49,28 @@ describe('Orbiloom brand assets', () => {
     expect(component).toContain('brand.name');
     expect(component).not.toMatch(/aria-label="Nashr"/);
   });
+
+  it('keeps application CSS synchronized with the approved tokens', () => {
+    const colors = fs.readFileSync(
+      path.join(root, 'apps/frontend/src/app/colors.scss'),
+      'utf8'
+    );
+
+    for (const value of [
+      '#080A0F',
+      '#11141C',
+      '#F7F7F2',
+      '#9299AA',
+      '#7357FF',
+      '#6043F2',
+      '#C8FF4D',
+      '#FF5F74',
+      '#2A2F3B',
+    ]) {
+      expect(colors.toUpperCase()).toContain(value.toUpperCase());
+    }
+
+    expect(colors).toContain('Orbiloom brand design tokens');
+    expect(colors).not.toMatch(/--brand-primary:\s*#0E7C74/i);
+  });
 });

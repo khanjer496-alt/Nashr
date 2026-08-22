@@ -5,7 +5,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Nashr brand design tokens. Defined in src/app/colors.scss and mirrored
+        // Orbiloom brand design tokens. Defined in src/app/colors.scss and mirrored
         // from libraries/nashr-brand/src/brand.config.ts (`brand.colors`).
         brand: {
           DEFAULT: 'var(--brand-primary)',
@@ -137,7 +137,8 @@ module.exports = {
         loginBg: 'url(/auth/bg-login.png)',
       },
       fontFamily: {
-        sans: ['Helvetica Neue'],
+        sans: ['Manrope', 'sans-serif'],
+        mono: ['var(--orbiloom-font-mono)', 'monospace'],
       },
       animation: {
         fade: 'fadeOut 0.5s ease-in-out',

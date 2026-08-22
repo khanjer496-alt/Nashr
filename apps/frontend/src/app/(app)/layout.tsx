@@ -8,7 +8,11 @@ import 'react-tooltip/dist/react-tooltip.css';
 import '@copilotkit/react-ui/styles.css';
 import LayoutContext from '@gitroom/frontend/components/layout/layout.context';
 import { ReactNode } from 'react';
-import { Plus_Jakarta_Sans, IBM_Plex_Sans_Arabic } from 'next/font/google';
+import {
+  Manrope,
+  IBM_Plex_Sans_Arabic,
+  JetBrains_Mono,
+} from 'next/font/google';
 import PlausibleProvider from 'next-plausible';
 import clsx from 'clsx';
 import { VariableContextComponent } from '@gitroom/react/helpers/variable.context';
@@ -59,13 +63,13 @@ export const metadata: Metadata = {
   },
 };
 
-const jakartaSans = Plus_Jakarta_Sans({
-  weight: ['600', '500'],
+const manrope = Manrope({
+  weight: ['500', '600', '700'],
   style: ['normal', 'italic'],
   subsets: ['latin'],
 });
 
-// Nashr: without this, no Arabic @font-face is ever shipped and Arabic glyphs
+// Orbiloom: without this, no Arabic @font-face is ever shipped and Arabic glyphs
 // fall back to whatever the client OS provides (verified in-browser: rasterised
 // by DejaVu Sans, isCustomFont=false) while Latin was correctly self-hosted.
 // next/font self-hosts at build time, so this adds no third-party request.
@@ -73,7 +77,14 @@ const plexArabic = IBM_Plex_Sans_Arabic({
   weight: ['400', '500', '600'],
   subsets: ['arabic'],
   display: 'swap',
-  variable: '--nashr-font-arabic-loaded',
+  variable: '--orbiloom-font-arabic',
+});
+
+const jetBrainsMono = JetBrains_Mono({
+  weight: ['500', '600'],
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--orbiloom-font-mono',
 });
 
 export default async function AppLayout({ children }: { children: ReactNode }) {
@@ -106,8 +117,9 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
       <ChangeDirClient />
       <body
         className={clsx(
-          jakartaSans.className,
+          manrope.className,
           plexArabic.variable,
+          jetBrainsMono.variable,
           'dark text-primary !bg-primary'
         )}
       >

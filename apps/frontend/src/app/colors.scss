@@ -1,42 +1,42 @@
 :root {
   .dark {
-    /* Nashr brand design tokens — single source of truth is
+    /* Orbiloom brand design tokens — single source of truth is
        libraries/nashr-brand/src/brand.config.ts (`brand.colors`).
        Keep the two in sync. */
-    --brand-primary: #0E7C74;
-    --brand-primary-hover: #0B655E;
-    --brand-primary-soft: #14A79B;
-    --brand-accent: #B4552D;
-    --brand-accent-hover: #96431F;
-    --brand-gold: #C8912F;
-    --brand-success: #2E9E6B;
-    --brand-warning: #D99A2B;
-    --brand-danger: #D6453D;
-    --brand-info: #2F80ED;
-    --new-back-drop: #000;
-    --new-settings: #242323;
-    --new-border: #252525;
-    --new-bgColor: #0e0e0e;
-    --new-bgColorInner: #1a1919;
-    --new-sep: #454444;
-    --new-bgLineColor: #212121;
-    --new-textItemFocused: #1a1919;
-    --new-textItemBlur: #999999;
-    --new-boxFocused: #fff;
-    --new-textColor: 255 255 255;
-    --new-blockSeparator: #272626;
-    --new-btn-simple: #313030;
-    --new-btn-text: #ffffff;
-    --new-btn-primary: #0e7c74;
-    --new-ai-btn: #b4552d;
-    --new-box-hover: #201f1f;
-    --new-table-border: #2b2b2b;
-    --new-table-header: #1e1d1d;
-    --new-table-text: #9c9c9c;
-    --new-table-text-focused: #14a79b;
-    --new-small-strips: #191818;
-    --new-big-strips: #161515;
-    --new-col-color: #2c2b2b;
+    --brand-primary: #7357FF;
+    --brand-primary-hover: #6043F2;
+    --brand-primary-soft: #8D78FF;
+    --brand-accent: #C8FF4D;
+    --brand-accent-hover: #B4EA35;
+    --brand-gold: #FF5F74;
+    --brand-success: #72DCA4;
+    --brand-warning: #F4BF50;
+    --brand-danger: #FF5F74;
+    --brand-info: #64B5FF;
+    --new-back-drop: #080A0F;
+    --new-settings: #191D27;
+    --new-border: #2A2F3B;
+    --new-bgColor: #080A0F;
+    --new-bgColorInner: #11141C;
+    --new-sep: #3A4050;
+    --new-bgLineColor: #2A2F3B;
+    --new-textItemFocused: #191D27;
+    --new-textItemBlur: #9299AA;
+    --new-boxFocused: #F7F7F2;
+    --new-textColor: 247 247 242;
+    --new-blockSeparator: #202530;
+    --new-btn-simple: #202530;
+    --new-btn-text: #F7F7F2;
+    --new-btn-primary: #7357FF;
+    --new-ai-btn: #7357FF;
+    --new-box-hover: #191D27;
+    --new-table-border: #2A2F3B;
+    --new-table-header: #191D27;
+    --new-table-text: #9299AA;
+    --new-table-text-focused: #8D78FF;
+    --new-small-strips: #11141C;
+    --new-big-strips: #0D1017;
+    --new-col-color: #202530;
     --new-menu-dots: #696868;
     --new-menu-hover: #fff;
     --menu-shadow: 0 8px 30px 0 rgba(0, 0, 0, 0.5);
@@ -57,19 +57,19 @@
     --youtube-svg-border: #A0A0A0;
   }
   .light {
-    /* Nashr brand design tokens — single source of truth is
+    /* Orbiloom brand design tokens — single source of truth is
        libraries/nashr-brand/src/brand.config.ts (`brand.colors`).
        Keep the two in sync. */
-    --brand-primary: #0E7C74;
-    --brand-primary-hover: #0B655E;
-    --brand-primary-soft: #14A79B;
-    --brand-accent: #B4552D;
-    --brand-accent-hover: #96431F;
-    --brand-gold: #C8912F;
-    --brand-success: #2E9E6B;
-    --brand-warning: #D99A2B;
-    --brand-danger: #D6453D;
-    --brand-info: #2F80ED;
+    --brand-primary: #7357FF;
+    --brand-primary-hover: #6043F2;
+    --brand-primary-soft: #8D78FF;
+    --brand-accent: #C8FF4D;
+    --brand-accent-hover: #B4EA35;
+    --brand-gold: #FF5F74;
+    --brand-success: #328A5D;
+    --brand-warning: #A86800;
+    --brand-danger: #D63D57;
+    --brand-info: #1672C4;
     --new-back-drop: #2d1b57;
     --new-settings: #eceef1;
     --new-sep: #d5d9dd;
@@ -84,13 +84,13 @@
     --new-blockSeparator: #f2f2f4;
     --new-btn-simple: #eceef1;
     --new-btn-text: #0e0e0e;
-    --new-btn-primary: #0e7c74;
-    --new-ai-btn: #b4552d;
+    --new-btn-primary: #7357FF;
+    --new-ai-btn: #7357FF;
     --new-box-hover: #f4f6f8;
     --new-table-border: #e7e9eb;
     --new-table-header: #f5f7f9;
     --new-table-text: #777b7f;
-    --new-table-text-focused: #14a79b;
+    --new-table-text-focused: #6043F2;
     --new-small-strips: #191818;
     --new-big-strips: #f5f7f9;
     --new-col-color: #eff1f3;
@@ -124,14 +124,14 @@
 
 :root {
   .dark {
-    --color-primary: #0e0e0e;
-    --color-secondary: #090b13;
-    --color-text: #ffffff;
-    --color-third: #080b13;
-    --color-forth: #0e7c74;
+    --color-primary: #080A0F;
+    --color-secondary: #11141C;
+    --color-text: #F7F7F2;
+    --color-third: #11141C;
+    --color-forth: #7357FF;
     --color-fifth: var(--new-bgLineColor);
     --color-sixth: var(--new-table-header);
-    --color-seventh: #7236f1;
+    --color-seventh: #7357FF;
     --color-gray: #8c8c8c;
     --color-input: var(--new-table-header);
     --color-input-text: #64748b;
@@ -198,10 +198,10 @@
     --color-secondary: #fff;
     --color-text: #000;
     --color-third: white;
-    --color-forth: #0e7c74;
+    --color-forth: #7357FF;
     --color-fifth: var(--new-bgLineColor);
     --color-sixth: var(--new-table-header);
-    --color-seventh: #7236f1;
+    --color-seventh: #7357FF;
     --color-gray: #8c8c8c;
     --color-input: var(--new-table-header);
     --color-input-text: #64748b;

@@ -16,8 +16,20 @@ body {
   color: var(--new-btn-text);
 }
 
-body * {
-  outline: none !important;
+*:focus-visible {
+  outline: 2px solid #C8FF4D !important;
+  outline-offset: 3px !important;
+}
+
+[lang^='ar'] body {
+  font-family: var(--orbiloom-font-arabic), sans-serif;
+}
+
+code,
+pre,
+kbd,
+samp {
+  font-family: var(--orbiloom-font-mono), monospace;
 }
 
 .box {
