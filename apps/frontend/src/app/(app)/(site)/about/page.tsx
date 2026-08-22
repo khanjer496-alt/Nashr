@@ -14,15 +14,14 @@ export const metadata: Metadata = {
 export default async function Page() {
   return (
     <LegalPage title={`About ${brand.name}`} subtitle={brand.tagline}>
-      <Section heading="What Nashr is">
+      <Section heading={`What ${brand.name} is`}>
         <p>
           <strong>
             Social publishing infrastructure for humans and AI agents.
           </strong>{' '}
-          {brand.name} ({brand.nameAr} — Arabic for &ldquo;publishing&rdquo;) gives
-          creators, teams and agencies a complete workspace to plan a content
-          calendar, review and approve posts, publish across connected channels,
-          and measure what happened afterwards.
+          {brand.name} gives creators, teams and agencies a complete workspace
+          to plan a content calendar, review and approve posts, publish across
+          connected channels, and measure what happened afterwards.
         </p>
         <p>
           The browser product remains the complete control surface. The same

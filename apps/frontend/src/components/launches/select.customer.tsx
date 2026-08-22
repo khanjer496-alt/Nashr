@@ -67,7 +67,7 @@ export const SelectCustomer: FC<{
         onClick={openClose}
         className={clsx(
           'relative z-[20] cursor-pointer h-[42px] rounded-[8px] ps-[16px] pe-[12px] gap-[8px] border flex items-center',
-          open ? 'border-[#0E7C74]' : 'border-newColColor'
+          open ? 'border-[#7357FF]' : 'border-newColColor'
         )}
       >
         <div>

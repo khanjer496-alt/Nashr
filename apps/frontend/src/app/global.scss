@@ -545,7 +545,7 @@ html[dir='rtl'] [dir='ltr'] {
   direction: rtl !important;
 }
 
-/* ───────────────────────────── Nashr: RTL + Arabic ─────────────────────────
+/* ─────────────────────────── Orbiloom: RTL + Arabic ────────────────────────
    Canonical source for these rules is
    `libraries/nashr-i18n/src/typography.ts` (`arabicTypographyCss`), which is
    exported for consumers that do not build through this stylesheet (the
@@ -653,7 +653,7 @@ html[dir='rtl'] .text-start-safe {
 html[dir='rtl'] .text-end-safe {
   text-align: end;
 }
-/* ─────────────────────────── end Nashr: RTL + Arabic ────────────────────── */
+/* ───────────────────────── end Orbiloom: RTL + Arabic ───────────────────── */
 //
 .uppy-Dashboard-AddFiles {
   display: none !important;

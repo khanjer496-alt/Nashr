@@ -31,7 +31,7 @@ import { LogoutComponent } from '@gitroom/frontend/components/layout/logout.comp
 
 // Product tour video. Upstream ships a Postiz walkthrough; supply your own with
 // NEXT_PUBLIC_TUTORIAL_VIDEO_URL. Empty (the default) hides the entry point
-// rather than showing another product's tutorial under the Nashr brand.
+// rather than showing another product's tutorial under the Orbiloom brand.
 const tutorialVideoUrl = process.env.NEXT_PUBLIC_TUTORIAL_VIDEO_URL || '';
 import { DeveloperIconComponent } from '@gitroom/frontend/components/developer/developer.icon.component';
 

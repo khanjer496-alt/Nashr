@@ -245,7 +245,7 @@ export const DeveloperComponent: FC = () => {
             <div className="flex gap-[6px] shrink-0 pt-[2px]">
               {!!brand.docsUrl && (
                 <a
-                  className="cursor-pointer px-[16px] h-[36px] bg-[#0E7C74] hover:bg-[#0B655E] text-white transition-colors rounded-[8px] text-[13px] font-[600] flex items-center gap-[6px]"
+                  className="cursor-pointer px-[16px] h-[36px] bg-[#7357FF] hover:bg-[#6043F2] text-white transition-colors rounded-[8px] text-[13px] font-[600] flex items-center gap-[6px]"
                   href={`${brand.docsUrl}/public-api/oauth`}
                   target="_blank"
                 >
@@ -259,7 +259,7 @@ export const DeveloperComponent: FC = () => {
             <button
               type="button"
               onClick={() => setCreating(true)}
-              className="cursor-pointer px-[20px] h-[44px] bg-[#0E7C74] hover:bg-[#0B655E] transition-colors text-white rounded-[8px] text-[15px] font-[600]"
+              className="cursor-pointer px-[20px] h-[44px] bg-[#7357FF] hover:bg-[#6043F2] transition-colors text-white rounded-[8px] text-[15px] font-[600]"
             >
               {t('create_oauth_app', 'Create OAuth App')}
             </button>
@@ -361,7 +361,7 @@ export const DeveloperComponent: FC = () => {
               <button
                 type="button"
                 onClick={createApp}
-                className="cursor-pointer px-[20px] h-[44px] bg-[#0E7C74] hover:bg-[#0B655E] transition-colors text-white rounded-[8px] text-[15px] font-[600]"
+                className="cursor-pointer px-[20px] h-[44px] bg-[#7357FF] hover:bg-[#6043F2] transition-colors text-white rounded-[8px] text-[15px] font-[600]"
               >
                 {t('create', 'Create')}
               </button>
@@ -410,7 +410,7 @@ export const DeveloperComponent: FC = () => {
           <div className="flex gap-[6px] shrink-0 pt-[2px]">
             {!!brand.docsUrl && (
               <a
-                className="cursor-pointer px-[16px] h-[36px] bg-[#0E7C74] hover:bg-[#0B655E] text-white transition-colors rounded-[8px] text-[13px] font-[600] flex items-center gap-[6px]"
+                className="cursor-pointer px-[16px] h-[36px] bg-[#7357FF] hover:bg-[#6043F2] text-white transition-colors rounded-[8px] text-[13px] font-[600] flex items-center gap-[6px]"
                 href={`${brand.docsUrl}/public-api/oauth`}
                 target="_blank"
               >
@@ -487,7 +487,7 @@ export const DeveloperComponent: FC = () => {
               <button
                 type="button"
                 onClick={updateApp}
-                className="cursor-pointer px-[20px] h-[44px] bg-[#0E7C74] hover:bg-[#0B655E] transition-colors text-white rounded-[8px] text-[15px] font-[600]"
+                className="cursor-pointer px-[20px] h-[44px] bg-[#7357FF] hover:bg-[#6043F2] transition-colors text-white rounded-[8px] text-[15px] font-[600]"
               >
                 {t('save', 'Save')}
               </button>

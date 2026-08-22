@@ -46,6 +46,20 @@ describe('public product copy', () => {
     expect(about).toMatch(/Ramadan|Eid|Hijri/);
   });
 
+  it('contains no legacy customer-facing Nashr name', () => {
+    const customerPages = [
+      'apps/frontend/src/app/(app)/(site)/about/page.tsx',
+      'apps/frontend/src/app/(app)/auth/layout.tsx',
+      'apps/frontend/src/components/layout/public.shell.tsx',
+      'apps/frontend/src/components/marketing/landing.page.tsx',
+    ]
+      .map(read)
+      .join('\n');
+
+    expect(customerPages).not.toMatch(/\bNashr\b/);
+    expect(customerPages).toContain('brand.name');
+  });
+
   it('describes a maintained Postiz fork without regional primacy', () => {
     const licenses = read(
       'apps/frontend/src/app/(app)/(site)/licenses/page.tsx'
