@@ -84,11 +84,11 @@ export default async function Page() {
 
       <Section heading="What we changed">
         <p>
-          {brand.name} adds regional and workflow features on top of{' '}
-          {brand.upstream.name}: Arabic and RTL support, Gulf-region defaults, an
-          approval workflow for agencies, and brand changes. Every modification
-          is recorded in <code>MENA_CUSTOMIZATIONS.md</code> in the source
-          repository, alongside the rationale for each change.
+          {brand.name} is a maintained fork of Postiz that adds global publishing
+          infrastructure, human and agent workflows, and optional localization
+          capabilities such as Arabic, RTL and regional calendars. Every
+          modification is recorded in <code>FORK_CUSTOMIZATIONS.md</code> in the
+          source repository, alongside the rationale for each change.
         </p>
       </Section>
 
