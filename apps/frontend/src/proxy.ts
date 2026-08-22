@@ -53,7 +53,8 @@ export async function proxy(request: NextRequest) {
     nextUrl.pathname.startsWith('/icons/') ||
     // Public information pages. /licenses carries the AGPL-3.0 §13 source-code
     // offer, which must reach every network user, signed in or not.
-    publicPages.some((page) => nextUrl.pathname.startsWith(page))
+    publicPages.some((page) => nextUrl.pathname.startsWith(page)) ||
+    (nextUrl.pathname === '/' && !authCookie)
   ) {
     return topResponse;
   }

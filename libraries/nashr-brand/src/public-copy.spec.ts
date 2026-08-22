@@ -5,6 +5,25 @@ const root = path.resolve(__dirname, '../../..');
 const read = (file: string) => fs.readFileSync(path.join(root, file), 'utf8');
 
 describe('public product copy', () => {
+  it('exposes an honest signed-out root landing page', () => {
+    const proxy = read('apps/frontend/src/proxy.ts');
+    const landing = read(
+      'apps/frontend/src/components/marketing/landing.page.tsx'
+    );
+
+    expect(proxy).toContain("nextUrl.pathname === '/' && !authCookie");
+    expect(landing).toContain('brand.heroLine');
+    expect(landing).toContain('brand.tagline');
+    expect(landing).toMatch(/Web/);
+    expect(landing).toMatch(/API/);
+    expect(landing).toMatch(/MCP/);
+    expect(landing).toMatch(/CLI/);
+    expect(landing).toMatch(/Arabic/);
+    expect(landing).toMatch(/RTL/);
+    expect(landing).toMatch(/Postiz/);
+    expect(landing).not.toMatch(/\$\d+|\d+[,+] users|trusted by \d+/i);
+  });
+
   it('presents a global product with first-class interfaces', () => {
     const about = read('apps/frontend/src/app/(app)/(site)/about/page.tsx');
 
