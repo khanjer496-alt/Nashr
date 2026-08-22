@@ -1,14 +1,24 @@
 /**
- * Nashr MENA market registry.
+ * Global market registry with optional regional overlays.
  *
  * One place that answers "for market X, what is the timezone / currency /
  * working week / locale?". Everything else in this library reads from here so
  * adding a market is a single edit.
  *
- * Launch market is the UAE; the rest are the announced expansion set.
+ * The neutral global entry is the fallback. Explicit organization, user, or
+ * locale choices opt into the regional behavior below.
  */
 
-export type MarketCode = 'AE' | 'SA' | 'KW' | 'QA' | 'BH' | 'OM' | 'EG' | 'JO';
+export type MarketCode =
+  | 'GLOBAL'
+  | 'AE'
+  | 'SA'
+  | 'KW'
+  | 'QA'
+  | 'BH'
+  | 'OM'
+  | 'EG'
+  | 'JO';
 
 export type CurrencyCode =
   | 'AED'
@@ -54,6 +64,18 @@ export interface Market {
 }
 
 export const MARKETS: Record<MarketCode, Market> = {
+  GLOBAL: {
+    code: 'GLOBAL',
+    nameEn: 'Global',
+    nameAr: 'عالمي',
+    timezone: 'UTC',
+    currency: 'USD',
+    localeEn: 'en',
+    localeAr: 'ar',
+    weekend: [6, 7],
+    firstDayOfWeek: 1,
+    prefersArabicIndicDigits: false,
+  },
   AE: {
     code: 'AE',
     nameEn: 'United Arab Emirates',
@@ -152,8 +174,8 @@ export const MARKETS: Record<MarketCode, Market> = {
   },
 };
 
-/** Launch market. Everything defaults here when nothing else is known. */
-export const DEFAULT_MARKET: MarketCode = 'AE';
+/** Neutral fallback used only when no explicit market is known. */
+export const DEFAULT_MARKET: MarketCode = 'GLOBAL';
 
 export const MARKET_CODES = Object.keys(MARKETS) as MarketCode[];
 
@@ -162,7 +184,7 @@ export const getMarket = (code?: string | null): Market =>
 
 /**
  * Derive a market from a locale tag such as `ar-AE`. Returns undefined when the
- * tag carries no region or the region is not a Nashr market — callers should
+ * tag carries no region or the region is not a configured market — callers should
  * then fall back to the organisation's configured market, not guess.
  */
 export const marketFromLocale = (locale?: string | null): Market | undefined => {

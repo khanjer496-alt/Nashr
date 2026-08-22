@@ -6,8 +6,8 @@ import {
 } from './numerals';
 
 
-/** Billing/display currency when nothing else is known. */
-export const DEFAULT_CURRENCY: CurrencyCode = 'AED';
+/** Neutral billing/display currency when nothing else is known. */
+export const DEFAULT_CURRENCY: CurrencyCode = 'USD';
 
 /**
  * Minor-unit counts. `Intl` already knows these, so this table is only for
@@ -28,7 +28,7 @@ export const CURRENCY_MINOR_UNITS: Record<CurrencyCode, number> = {
 };
 
 export interface FormatCurrencyOptions {
-  /** BCP-47 tag, e.g. `ar-AE`. Defaults to `en-AE`. */
+  /** BCP-47 tag, e.g. `ar-AE`. Defaults to `en-US`. */
   locale?: string;
   currency?: CurrencyCode;
   /** `symbol` -> "AED 1,200.00", `code` -> "AED 1,200.00", `name` -> "1,200.00 UAE dirhams". */
@@ -40,7 +40,7 @@ export interface FormatCurrencyOptions {
 }
 
 /**
- * Format a major-unit amount (1200.5 = AED 1,200.50).
+ * Format a major-unit amount (1200.5 = $1,200.50 by default).
  *
  * Arabic locales are pinned to Western digits by default; pass
  * `numerals: 'arab'` for Arabic-Indic. Currency placement, the
@@ -53,7 +53,7 @@ export const formatCurrency = (
   options: FormatCurrencyOptions = {}
 ): string => {
   const {
-    locale = 'en-AE',
+    locale = 'en-US',
     currency = DEFAULT_CURRENCY,
     display = 'symbol',
     trimZeroDecimals = false,
@@ -79,7 +79,7 @@ export const formatCurrency = (
   }
 };
 
-/** Format an integer minor-unit amount (120050 -> "AED 1,200.50"). */
+/** Format an integer minor-unit amount (120050 -> "$1,200.50" by default). */
 export const formatCurrencyMinor = (
   minorAmount: number,
   options: FormatCurrencyOptions = {}
@@ -92,7 +92,7 @@ export const formatCurrencyMinor = (
 /** Plain number formatting with the same Arabic numeral policy. */
 export const formatNumber = (
   value: number,
-  locale = 'en-AE',
+  locale = 'en-US',
   options: Intl.NumberFormatOptions = {},
   numerals: NumeralSystem = DEFAULT_NUMERAL_SYSTEM
 ): string => {
@@ -109,7 +109,7 @@ export const formatNumber = (
 /** Compact counts for analytics tiles: 12300 -> "12K" / "١٢ ألف". */
 export const formatCompactNumber = (
   value: number,
-  locale = 'en-AE',
+  locale = 'en-US',
   numerals: NumeralSystem = DEFAULT_NUMERAL_SYSTEM
 ): string =>
   formatNumber(
