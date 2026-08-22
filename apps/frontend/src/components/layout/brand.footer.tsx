@@ -32,6 +32,10 @@ export const BrandFooter = () => {
         Licences
       </Link>
       <span aria-hidden="true">·</span>
+      <Link className="hover:text-newTextColor" href={brand.sourceUrl}>
+        Proudly open source
+      </Link>
+      <span aria-hidden="true">·</span>
       <Link className="hover:text-newTextColor" href={brand.licensesUrl}>
         {brand.upstream.attribution}
       </Link>

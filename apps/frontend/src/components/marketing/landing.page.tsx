@@ -45,7 +45,7 @@ const interfaces = [
 ] as const;
 
 const faqs = [
-  ['Is Orbiloom open source?', `Yes. ${brand.upstream.attribution}, and Orbiloom is distributed under ${brand.upstream.license}.`],
+  ['How do I get started?', 'Create a workspace, connect your channels and invite your team. You can add agent and developer interfaces whenever the workflow needs them.'],
   ['Is this only for AI agents?', 'No. People get a complete publishing workspace. Agents and applications use first-class interfaces to the same governed system.'],
   ['Does Orbiloom support Arabic?', 'Yes. Arabic, RTL layouts, bilingual workflows, regional dialect support and Hijri campaign planning remain deep localization capabilities.'],
   ['Can agents publish without review?', 'Generated work starts as a draft unless a workspace explicitly enables autonomous publishing and the central approval policy permits it.'],
@@ -59,7 +59,7 @@ export function LandingPage() {
         <div className={styles.heroCopy}>
           <div className={styles.eyebrow}>
             <span className={styles.liveDot} />
-            OPEN SOURCE · AGENT-READY
+            AGENT-READY PUBLISHING
           </div>
           <h1>{brand.heroLine}</h1>
           <p className={styles.heroDescriptor}>{brand.tagline}.</p>
@@ -161,37 +161,13 @@ export function LandingPage() {
         </div>
       </section>
 
-      <section className={`${styles.section} ${styles.openSection}`} id="open-source">
-        <div>
-          <span className={styles.monoLabel}>OPEN AT THE FOUNDATION</span>
-          <h2>Built on Postiz.<br />Open to inspect.</h2>
-        </div>
-        <div>
-          <p>
-            Orbiloom keeps Postiz as the underlying engine and is distributed
-            under AGPL-3.0. Run it, study it and build on a publishing system
-            whose source is visible.
-          </p>
-          <div className={styles.inlineActions}>
-            <Link href={brand.sourceUrl}>View source ↗</Link>
-            <Link href={brand.licensesUrl}>Licences and attribution →</Link>
-          </div>
-        </div>
-      </section>
-
       <section className={`${styles.section} ${styles.pricingSection}`} id="pricing">
         <div className={styles.sectionHeadingCompact}>
           <span className={styles.monoLabel}>START YOUR WAY</span>
-          <h2>Open source now.<br />Cloud plans next.</h2>
-          <p>No invented launch price. Self-host from the public source today, or start a workspace while managed cloud plans are finalized.</p>
+          <h2>Start now.<br />Scale with clarity.</h2>
+          <p>Create your workspace today. Final public plans will be published before billing is enabled.</p>
         </div>
         <div className={styles.pricingCards}>
-          <article>
-            <span className={styles.cardNumber}>SELF-HOST</span>
-            <h3>Run the source</h3>
-            <p>Deploy the AGPL application on infrastructure you control.</p>
-            <Link href={brand.sourceUrl}>Open repository ↗</Link>
-          </article>
           <article className={styles.pricingFeatured}>
             <span className={styles.cardNumber}>MANAGED CLOUD</span>
             <h3>Start with Orbiloom</h3>

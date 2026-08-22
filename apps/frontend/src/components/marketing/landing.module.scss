@@ -103,8 +103,7 @@
   line-height: 1.7;
 }
 
-.heroActions,
-.inlineActions {
+.heroActions {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -345,7 +344,6 @@
 .sectionHeadingCompact h2,
 .interfaceCopy h2,
 .localeCopy h2,
-.openSection h2,
 .finalCta h2 {
   font-size: clamp(48px, 6.4vw, 88px);
   font-weight: 700;
@@ -357,7 +355,6 @@
 .sectionHeadingCompact p,
 .interfaceCopy > p,
 .localeCopy > p,
-.openSection p,
 .finalCta p {
   color: var(--steel);
   font-size: 17px;
@@ -445,13 +442,7 @@
 .localeCopy li { display: flex; align-items: center; gap: 12px; }
 .localeCopy li::before { width: 7px; height: 7px; border-radius: 50%; background: var(--lime); content: ''; }
 
-.openSection { display: grid; grid-template-columns: 1.15fr .85fr; gap: 100px; width: 100%; padding-inline: max(24px, calc((100vw - 1240px) / 2)); border-top: 1px solid var(--path); border-bottom: 1px solid var(--path); background: linear-gradient(110deg, rgba(115, 87, 255, .18), transparent 55%); }
-.openSection h2 { margin-top: 22px; }
-.openSection > div:last-child { align-self: end; }
-.inlineActions { justify-content: flex-start; margin-top: 28px; }
-.inlineActions a { color: var(--lime); font-size: 13px; font-weight: 700; }
-
-.pricingCards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.pricingCards { display: grid; grid-template-columns: 1fr; max-width: 800px; }
 .pricingCards article { min-height: 350px; padding: 32px; border: 1px solid var(--path); border-radius: 24px; background: var(--space); }
 .pricingCards h3 { margin-top: 100px; font-size: 34px; letter-spacing: -.04em; }
 .pricingCards p { max-width: 470px; min-height: 72px; margin-top: 16px; color: var(--steel); line-height: 1.6; }
@@ -495,7 +486,6 @@
   .sectionHeading,
   .interfaceSection,
   .localizationSection,
-  .openSection,
   .faqSection { grid-template-columns: 1fr; }
   .sectionHeading { align-items: start; gap: 22px; }
   .audienceGrid { grid-template-columns: 1fr; }
@@ -508,7 +498,6 @@
   .interfaceCopy { padding-inline-end: 0; }
   .interfaceList { margin-top: 64px; }
   .localizationSection { gap: 58px; }
-  .openSection { gap: 48px; }
   .faqSection { gap: 20px; }
 }
 
@@ -531,14 +520,12 @@
   .sectionHeadingCompact h2,
   .interfaceCopy h2,
   .localeCopy h2,
-  .openSection h2,
   .finalCta h2 { font-size: 47px; }
   .capabilityGrid,
   .pricingCards { grid-template-columns: 1fr; }
   .capabilityCard,
   .capabilityWide { min-height: 240px; }
-  .interfaceSection,
-  .openSection { padding-inline: 18px; }
+  .interfaceSection { padding-inline: 18px; }
   .localeVisual { min-height: 420px; padding: 30px; border-radius: 24px; }
   .localeVisual strong { margin-top: 90px; font-size: 47px; }
   .localeChips { right: 30px; bottom: 30px; }

@@ -11,12 +11,6 @@ import { brand } from '@gitroom/nashr-brand/brand.config';
 export const PublicShell = ({ children }: { children: ReactNode }) => {
   return (
     <div className="flex flex-col min-h-screen w-full bg-[#080A0F] text-[#F7F7F2]">
-      <div className="min-h-[34px] px-[18px] flex items-center justify-center gap-[10px] text-center bg-[#C8FF4D] text-[#080A0F] font-mono text-[10px] sm:text-[11px] font-[700] tracking-[0.08em]">
-        ORBILOOM IS OPEN SOURCE
-        <Link className="underline underline-offset-2" href={brand.sourceUrl}>
-          VIEW SOURCE ↗
-        </Link>
-      </div>
       <header className="sticky top-0 z-[50] w-full border-b border-[#2A2F3B] bg-[#080A0F]/90 backdrop-blur-xl">
         <div className="relative w-full max-w-[1240px] mx-auto px-[20px] py-[14px] flex items-center justify-between gap-[16px]">
           <Link href="/" aria-label={brand.name}>
@@ -28,7 +22,6 @@ export const PublicShell = ({ children }: { children: ReactNode }) => {
             <Link className="hover:text-[#F7F7F2]" href="/#capabilities">Capabilities</Link>
             <Link className="hover:text-[#F7F7F2]" href="/#global">Global</Link>
             <Link className="hover:text-[#F7F7F2]" href="/#pricing">Pricing</Link>
-            <Link className="hover:text-[#F7F7F2]" href={brand.sourceUrl}>Open source</Link>
           </nav>
           <div className="hidden sm:flex items-center gap-[10px]">
             <Link href="/auth/login" className="min-h-[44px] px-[16px] flex items-center text-[13px] font-[700] text-[#F7F7F2]">
@@ -49,7 +42,6 @@ export const PublicShell = ({ children }: { children: ReactNode }) => {
                 ['Capabilities', '/#capabilities'],
                 ['Global', '/#global'],
                 ['Pricing', '/#pricing'],
-                ['Open source', brand.sourceUrl],
               ].map(([label, href]) => (
                 <Link key={label} href={href} className="min-h-[44px] flex items-center rounded-[12px] px-[14px] text-[14px] font-[600] hover:bg-[#191D27]">
                   {label}

@@ -20,8 +20,20 @@ describe('public product copy', () => {
     expect(landing).toMatch(/CLI/);
     expect(landing).toMatch(/Arabic/);
     expect(landing).toMatch(/RTL/);
-    expect(landing).toMatch(/Postiz/);
     expect(landing).not.toMatch(/\$\d+|\d+[,+] users|trusted by \d+/i);
+  });
+
+  it('keeps open-source positioning quiet and confined to the footer', () => {
+    const landing = read(
+      'apps/frontend/src/components/marketing/landing.page.tsx'
+    );
+    const shell = read('apps/frontend/src/components/layout/public.shell.tsx');
+    const footer = read('apps/frontend/src/components/layout/brand.footer.tsx');
+
+    expect(landing).not.toMatch(/open source|Postiz|AGPL|self-host/i);
+    expect(shell).not.toMatch(/open source/i);
+    expect(footer).toContain('Proudly open source');
+    expect(footer).toContain('brand.sourceUrl');
   });
 
   it('presents a global product with first-class interfaces', () => {
