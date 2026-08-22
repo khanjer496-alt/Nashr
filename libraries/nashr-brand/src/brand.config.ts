@@ -128,10 +128,9 @@ export interface Brand {
 const legalEntityName = env(process.env.NEXT_PUBLIC_BRAND_LEGAL_NAME, '');
 
 /**
- * MENA-oriented palette: a deep Gulf teal as the primary action colour with a
- * warm copper accent and a restrained gold for decorative detail. Both the
- * primary and the accent clear 4.5:1 against white text, so they are safe for
- * filled buttons in the dark theme the app ships with.
+ * Accessible high-contrast palette used by the temporary Nashr identity.
+ * Both primary and accent colors clear 4.5:1 against white text, so they are
+ * safe for filled buttons in the dark theme the app ships with.
  */
 const colors: BrandColors = {
   primary: '#0E7C74',
@@ -166,12 +165,12 @@ export const brand: Brand = {
     isConfigured: legalEntityName.length > 0,
   },
 
-  tagline: 'Social media management for the Middle East',
-  taglineAr: 'إدارة وسائل التواصل الاجتماعي لمنطقة الشرق الأوسط',
+  tagline: 'Social publishing infrastructure for humans and AI agents',
+  taglineAr: 'بنية تحتية للنشر الاجتماعي للبشر ووكلاء الذكاء الاصطناعي',
   description:
-    'Plan, approve and publish social content across every channel — in Arabic and English, on Gulf time.',
+    'Plan, approve, automate and publish social content across every channel from one workspace.',
   descriptionAr:
-    'خطّط للمحتوى واعتمده وانشره على جميع القنوات — بالعربية والإنجليزية، وبتوقيت الخليج.',
+    'خطّط للمحتوى واعتمده وأتمته وانشره عبر جميع القنوات من مساحة عمل واحدة.',
 
   appUrl,
   domain,
@@ -196,7 +195,7 @@ export const brand: Brand = {
 
   defaultLocale: 'en',
   locales: ['en', 'ar'],
-  defaultTimezone: 'Asia/Dubai',
+  defaultTimezone: 'UTC',
 
   colors,
 
