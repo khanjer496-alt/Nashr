@@ -17,6 +17,12 @@ jobs:
   analyze:
     name: Analyze (${{ matrix.language }})
 
+    # GitHub only accepts CodeQL results from private repositories when GitHub
+    # Code Security/Advanced Security is enabled. Keep the inherited upstream
+    # scan active for public mirrors without turning a missing paid entitlement
+    # into a permanently failing check on private forks.
+    if: github.event.repository.private == false
+
     runs-on: 'ubuntu-latest'
     permissions:
       # Explicit job permissions default every omitted permission to `none`.
