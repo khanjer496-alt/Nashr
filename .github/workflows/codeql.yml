@@ -21,6 +21,7 @@ jobs:
     permissions:
       # Explicit job permissions default every omitted permission to `none`.
       # Private-repository checkout therefore needs this grant.
+      actions: read
       contents: read
       security-events: write
 
