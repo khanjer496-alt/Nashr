@@ -52,7 +52,7 @@ export default defineConfig<LocaleOptions>({
   use: {
     baseURL: BASE_URL,
     // Deterministic captures: freeze the clock-adjacent bits we can.
-    timezoneId: process.env.E2E_TZ || 'Asia/Dubai',
+    timezoneId: process.env.E2E_TZ || 'UTC',
     colorScheme: 'dark',
     deviceScaleFactor: 1,
     trace: 'retain-on-failure',

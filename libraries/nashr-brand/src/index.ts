@@ -6,7 +6,7 @@
  *
  * Note: the `@gitroom/*` scope is kept deliberately. Renaming the internal
  * import scope would conflict with every future upstream Postiz merge, so
- * Nashr libraries live under the same scope. See MENA_CUSTOMIZATIONS.md.
+ * Nashr libraries live under the same scope. See FORK_CUSTOMIZATIONS.md.
  */
 export * from './brand.config';
 export { brand as default } from './brand.config';

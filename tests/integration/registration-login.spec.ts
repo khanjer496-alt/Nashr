@@ -415,7 +415,7 @@ describe('logout', () => {
   });
 
   /**
-   * PINNED UPSTREAM TRAP (already recorded in MENA_CUSTOMIZATIONS.md): the
+   * PINNED UPSTREAM TRAP (already recorded in FORK_CUSTOMIZATIONS.md): the
    * code tests `!process.env.NOT_SECURED`, so the STRING "false" is truthy and
    * setting NOT_SECURED=false ENABLES the insecure path. Any guard must reject
    * the variable's PRESENCE, not its value.

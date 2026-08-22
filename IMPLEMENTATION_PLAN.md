@@ -15,7 +15,7 @@ Nothing in Phases 2–8 begins until Phase 1 is approved.
 3. **AGPL preserved.** `LICENSE`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, `CONTRIBUTING.md`,
    `ICLA.md`, `CCLA.md` stay untouched. Attribution added, never removed.
 4. **No secrets in git.** Everything through env vars; `.env.example` carries placeholders only.
-5. **Nothing deleted without a documented reason** in `MENA_CUSTOMIZATIONS.md`.
+5. **Nothing deleted without a documented reason** in `FORK_CUSTOMIZATIONS.md`.
 
 ## Repository and branching strategy
 
@@ -52,10 +52,10 @@ Upstream sync: `git fetch upstream && git merge upstream/main` on a dedicated
 | 2.10 | Design tokens: MENA-oriented palette, spacing, radii — clean and fast, agency-appropriate | `apps/frontend/tailwind.config.cjs`, `globals.css` |
 | 2.11 | **New pages:** `/about`, `/terms`, `/privacy`, `/licenses` (the last generated from `pnpm licenses list`) | new routes |
 | 2.12 | Footer attribution: "Built on Postiz, AGPL-3.0" + source-offer link | frontend layout |
-| 2.13 | Start `MENA_CUSTOMIZATIONS.md` | root |
+| 2.13 | Start `FORK_CUSTOMIZATIONS.md` | root |
 
 **Not renamed (deliberate):** `@gitroom/*` imports, Prisma model names, DB table names,
-internal env var names. Rationale recorded in `MENA_CUSTOMIZATIONS.md`.
+internal env var names. Rationale recorded in `FORK_CUSTOMIZATIONS.md`.
 
 **Exit:** `grep -ril postiz apps/frontend/src apps/backend/src libraries/*/src` returns only
 attribution strings and the upstream licence notice.

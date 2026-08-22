@@ -343,7 +343,7 @@ pinned by regression tests in `tests/integration/tenant-isolation.spec.ts`.
 | `NashrBrandProfile.autonomousPublishing` / `.clientApprovalRequired` are never read | `autonomy.policy.ts` | The DB columns exist but the gate resolves both from environment variables only, so a per-brand setting is **silently ignored**. Both directions fail closed (safe), so this is a correctness/UX defect, not a hole. Wiring them up is a deliberate behaviour change. |
 | Rate limiting covers only `POST /public/v1/posts` | `throttler.provider.ts` | Everything else — the rest of the public API and the entire authenticated API — is unlimited (RISK-S6). Widening it would start returning 429 on paths that have never been limited; that needs a decision, not a test run. |
 | `API_LIMIT` set to a non-numeric value becomes `NaN` and disables limiting | `app.module.ts` | Footgun pinned by a test. Validate it in the preflight guard. |
-| `NOT_SECURED=false` **enables** the insecure path | `auth.middleware.ts`, `users.controller.ts` | Known upstream trap, already recorded in `MENA_CUSTOMIZATIONS.md`. Guards must reject the variable's *presence*, not its value. Pinned by a test. |
+| `NOT_SECURED=false` **enables** the insecure path | `auth.middleware.ts`, `users.controller.ts` | Known upstream trap, already recorded in `FORK_CUSTOMIZATIONS.md`. Guards must reject the variable's *presence*, not its value. Pinned by a test. |
 
 ---
 

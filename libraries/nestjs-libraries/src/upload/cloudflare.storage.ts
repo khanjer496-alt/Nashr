@@ -1,4 +1,8 @@
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import {
+  DeleteObjectCommand,
+  PutObjectCommand,
+  S3Client,
+} from '@aws-sdk/client-s3';
 import 'multer';
 import { makeId } from '@gitroom/nestjs-libraries/services/make.is';
 import mime from 'mime-types';
@@ -38,6 +42,18 @@ class CloudflareStorage implements IUploadProvider {
     private _bucketName: string,
     private _uploadUrl: string
   ) {
+    if (process.env.NODE_ENV === 'production') {
+      const publicUrl = new URL(_uploadUrl);
+      if (
+        publicUrl.protocol !== 'https:' ||
+        publicUrl.hostname.endsWith('.r2.dev')
+      ) {
+        throw new Error(
+          'Production R2 media requires an HTTPS custom domain; r2.dev is development-only.'
+        );
+      }
+    }
+
     this._client = new S3Client({
       endpoint: `https://${accountID}.r2.cloudflarestorage.com`,
       region,
@@ -128,7 +144,6 @@ class CloudflareStorage implements IUploadProvider {
       // Create the PutObjectCommand to upload the file to Cloudflare R2
       const command = new PutObjectCommand({
         Bucket: this._bucketName,
-        ACL: 'public-read',
         Key: `${id}.${extension}`,
         Body: file.buffer,
         ContentType: safeContentType,
@@ -143,8 +158,8 @@ class CloudflareStorage implements IUploadProvider {
         buffer: file.buffer,
         originalname: `${id}.${extension}`,
         fieldname: 'file',
-        path: `${this._uploadUrl}/${id}.${extension}`,
-        destination: `${this._uploadUrl}/${id}.${extension}`,
+        path: `${this._uploadUrl.replace(/\/+$/, '')}/${id}.${extension}`,
+        destination: `${this._uploadUrl.replace(/\/+$/, '')}/${id}.${extension}`,
         encoding: '7bit',
         stream: file.buffer as any,
       };
@@ -154,14 +169,31 @@ class CloudflareStorage implements IUploadProvider {
     }
   }
 
-  // Implement the removeFile method from IUploadProvider
   async removeFile(filePath: string): Promise<void> {
-    // const fileName = filePath.split('/').pop(); // Extract the filename from the path
-    // const command = new DeleteObjectCommand({
-    //   Bucket: this._bucketName,
-    //   Key: fileName,
-    // });
-    // await this._client.send(command);
+    const mediaOrigin = new URL(this._uploadUrl);
+    const target = new URL(filePath);
+    if (target.origin !== mediaOrigin.origin) {
+      throw new Error('File is outside the configured R2 media origin.');
+    }
+
+    const basePath = decodeURIComponent(mediaOrigin.pathname).replace(
+      /^\/+|\/+$/g,
+      ''
+    );
+    const targetPath = decodeURIComponent(target.pathname).replace(/^\/+/, '');
+    const expectedPrefix = basePath ? `${basePath}/` : '';
+    if (expectedPrefix && !targetPath.startsWith(expectedPrefix)) {
+      throw new Error('File is outside the configured R2 media origin.');
+    }
+
+    const key = targetPath.slice(expectedPrefix.length);
+    if (!key || key.endsWith('/')) {
+      throw new Error('R2 object key is missing.');
+    }
+
+    await this._client.send(
+      new DeleteObjectCommand({ Bucket: this._bucketName, Key: key })
+    );
   }
 }
 

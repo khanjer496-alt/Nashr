@@ -1,11 +1,19 @@
 # FEATURES.md — Nashr (نشر)
 
+> **Global-first direction — 2026-08-22.** Nashr is the temporary name for
+> social publishing infrastructure for humans and AI agents. The existing
+> Postiz web product remains the engine. Capabilities below now fall into six
+> product groups: publishing core, human collaboration, programmable
+> interfaces, agent workflows, optional localization, and operations. API,
+> MCP, SDK, CLI, agent and R2 items must retain their explicit shipped/planned
+> status; this inventory does not turn roadmap work into a production claim.
+
 **Phase 8 deliverable.** What Nashr does today, and — with equal prominence —
 what it does not. Compiled 2026-08-08 against
 `claude/mena-saas-postiz-conversion-7el9fk`.
 
 Base: [Postiz](https://github.com/gitroomhq/postiz-app) v1.47.0 (AGPL-3.0).
-See [`MENA_CUSTOMIZATIONS.md`](MENA_CUSTOMIZATIONS.md) for the full change log
+See [`FORK_CUSTOMIZATIONS.md`](FORK_CUSTOMIZATIONS.md) for the full change log
 and [`OPEN_SOURCE_COMPLIANCE.md`](OPEN_SOURCE_COMPLIANCE.md) for licensing.
 
 > **Status of every claim below.** Features marked ✅ exist in the source and
@@ -31,7 +39,7 @@ scraping, no headless browser, and no password storage for any social account �
 verified across all provider files during the Phase 1 audit
 (`AUDIT_REPORT.md` §5).
 
-### 1.1 The MENA-relevant subset (what a UAE business actually wants)
+### 1.1 Common launch channels
 
 | Platform | Provider | Analytics | Notes for the beta |
 |---|---|---|---|
@@ -140,7 +148,7 @@ Six roles — `OWNER`, `ADMIN`, `EDITOR`, `APPROVER`, `CLIENT`, `VIEWER`
 (`schema.prisma:993`) — evaluated by `libraries/nashr-permissions` as a
 default-deny matrix over resources and actions. Role checks run **in addition
 to** upstream's subscription-tier checks, never replacing them, so endpoints
-without role metadata behave exactly as before (`MENA_CUSTOMIZATIONS.md`).
+without role metadata behave exactly as before (`FORK_CUSTOMIZATIONS.md`).
 
 `CLIENT` members are scoped to a single brand through
 `UserOrganization.nashrCustomerId` — without that link the CLIENT_APPROVAL
@@ -386,7 +394,7 @@ yield live credentials for every customer's social accounts.
   `gpt-5.2`; the code says `gpt-4.1`
   (`libraries/nashr-agents/src/nashr-agents.service.ts:58`). Harmless but fix
   it before an operator trusts the comment.
-- **Two upstream bugs found, not fixed** (tracked in `MENA_CUSTOMIZATIONS.md`):
+- **Two upstream bugs found, not fixed** (tracked in `FORK_CUSTOMIZATIONS.md`):
   `mastodon.custom.provider.ts:52` passes 5 args to a 4-arg function; the root
   `jest.config.ts` is broken upstream for every project.
 

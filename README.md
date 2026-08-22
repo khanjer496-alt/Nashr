@@ -1,3 +1,29 @@
+# Nashr (temporary working name)
+
+**Social publishing infrastructure for humans and AI agents.**
+
+Nashr is a global-first publishing platform built as a maintained fork of
+[Postiz](https://github.com/gitroomhq/postiz-app). It keeps the complete web
+product and is extending the same engine through first-class API, MCP, SDK and
+CLI interfaces. The API, MCP and SDK foundations exist today; CLI and deeper
+agent parity are approved follow-up work and are not represented as complete.
+
+Arabic, right-to-left layouts, bilingual approvals, dialect-aware content, and
+Hijri/Ramadan/Eid planning remain strong optional localization capabilities.
+They do not change the neutral English, UTC and USD product defaults.
+
+This repository is distributed under the [AGPL-3.0 license](LICENSE), preserves
+Postiz attribution, and must expose the exact deployed source to network users.
+See the [approved product direction](docs/superpowers/specs/2026-08-22-global-first-postiz-direction-design.md),
+the [fork maintenance ledger](FORK_CUSTOMIZATIONS.md), and
+[launch readiness](LAUNCH_READINESS.md).
+
+> The product is still using the Nashr name and assets until a permanent global
+> name is selected. Links below belong to upstream Postiz and are retained for
+> technical reference; they are not registration links for a hosted Nashr service.
+
+## Upstream Postiz reference material
+
 <p align="center">
   <a href="https://postiz.com/" target="_blank">
   <picture>

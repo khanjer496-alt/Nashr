@@ -413,7 +413,7 @@ ship upstream branding).
 - **MENA campaign templates** (Ramadan, Eid, UAE National Day, Saudi National Day) + sample content
 - **The entire test suite** — 0 tests exist today
 - Production ops: migrations baseline, backups, log rotation, HTTPS, staging/prod split
-- The 5 Phase-6 documents + `MENA_CUSTOMIZATIONS.md`
+- The 5 Phase-6 documents + `FORK_CUSTOMIZATIONS.md`
 
 ### E. Should be postponed (explicitly out of MVP)
 - WhatsApp Business integration, CRM, payment automation, mobile apps

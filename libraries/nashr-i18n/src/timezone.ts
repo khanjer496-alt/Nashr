@@ -18,10 +18,10 @@ dayjs.extend(utc);
 dayjs.extend(timezonePlugin);
 
 /**
- * Product-wide default timezone. Nashr launches in the UAE, so an org that has
- * never picked a timezone schedules in Gulf Standard Time rather than UTC.
+ * Product-wide neutral timezone. Explicit organization, user, locale, or
+ * market settings take precedence over this fallback.
  */
-export const DEFAULT_TIMEZONE = 'Asia/Dubai';
+export const DEFAULT_TIMEZONE = 'UTC';
 
 export const MARKET_TIMEZONES: Record<MarketCode, string> = MARKET_CODES.reduce(
   (acc, code) => {
@@ -31,7 +31,7 @@ export const MARKET_TIMEZONES: Record<MarketCode, string> = MARKET_CODES.reduce(
   {} as Record<MarketCode, string>
 );
 
-/** Timezone for a market code (`'AE'`), falling back to the launch market. */
+/** Timezone for a market code (`'AE'`), falling back to the global default. */
 export const timezoneForMarket = (market?: string | null): string =>
   getMarket(market).timezone;
 
@@ -43,7 +43,7 @@ export const timezoneForMarket = (market?: string | null): string =>
 export const timezoneForLocale = (locale?: string | null): string =>
   marketFromLocale(locale)?.timezone ?? DEFAULT_TIMEZONE;
 
-/** The viewer's own IANA timezone, or the Nashr default if unavailable. */
+/** The viewer's own IANA timezone, or the global default if unavailable. */
 export const detectBrowserTimezone = (): string => {
   try {
     return Intl.DateTimeFormat().resolvedOptions().timeZone || DEFAULT_TIMEZONE;
@@ -100,7 +100,7 @@ export const timezoneLabel = (
   }
 };
 
-/** Markets ordered for a timezone picker, launch market first. */
+/** Markets ordered for a timezone picker, neutral global option first. */
 export const marketTimezoneOptions = (locale = 'en') =>
   [DEFAULT_MARKET, ...MARKET_CODES.filter((c) => c !== DEFAULT_MARKET)].map(
     (code) => {

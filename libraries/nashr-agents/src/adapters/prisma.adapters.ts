@@ -288,7 +288,7 @@ export class IntegrationAnalyticsPort implements AnalyticsPort {
  *
  * `scheduleDrafts` is intentionally NOT implemented here. Publishing in Nashr
  * is gated on a `NashrPostApproval` row at stage APPROVED, enforced in the
- * Temporal publish activity (MENA_CUSTOMIZATIONS.md). Wiring scheduling from
+ * Temporal publish activity (FORK_CUSTOMIZATIONS.md). Wiring scheduling from
  * this library before `libraries/nashr-approval` lands would create a second
  * path to the queue that does not traverse that chokepoint. It therefore fails
  * closed with NOT_CONFIGURED until the approval library exposes a scheduling

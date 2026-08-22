@@ -1,8 +1,16 @@
 # DEPLOYMENT.md — Nashr (نشر)
 
-Production deployment of Nashr, a MENA social media management SaaS derived from
-[Postiz](https://github.com/gitroomhq/postiz-app) v1.47.0 (AGPL-3.0). Target
-market UAE; first launch is a closed beta of 5–10 businesses.
+Production deployment of Nashr, the temporary name for a global social
+publishing platform derived from
+[Postiz](https://github.com/gitroomhq/postiz-app) v1.47.0 (AGPL-3.0). The first
+launch is a controlled global beta.
+
+**Approved production topology:** run the Postiz application services,
+PostgreSQL, Redis and Temporal on a conventional Docker host. Put Cloudflare in
+front for DNS, CDN, WAF and TLS, and use Cloudflare R2 for media and encrypted
+database backups. This is deliberately not a Cloudflare Workers-only rewrite:
+the stateful Node.js and Temporal stack stays on the topology it was designed
+for, while Cloudflare provides the edge and object storage.
 
 Read alongside:
 [`SECURITY_CHECKLIST.md`](SECURITY_CHECKLIST.md) ·
@@ -11,7 +19,8 @@ Read alongside:
 [`AUDIT_REPORT.md`](AUDIT_REPORT.md) · [`RISK_REGISTER.md`](RISK_REGISTER.md)
 
 Throughout, `nashr.example` is a placeholder. Every real hostname comes from
-`NASHR_DOMAIN` in your env file.
+`NASHR_DOMAIN` in your env file. In production the public DNS record is proxied
+through Cloudflare and the origin accepts Cloudflare traffic over HTTPS.
 
 ---
 
@@ -134,6 +143,10 @@ before doing it in production.
 - An SMTP account or a Resend API key
 - A Cloudflare R2 bucket for backups, and a second one for media if you use
   `STORAGE_PROVIDER=cloudflare`
+- An HTTPS custom domain connected directly to the media bucket. Cloudflare's
+  `r2.dev` endpoint is development-only and the production app rejects it.
+- A bucket-scoped Object Read & Write R2 API token. R2 object ACLs are not
+  supported; public delivery is controlled at the bucket custom domain.
 
 **Repository note.** `.gitmodules` declares a submodule at
 `libraries/plugins/src/list/public-api`. Clone with `--recurse-submodules` or
@@ -600,7 +613,7 @@ git checkout -b sync/upstream-v1.48.0
 git merge v1.48.0
 ```
 
-Expect conflicts in the files listed in `MENA_CUSTOMIZATIONS.md`. Guidance that
+Expect conflicts in the files listed in `FORK_CUSTOMIZATIONS.md`. Guidance that
 keeps merges cheap:
 
 - Never rename the `@gitroom/*` package scope.

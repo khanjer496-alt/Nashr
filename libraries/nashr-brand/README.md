@@ -2,6 +2,12 @@
 
 Single source of truth for Nashr (نشر) brand strings, URLs and design tokens.
 
+Nashr is the temporary working name for a global-first social publishing
+platform. Product defaults are neutral; Arabic, RTL and regional workflows are
+localization layers available to the teams that need them. Once a permanent
+name is selected, update this module instead of scattering new literals across
+the application.
+
 Consumed by `apps/frontend`, `apps/backend` and `libraries/nestjs-libraries` via the
 TypeScript path alias `@gitroom/nashr-brand/*` (see `tsconfig.base.json`).
 
@@ -35,4 +41,5 @@ No secrets belong in this file — it is bundled into the browser.
 ## Attribution
 
 Nashr is built on [Postiz](https://github.com/gitroomhq/postiz-app) and distributed under
-the AGPL-3.0. `brand.upstream` carries that attribution; do not remove it.
+the AGPL-3.0. `brand.upstream` carries that attribution; neither it nor the live
+deployment's source offer may be removed during a future rebrand.

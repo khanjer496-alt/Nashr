@@ -16,41 +16,59 @@ export default async function Page() {
     <LegalPage title={`About ${brand.name}`} subtitle={brand.tagline}>
       <Section heading="What Nashr is">
         <p>
-          {brand.name} ({brand.nameAr} — Arabic for &ldquo;publishing&rdquo;) is a
-          social media management platform built for teams working in the Middle
-          East. Plan a content calendar, route posts through internal review and
-          client approval, schedule across every connected channel, and measure
-          what happened afterwards — from one workspace.
+          <strong>
+            Social publishing infrastructure for humans and AI agents.
+          </strong>{' '}
+          {brand.name} ({brand.nameAr} — Arabic for &ldquo;publishing&rdquo;) gives
+          creators, teams and agencies a complete workspace to plan a content
+          calendar, review and approve posts, publish across connected channels,
+          and measure what happened afterwards.
         </p>
         <p>
-          It is designed for the people who actually run the accounts:
-          restaurants and hospitality groups, marketing agencies managing several
-          client brands, salons and clinics, and small businesses that publish
-          themselves.
+          The browser product remains the complete control surface. The same
+          publishing engine is being opened through programmable interfaces so
+          software and trusted agents can participate under the same permissions,
+          approvals and audit trail as people.
         </p>
       </Section>
 
-      <Section heading="Built for the region">
+      <Section heading="One publishing system, every interface">
         <ul className="list-disc ps-[22px] flex flex-col gap-[6px]">
           <li>
-            <strong>Arabic and English, side by side.</strong> The interface runs
-            right-to-left or left-to-right, and a single workspace can publish in
-            both languages.
+            <strong>Web.</strong> The complete product for planning, approvals,
+            publishing, analytics and administration.
           </li>
           <li>
-            <strong>Gulf time by default.</strong> Scheduling assumes{' '}
-            {brand.defaultTimezone} unless a workspace says otherwise, so
-            &ldquo;9am&rdquo; means 9am where your audience is.
+            <strong>API, MCP and SDK.</strong> First-class integration surfaces
+            for products and AI agents, built around the same publishing model.
           </li>
           <li>
-            <strong>Agency-shaped.</strong> Multiple client brands, separate
-            channel sets, and an approval step before anything goes out.
+            <strong>CLI.</strong> A command-line interface is being completed for
+            automation, scripting and terminal-native workflows.
           </li>
         </ul>
-        <p className="text-textItemBlur text-[14px]">
-          Initial market: the United Arab Emirates, expanding across Saudi
-          Arabia, Kuwait, Qatar, Bahrain, Oman, Egypt and Jordan.
-        </p>
+      </Section>
+
+      <Section heading="Global by default, local when it matters">
+        <ul className="list-disc ps-[22px] flex flex-col gap-[6px]">
+          <li>
+            <strong>Arabic and bilingual publishing.</strong> The interface
+            supports right-to-left (RTL) layouts, and one workspace can plan,
+            approve and publish Arabic and English content side by side.
+          </li>
+          <li>
+            <strong>Regional voice.</strong> Dialect-aware content tools help
+            teams adapt a message without making one region the product default.
+          </li>
+          <li>
+            <strong>Calendars that understand context.</strong> Optional Hijri,
+            Ramadan and Eid planning layers sit alongside global scheduling.
+          </li>
+          <li>
+            <strong>Agency-shaped collaboration.</strong> Multiple client brands,
+            separate channel sets and approvals before anything goes out.
+          </li>
+        </ul>
       </Section>
 
       <Section heading="Open source">

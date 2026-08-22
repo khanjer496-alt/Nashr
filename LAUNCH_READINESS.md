@@ -1,5 +1,12 @@
 # LAUNCH_READINESS.md — Nashr (نشر)
 
+> **Global-first pivot — 2026-08-22.** The approved direction is documented in
+> [`docs/superpowers/specs/2026-08-22-global-first-postiz-direction-design.md`](docs/superpowers/specs/2026-08-22-global-first-postiz-direction-design.md).
+> Earlier regional verification remains useful engineering evidence, but it is
+> not approval to launch under the new global scope. Production now requires
+> the approved Docker origin plus Cloudflare edge and R2 topology, global
+> onboarding/pricing, and end-to-end validation of the public deployment.
+
 **Phase 8 master document.** Compiled 2026-08-08 against
 `claude/mena-saas-postiz-conversion-7el9fk`.
 Base: [Postiz](https://github.com/gitroomhq/postiz-app) v1.47.0, AGPL-3.0.
@@ -81,7 +88,7 @@ Items 3 and 4 are the ones a beta customer is silently trusting you with. Item
 
 | Area | State | Evidence |
 |---|---|---|
-| **Architecture and code** | 🟢 Built | Backend, frontend and orchestrator all build clean (`MENA_CUSTOMIZATIONS.md`) |
+| **Architecture and code** | 🟢 Built | Backend, frontend and orchestrator all build clean (`FORK_CUSTOMIZATIONS.md`) |
 | **Rebrand** | 🟡 One defect left | `libraries/nashr-brand` is the single source; 234 "Postiz" occurrences in locale **values** reduced to **16** — one per base locale, all the same FAQ string (§4.2) |
 | **Approval workflow** | 🟢 Built, untested live | Gate in `postSocialInternal` — the chokepoint every `CreationMethod` traverses |
 | **RBAC** | 🟢 Built | 6 roles, default-deny, additive to tier gating |
@@ -104,7 +111,7 @@ Items 3 and 4 are the ones a beta customer is silently trusting you with. Item
 ## 3. What was actually built — Phases 1–7
 
 Summarised so the verdict above is read in proportion. Full record:
-[`MENA_CUSTOMIZATIONS.md`](MENA_CUSTOMIZATIONS.md).
+[`FORK_CUSTOMIZATIONS.md`](FORK_CUSTOMIZATIONS.md).
 
 - **Phase 1 — Audit.** 484-line read-only audit of Postiz v1.47.0, a 251-line
   plan, a 28-entry risk register. The audit later **corrected itself** (§21) on
@@ -146,7 +153,7 @@ owns it.
 ### 4.1 🔴 Nothing has ever been deployed
 
 No image built, no container started, no `caddy validate`, no ACME certificate,
-no migration applied to a live database. `MENA_CUSTOMIZATIONS.md` states this
+no migration applied to a live database. `FORK_CUSTOMIZATIONS.md` states this
 plainly: *"Not verified — no Docker daemon in this environment."*
 
 Everything downstream — TLS, health checks, backups, publishing, RTL rendering —
@@ -386,7 +393,7 @@ Not engineering questions. Nothing below can be resolved from the repository.
 Earlier phases: [`AUDIT_REPORT.md`](AUDIT_REPORT.md) ·
 [`IMPLEMENTATION_PLAN.md`](IMPLEMENTATION_PLAN.md) ·
 [`RISK_REGISTER.md`](RISK_REGISTER.md) ·
-[`MENA_CUSTOMIZATIONS.md`](MENA_CUSTOMIZATIONS.md) ·
+[`FORK_CUSTOMIZATIONS.md`](FORK_CUSTOMIZATIONS.md) ·
 [`DEPLOYMENT.md`](DEPLOYMENT.md) ·
 [`BACKUP_AND_RECOVERY.md`](BACKUP_AND_RECOVERY.md) ·
 [`SECURITY_CHECKLIST.md`](SECURITY_CHECKLIST.md) ·

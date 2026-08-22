@@ -22,7 +22,7 @@ export const baseLanguages = [
 ];
 
 /**
- * Nashr MENA regional locales.
+ * Optional regional locale overlays.
  *
  * These are *thin overlays*: their `translation.json` only carries the strings
  * that genuinely differ per market (currency wording, national-day naming,
