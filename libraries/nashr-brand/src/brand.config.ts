@@ -219,7 +219,7 @@ export const brand: Brand = {
 
   /**
    * Upstream attribution. Required by the AGPL-3.0 and by
-   * MENA_CUSTOMIZATIONS.md — do not remove.
+   * FORK_CUSTOMIZATIONS.md — do not remove.
    */
   upstream: {
     name: 'Postiz',

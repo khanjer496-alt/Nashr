@@ -4,7 +4,7 @@
 `v1.47.0`, **AGPL-3.0**. Compiled 2026-08-08.
 
 Read alongside [`SECURITY_CHECKLIST.md`](SECURITY_CHECKLIST.md) §8,
-[`MENA_CUSTOMIZATIONS.md`](MENA_CUSTOMIZATIONS.md) → *Licence compliance*,
+[`FORK_CUSTOMIZATIONS.md`](FORK_CUSTOMIZATIONS.md) → *Licence compliance*,
 [`RISK_REGISTER.md`](RISK_REGISTER.md) → RISK-L1…L5, and
 [`DEPLOYMENT.md`](DEPLOYMENT.md) §9.
 
@@ -39,7 +39,7 @@ violation, not a bug.
 | Root manifest declaration | `"license": "AGPL-3.0"` | `package.json` |
 | Nashr's own licence | AGPL-3.0 (a derivative must be) | §6 |
 | Direct runtime dependencies inventoried | **213** | `grep -c '{ name:' apps/frontend/src/components/legal/dependencies.ts` |
-| Upstream commits retained | 2 781 | `MENA_CUSTOMIZATIONS.md` |
+| Upstream commits retained | 2 781 | `FORK_CUSTOMIZATIONS.md` |
 
 Nashr is a **derivative work**. It is not an independent program that merely
 talks to Postiz; it modifies Postiz's own source tree (Prisma schema, Temporal
@@ -59,7 +59,7 @@ Four obligations, in the order they bite.
   `CONTRIBUTING.md`, `ICLA.md`, `CCLA.md`.
 - Copyright notices in source files are preserved, never rewritten.
 - Modified files must carry "prominent notices stating that you modified it and
-  the date". `MENA_CUSTOMIZATIONS.md` is the project-level record of this;
+  the date". `FORK_CUSTOMIZATIONS.md` is the project-level record of this;
   individual Nashr edits inside upstream files are marked inline
   (e.g. `// ── Nashr (نشر) addition — approval gate ──` in
   `apps/orchestrator/src/activities/post.activity.ts:28`).
@@ -243,7 +243,7 @@ grep -ril postiz apps/frontend/src apps/backend/src libraries/*/src | wc -l   # 
 
 Those 49 are attribution strings, translation **key slugs**, and the upstream
 import scope — plus the one FAQ **value** in §3.3, which is the only
-customer-visible offender and is a launch blocker. `MENA_CUSTOMIZATIONS.md`
+customer-visible offender and is a launch blocker. `FORK_CUSTOMIZATIONS.md`
 records the deliberate decision not to rename `@gitroom/*` (≈900 files, breaks
 every future upstream merge, zero customer benefit).
 
@@ -379,7 +379,7 @@ Either is defensible. Silence is not. **Owner/lawyer decision.**
 
 The Nashr libraries (`libraries/nashr-*`) deliberately ship **no**
 `package.json` at all — no library in this repo has one, and adding one breaks
-`pnpm install --frozen-lockfile` in CI (`MENA_CUSTOMIZATIONS.md`). They are
+`pnpm install --frozen-lockfile` in CI (`FORK_CUSTOMIZATIONS.md`). They are
 covered by the root declaration.
 
 ---
@@ -447,7 +447,7 @@ looked plausible.
 - [ ] Re-run the §3.3 locale check (a translation run can reintroduce it).
 - [ ] Re-run `wc -l LICENSE` → 661.
 - [ ] If dependencies changed, regenerate `dependencies.ts`.
-- [ ] After each monthly upstream merge, re-read `MENA_CUSTOMIZATIONS.md` for
+- [ ] After each monthly upstream merge, re-read `FORK_CUSTOMIZATIONS.md` for
       new upstream files that need attribution notices.
 
 ---

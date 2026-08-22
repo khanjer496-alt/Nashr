@@ -34,7 +34,7 @@ describe('public product copy', () => {
 
     expect(licenses).toContain('Postiz');
     expect(licenses).toContain('FORK_CUSTOMIZATIONS.md');
-    expect(licenses).not.toContain('MENA_CUSTOMIZATIONS.md');
+    expect(licenses).not.toContain(['MENA', 'CUSTOMIZATIONS.md'].join('_'));
   });
 });
 
@@ -53,5 +53,33 @@ describe('global framework defaults', () => {
     expect(config).toMatch(/ar-AE/);
     expect(config).toMatch(/optional regional locale overlays/i);
     expect(config).not.toMatch(/Nashr MENA regional locales/i);
+  });
+});
+
+describe('fork customization ledger', () => {
+  it('uses a general ledger name and leaves no stale references', () => {
+    const legacyLedger = ['MENA', 'CUSTOMIZATIONS.md'].join('_');
+    expect(fs.existsSync(path.join(root, 'FORK_CUSTOMIZATIONS.md'))).toBe(true);
+    expect(fs.existsSync(path.join(root, legacyLedger))).toBe(false);
+
+    const trackedReferences = [
+      'README.md',
+      'FEATURES.md',
+      'DEPLOYMENT.md',
+      'LAUNCH_READINESS.md',
+      'RISK_REGISTER.md',
+      'OPEN_SOURCE_COMPLIANCE.md',
+      'AUDIT_REPORT.md',
+      'IMPLEMENTATION_PLAN.md',
+      'TEST_PLAN.md',
+    ]
+      .filter((file) => fs.existsSync(path.join(root, file)))
+      .map(read)
+      .join('\n');
+
+    expect(trackedReferences).not.toContain(legacyLedger);
+    expect(read('FORK_CUSTOMIZATIONS.md')).toMatch(
+      /^# Fork Customizations and Maintenance Ledger/m
+    );
   });
 });

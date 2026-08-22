@@ -985,7 +985,7 @@ model Announcement {
 // ─────────────────────────────────────────────────────────────────────────────
 // Nashr (نشر) — MENA additions.
 // Namespaced `Nashr*` so upstream Postiz models are never shadowed and
-// `git merge upstream/main` stays clean. See MENA_CUSTOMIZATIONS.md.
+// `git merge upstream/main` stays clean. See FORK_CUSTOMIZATIONS.md.
 // ─────────────────────────────────────────────────────────────────────────────
 
 /// Roles enforced by Nashr's permission matrix. Upstream `Role`

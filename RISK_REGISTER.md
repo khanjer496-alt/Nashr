@@ -33,7 +33,7 @@ An aggressive find-and-replace could remove the AGPL notice, `LICENSE`, or copyr
 ### RISK-L4 🟡 Sub-package licence metadata inconsistency — Score 6 (L3 × I2)
 4 sub-package manifests declare `"license": "ISC"` while root declares `AGPL-3.0`.
 Upstream sloppiness, but it could be read as a licence misrepresentation in our fork.
-**Mitigation:** document in `MENA_CUSTOMIZATIONS.md`; do not "correct" in a way that
+**Mitigation:** document in `FORK_CUSTOMIZATIONS.md`; do not "correct" in a way that
 weakens the AGPL claim. **Status:** Open.
 
 ### RISK-L5 🟡 Mastra licence unverified — Score 6 (L2 × I3)
@@ -68,7 +68,7 @@ The brief says remove enterprise/CRM complexity. Deleting `SocialMediaAgency`, `
 conflicts against upstream and violate brief item 10 (preserve upstream updates) and
 item 9 (no undocumented destructive changes).
 **Mitigation:** **hide in UI, keep in code and schema.** Feature-flag rather than delete.
-Every hidden feature documented in `MENA_CUSTOMIZATIONS.md`. **Status:** Mitigating by design.
+Every hidden feature documented in `FORK_CUSTOMIZATIONS.md`. **Status:** Mitigating by design.
 
 ### RISK-04 🟠 No backups configured — Score 12 (L3 × I4)
 No backup tooling exists in the repo. Losing the Postgres volume loses all customer content,
@@ -185,7 +185,7 @@ approval enforcement, auth — before breadth. **Status:** Open.
 Every edit to an upstream file is a future merge conflict. Postiz moves quickly.
 **Mitigation:** additive-first architecture; **never rename `@gitroom/*`**; brand values
 centralised in one module; monthly `sync/upstream-<version>` branches; conflict-prone
-files listed in `MENA_CUSTOMIZATIONS.md`. **Status:** Mitigating by design.
+files listed in `FORK_CUSTOMIZATIONS.md`. **Status:** Mitigating by design.
 
 ### RISK-D3 🟠 Compose pulls the upstream branded image — Score 9 (L3 × I3)
 `docker-compose.yaml` uses `ghcr.io/gitroomhq/postiz-app:latest`. Deploying that ships

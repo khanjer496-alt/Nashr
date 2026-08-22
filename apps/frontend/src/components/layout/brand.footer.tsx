@@ -7,7 +7,7 @@ import { brand } from '@gitroom/nashr-brand/brand.config';
  *
  * Carries the AGPL-3.0 §13 attribution and the entry point to the source-code
  * offer on `/licenses`. Do not remove the upstream attribution — it is a licence
- * obligation, not decoration. See MENA_CUSTOMIZATIONS.md § Licence compliance.
+ * obligation, not decoration. See FORK_CUSTOMIZATIONS.md § Licence compliance.
  *
  * No hooks and no server-only imports, so it renders from both server layouts
  * and client layouts.

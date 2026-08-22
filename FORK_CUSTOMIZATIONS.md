@@ -1,7 +1,10 @@
-# MENA_CUSTOMIZATIONS.md
+# Fork Customizations and Maintenance Ledger
 
-Living record of every modification Nashr (نشر) makes to upstream
-[Postiz](https://github.com/gitroomhq/postiz-app). Required by the project brief (item 4).
+Living record of every modification this product makes to upstream
+[Postiz](https://github.com/gitroomhq/postiz-app). Historical entries document
+the original regional build; work from 2026-08-22 onward follows the approved
+global-first direction while preserving those regional capabilities as optional
+localization layers.
 
 **Upstream base:** `gitroomhq/postiz-app` @ `v1.47.0`
 **Upstream licence:** AGPL-3.0 — preserved in full, see [Licence compliance](#licence-compliance)
@@ -73,6 +76,22 @@ LICENSE  SECURITY.md  CODE_OF_CONDUCT.md  CONTRIBUTING.md  ICLA.md  CCLA.md
 
 ## Change log
 
+### 2026-08-22 — Global product baseline
+
+**Changed**
+
+| Area | Change and rationale |
+|---|---|
+| Product positioning | The primary promise is now “Social publishing infrastructure for humans and AI agents,” serving creators, teams and agencies globally. |
+| Default market | Added a neutral `GLOBAL` market; unspecified market, timezone and currency now resolve to `GLOBAL`, `UTC` and `USD`. Explicit regional choices retain their original behavior. |
+| Localization | Arabic, RTL, bilingual workflows, dialect support, Hijri, Ramadan/Eid and regional market overlays remain product strengths without defining the global default. |
+| Public pages | About and licensing copy now describe the global interface strategy and the maintained Postiz fork accurately. |
+| Maintenance record | Renamed this file from the legacy regional filename so future upstream rebases use a product-wide ledger. Historical details below remain intact. |
+
+**Affected source and tests:** `libraries/nashr-brand/`,
+`libraries/nashr-i18n/`, `libraries/react-shared-libraries/`, public About and
+Licenses pages, and the Playwright configuration.
+
 ### 2026-08-08 — Phase 1: Audit (no code changes)
 
 **Added**
@@ -81,7 +100,7 @@ LICENSE  SECURITY.md  CODE_OF_CONDUCT.md  CONTRIBUTING.md  ICLA.md  CCLA.md
 | `AUDIT_REPORT.md` | Full read-only audit of Postiz v1.47.0 |
 | `IMPLEMENTATION_PLAN.md` | Phased plan, Phases 2–8 |
 | `RISK_REGISTER.md` | 27 scored risks |
-| `MENA_CUSTOMIZATIONS.md` | This file |
+| `FORK_CUSTOMIZATIONS.md` | This file |
 
 **Modified:** none. **Removed:** none.
 

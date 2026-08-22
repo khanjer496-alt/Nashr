@@ -600,7 +600,7 @@ git checkout -b sync/upstream-v1.48.0
 git merge v1.48.0
 ```
 
-Expect conflicts in the files listed in `MENA_CUSTOMIZATIONS.md`. Guidance that
+Expect conflicts in the files listed in `FORK_CUSTOMIZATIONS.md`. Guidance that
 keeps merges cheap:
 
 - Never rename the `@gitroom/*` package scope.
