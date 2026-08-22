@@ -143,6 +143,10 @@ before doing it in production.
 - An SMTP account or a Resend API key
 - A Cloudflare R2 bucket for backups, and a second one for media if you use
   `STORAGE_PROVIDER=cloudflare`
+- An HTTPS custom domain connected directly to the media bucket. Cloudflare's
+  `r2.dev` endpoint is development-only and the production app rejects it.
+- A bucket-scoped Object Read & Write R2 API token. R2 object ACLs are not
+  supported; public delivery is controlled at the bucket custom domain.
 
 **Repository note.** `.gitmodules` declares a submodule at
 `libraries/plugins/src/list/public-api`. Clone with `--recurse-submodules` or
