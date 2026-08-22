@@ -23,8 +23,10 @@ interviews, support conversations and performance data.
 
 ### Name
 
-**Orbiloom**  
-Pronunciation: **OR-bee-loom**  
+**Orbiloom**
+
+Pronunciation: **OR-bee-loom**
+
 Arabic companion: **أوربيلوم**
 
 Orbiloom combines *orbit* and *loom*: one system weaving people, agents,
@@ -328,8 +330,10 @@ Avoid `Learn more` when a more specific destination exists.
 
 Use **capability → operational proof → outcome**:
 
-> Approval flows  
-> Route human and agent drafts through the same policy before they publish.  
+> Approval flows
+>
+> Route human and agent drafts through the same policy before they publish.
+>
 > Move quickly without losing accountability.
 
 ### Error pattern
