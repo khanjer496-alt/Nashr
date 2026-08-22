@@ -1,12 +1,15 @@
 # nashr-brand
 
-Single source of truth for Nashr (نشر) brand strings, URLs and design tokens.
+Single source of truth for Orbiloom brand strings, URLs and design tokens.
 
-Nashr is the temporary working name for a global-first social publishing
-platform. Product defaults are neutral; Arabic, RTL and regional workflows are
-localization layers available to the teams that need them. Once a permanent
-name is selected, update this module instead of scattering new literals across
-the application.
+Orbiloom is a global social publishing platform for humans and AI agents.
+Product defaults are neutral; Arabic, RTL and regional workflows are
+localization layers available to the teams that need them.
+
+The directory and TypeScript alias retain the historical `nashr-brand` name to
+avoid an unnecessary internal migration and noisy upstream conflicts. That
+internal path is not customer-facing. New product copy must come from this
+module instead of scattering brand literals across the application.
 
 Consumed by `apps/frontend`, `apps/backend` and `libraries/nestjs-libraries` via the
 TypeScript path alias `@gitroom/nashr-brand/*` (see `tsconfig.base.json`).
@@ -26,13 +29,13 @@ All are optional; every one has an empty-safe fallback so the app boots unconfig
 
 | Variable | Fallback | Purpose |
 |---|---|---|
-| `NEXT_PUBLIC_APP_URL` | `https://nashr.example` | Public origin. **Placeholder** — never commit a real domain. |
+| `NEXT_PUBLIC_APP_URL` | `https://orbiloom.example` | Public origin. **Placeholder** — never commit a real domain. |
 | `NEXT_PUBLIC_SUPPORT_EMAIL` | `support@<domain>` | Support contact shown in-app and in legal pages. |
 | `NEXT_PUBLIC_PRIVACY_EMAIL` | `privacy@<domain>` | Data-protection contact. |
 | `NEXT_PUBLIC_BRAND_LEGAL_NAME` | *(empty)* | Registered legal entity. Empty ⇒ legal pages render a "needs review" placeholder. |
 | `NEXT_PUBLIC_BRAND_JURISDICTION` | *(empty)* | e.g. `Dubai, United Arab Emirates`. |
 | `NEXT_PUBLIC_BRAND_GOVERNING_LAW` | *(empty)* | Governing-law clause text. |
-| `NEXT_PUBLIC_SOURCE_URL` | upstream Postiz repo | AGPL-3.0 §13 Corresponding Source offer. |
+| `NEXT_PUBLIC_SOURCE_URL` | public Orbiloom source repo | AGPL-3.0 §13 Corresponding Source offer. |
 | `NEXT_PUBLIC_DOCS_URL` | *(empty)* | Documentation site. |
 | `NEXT_PUBLIC_SOCIAL_X` / `_INSTAGRAM` / `_LINKEDIN` / `_TIKTOK` / `_YOUTUBE` | *(empty)* | Social profiles; empty entries are not rendered. |
 
@@ -40,6 +43,6 @@ No secrets belong in this file — it is bundled into the browser.
 
 ## Attribution
 
-Nashr is built on [Postiz](https://github.com/gitroomhq/postiz-app) and distributed under
+Orbiloom is built on [Postiz](https://github.com/gitroomhq/postiz-app) and distributed under
 the AGPL-3.0. `brand.upstream` carries that attribution; neither it nor the live
 deployment's source offer may be removed during a future rebrand.

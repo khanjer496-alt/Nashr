@@ -1,5 +1,5 @@
 /**
- * Nashr (نشر) — centralised brand configuration.
+ * Orbiloom — centralised customer-facing brand configuration.
  *
  * This module is the SINGLE SOURCE OF TRUTH for every customer-facing brand
  * string, colour token and URL. Nothing in `apps/*` or `libraries/*` should
@@ -16,7 +16,7 @@
  * - Every value has an empty-safe fallback so the app boots without any brand
  *   environment variables configured.
  *
- * Nashr is built on Postiz (https://github.com/gitroomhq/postiz-app) and is
+ * Orbiloom is built on Postiz (https://github.com/gitroomhq/postiz-app) and is
  * distributed under the AGPL-3.0. See `brand.upstream` and `/licenses`.
  */
 
@@ -27,7 +27,7 @@ const env = (value: string | undefined, fallback: string): string =>
  * Placeholder domain. The real domain is supplied through `NEXT_PUBLIC_APP_URL`.
  * Never replace this with a live domain — it is the documented fallback only.
  */
-export const FALLBACK_APP_URL = 'https://nashr.example';
+export const FALLBACK_APP_URL = 'https://orbiloom.example';
 
 const appUrl = env(process.env.NEXT_PUBLIC_APP_URL, FALLBACK_APP_URL);
 
@@ -35,7 +35,7 @@ const domain = (() => {
   try {
     return new URL(appUrl).host;
   } catch {
-    return 'nashr.example';
+    return 'orbiloom.example';
   }
 })();
 
@@ -96,6 +96,10 @@ export interface Brand {
   readonly legal: BrandLegal;
   readonly tagline: string;
   readonly taglineAr: string;
+  readonly heroLine: string;
+  readonly heroLineAr: string;
+  readonly campaignLine: string;
+  readonly campaignLineAr: string;
   readonly description: string;
   readonly descriptionAr: string;
   readonly appUrl: string;
@@ -128,36 +132,35 @@ export interface Brand {
 const legalEntityName = env(process.env.NEXT_PUBLIC_BRAND_LEGAL_NAME, '');
 
 /**
- * Accessible high-contrast palette used by the temporary Nashr identity.
- * Both primary and accent colors clear 4.5:1 against white text, so they are
- * safe for filled buttons in the dark theme the app ships with.
+ * Orbiloom's orbital editorial palette. Signal Lime is an attention accent,
+ * not body text on light surfaces. Filled buttons use Cloud on Orbit Violet.
  */
 const colors: BrandColors = {
-  primary: '#0E7C74',
-  primaryHover: '#0B655E',
-  primarySoft: '#14A79B',
-  accent: '#B4552D',
-  accentHover: '#96431F',
-  gold: '#C8912F',
-  ink: '#0E0E0E',
-  surface: '#1A1919',
-  surfaceRaised: '#212020',
-  border: '#2B2B2B',
-  textPrimary: '#FFFFFF',
-  textMuted: '#9C9C9C',
-  success: '#2E9E6B',
-  warning: '#D99A2B',
-  danger: '#D6453D',
-  info: '#2F80ED',
+  primary: '#7357FF',
+  primaryHover: '#6043F2',
+  primarySoft: '#8D78FF',
+  accent: '#C8FF4D',
+  accentHover: '#B4EA35',
+  gold: '#FF5F74',
+  ink: '#080A0F',
+  surface: '#11141C',
+  surfaceRaised: '#191D27',
+  border: '#2A2F3B',
+  textPrimary: '#F7F7F2',
+  textMuted: '#9299AA',
+  success: '#72DCA4',
+  warning: '#F4BF50',
+  danger: '#FF5F74',
+  info: '#64B5FF',
 };
 
 export const brand: Brand = {
-  name: 'Nashr',
-  nameAr: 'نشر',
-  nameLower: 'nashr',
+  name: 'Orbiloom',
+  nameAr: 'أوربيلوم',
+  nameLower: 'orbiloom',
 
   /** Display name used in legal copy — falls back to the product name. */
-  legalName: legalEntityName || 'Nashr',
+  legalName: legalEntityName || 'Orbiloom',
   legal: {
     entityName: legalEntityName,
     jurisdiction: env(process.env.NEXT_PUBLIC_BRAND_JURISDICTION, ''),
@@ -167,6 +170,10 @@ export const brand: Brand = {
 
   tagline: 'Social publishing infrastructure for humans and AI agents',
   taglineAr: 'بنية تحتية للنشر الاجتماعي للبشر ووكلاء الذكاء الاصطناعي',
+  heroLine: 'Put every channel in motion.',
+  heroLineAr: 'حرّك كل قناة في مسار واحد.',
+  campaignLine: 'Every channel. One intelligent orbit.',
+  campaignLineAr: 'كل قناة. مدار ذكي واحد.',
   description:
     'Plan, approve, automate and publish social content across every channel from one workspace.',
   descriptionAr:
@@ -189,7 +196,7 @@ export const brand: Brand = {
    */
   sourceUrl: env(
     process.env.NEXT_PUBLIC_SOURCE_URL,
-    'https://github.com/gitroomhq/postiz-app'
+    'https://github.com/khanjer496-alt/Nashr'
   ),
   docsUrl: env(process.env.NEXT_PUBLIC_DOCS_URL, ''),
 
@@ -200,13 +207,13 @@ export const brand: Brand = {
   colors,
 
   logo: {
-    mark: '/nashr-mark.svg',
-    wordmark: '/nashr-logo.svg',
-    wordmarkAr: '/nashr-logo-ar.svg',
+    mark: '/orbiloom-mark.svg',
+    wordmark: '/orbiloom-logo.svg',
+    wordmarkAr: '/orbiloom-logo-ar.svg',
     favicon: '/favicon.svg',
     faviconIco: '/favicon.ico',
     appleTouchIcon: '/apple-touch-icon.png',
-    ogImage: '/nashr-og.png',
+    ogImage: '/orbiloom-og.svg',
   },
 
   social: {
