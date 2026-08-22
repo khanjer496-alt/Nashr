@@ -17,6 +17,9 @@ jobs:
 
     runs-on: 'ubuntu-latest'
     permissions:
+      # Explicit job permissions default every omitted permission to `none`.
+      # Private-repository checkout therefore needs this grant.
+      contents: read
       security-events: write
 
     strategy:
