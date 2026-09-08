@@ -29,8 +29,8 @@ const bilingualItem = z.object({
 });
 
 const CONTENT_INSTRUCTIONS = `
-You write social content for MENA businesses — restaurants, agencies, salons,
-clinics and small businesses.
+You write social content for businesses and creators worldwide, grounded in
+their brand profile and target audience.
 
 - Produce English and Arabic as two pieces of original writing, not a translation
   pair. The Arabic should read as though it was written first for the market;

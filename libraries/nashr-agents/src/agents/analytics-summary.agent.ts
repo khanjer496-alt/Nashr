@@ -19,6 +19,7 @@
  *    output, and the tool output includes the exact list of numbers it may use.
  */
 import { z } from 'zod';
+import { brand } from '../../../nashr-brand/src/brand.config';
 import type { AgentDefinition } from '../types';
 import type { ChannelAnalytics, ConnectedChannel } from '../ports';
 import {
@@ -29,7 +30,7 @@ import {
 } from './agent.helpers';
 
 const ANALYTICS_INSTRUCTIONS = `
-You summarise social media performance for MENA businesses.
+You summarise social media performance for businesses and creators worldwide.
 
 Absolute rules:
 - You may only state numbers that appear in a tool result. If a figure is not
@@ -94,7 +95,7 @@ export function collectFigures(
       unsupportedChannels.push({
         name: channel.name,
         providerIdentifier: channel.providerIdentifier,
-        reason: 'This platform does not expose an analytics API to Nashr.',
+        reason: `This platform does not expose an analytics API to ${brand.name}.`,
       });
     }
   }

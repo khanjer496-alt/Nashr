@@ -25,8 +25,8 @@ const interfaces = [
 
 const faqs = [
   ['How do I get started?', 'Create a workspace, connect your channels and invite your team. Agent and developer interfaces use the same workspace when you need them.'],
-  ['Is Orbiloom only for AI agents?', 'No. It is a complete social publishing workspace for people, with first-class interfaces for software and trusted agents.'],
-  ['Which social channels can I connect?', 'Orbiloom supports major social platforms. Availability depends on each network’s current API and account requirements.'],
+  [`Is ${brand.name} only for AI agents?`, 'No. It is a complete social publishing workspace for people, with first-class interfaces for software and trusted agents.'],
+  ['Which social channels can I connect?', `${brand.name} supports major social platforms. Availability depends on each network’s current API and account requirements.`],
   ['Can agents publish without review?', 'Agent work begins as a draft unless your workspace explicitly permits autonomous publishing under its approval policy.'],
 ] as const;
 
@@ -59,7 +59,7 @@ export function LandingPage() {
       <section className={styles.section} id="for-teams">
         <div className={styles.centerHeading}>
           <span className={styles.monoLabel}>MADE FOR THE WHOLE WORKFLOW</span>
-          <h2>Who is Orbiloom for?</h2>
+          <h2>Who is {brand.name} for?</h2>
           <p>One publishing system for the people and software moving your brand forward.</p>
         </div>
         <div className={styles.audienceGrid}>
@@ -76,11 +76,11 @@ export function LandingPage() {
       <section className={`${styles.section} ${styles.actionSection}`} id="in-action">
         <div className={styles.centerHeading}>
           <span className={styles.monoLabel}>THE PRODUCT, NOT THE PROMISE</span>
-          <h2>See Orbiloom in action</h2>
+          <h2>See {brand.name} in action</h2>
           <p>From a rough idea to an approved, scheduled post in one continuous flow.</p>
         </div>
         <div className={styles.actionStage}>
-          <div className={styles.actionTopbar}><span>ORBIT / CAMPAIGN CALENDAR</span><div><i /><i /><i /></div></div>
+          <div className={styles.actionTopbar}><span>{brand.name.toUpperCase()} / CAMPAIGN CALENDAR</span><div><i /><i /><i /></div></div>
           <div className={styles.actionLayout}>
             <aside><strong>August</strong><span className={styles.activeNav}>Calendar</span><span>Drafts</span><span>Approvals</span><span>Analytics</span></aside>
             <div className={styles.calendarMock}>
@@ -102,12 +102,12 @@ export function LandingPage() {
           <article className={`${styles.featurePanel} ${styles.aiPanel}`}>
             <span className={styles.panelLabel}>AI COPILOT</span><h3>Turn a brief into channel-ready drafts.</h3>
             <p>Generate options, adapt tone and request approval without leaving the composer.</p>
-            <div className={styles.chatMock}><div><span>YOU</span><p>Turn the launch brief into a concise LinkedIn post.</p></div><div><span>ORBILOOM</span><p>Draft ready. I kept the product claim precise and added one clear CTA.</p></div></div>
+            <div className={styles.chatMock}><div><span>YOU</span><p>Turn the launch brief into a concise LinkedIn post.</p></div><div><span>{brand.name.toUpperCase()}</span><p>Draft ready. I kept the product claim precise and added one clear CTA.</p></div></div>
           </article>
           <article className={`${styles.featurePanel} ${styles.schedulePanel}`}>
             <span className={styles.panelLabel}>SMART SCHEDULING</span><h3>Publish at the right moment.</h3>
             <p>Coordinate timing across channels while every post stays attached to its campaign.</p>
-            <div className={styles.postMock}><div className={styles.postAvatar}>O</div><div><strong>Orbiloom</strong><span>LinkedIn · Tomorrow 09:30</span></div><p>One campaign. Every channel in motion.</p><div className={styles.postMedia}>READY TO PUBLISH</div></div>
+            <div className={styles.postMock}><div className={styles.postAvatar}>{brand.name[0]}</div><div><strong>{brand.name}</strong><span>LinkedIn · Tomorrow 09:30</span></div><p>One campaign. Every channel in motion.</p><div className={styles.postMedia}>READY TO PUBLISH</div></div>
           </article>
           <article className={styles.miniFeature}><span>01</span><h3>Calendar</h3><p>See every campaign, draft and scheduled post.</p></article>
           <article className={styles.miniFeature}><span>02</span><h3>Approvals</h3><p>Review human and agent work under one policy.</p></article>
@@ -120,7 +120,7 @@ export function LandingPage() {
         <div className={styles.interfaceCopy}>
           <span className={styles.monoLabel}>FIRST-CLASS INTERFACES</span><h2>Web for people.<br />Tools for agents.</h2>
           <p>{brand.campaignLine} Use the interface that fits the work without creating a second publishing system.</p>
-          <div className={styles.codeBlock}><div><span>$</span> orbiloom draft create --channels x,linkedin</div><div className={styles.codeResponse}>→ draft created · approval requested</div></div>
+          <div className={styles.codeBlock}><div><span>$</span> {brand.nameLower} draft create --channels x,linkedin</div><div className={styles.codeResponse}>→ draft created · approval requested</div></div>
         </div>
         <div className={styles.interfaceList}>
           {interfaces.map(([name, status, body]) => <article key={name}><div><h3>{name}</h3><span className={status === 'In progress' ? styles.statusProgress : styles.statusLive}>{status}</span></div><p>{body}</p></article>)}
@@ -128,8 +128,8 @@ export function LandingPage() {
       </section>
 
       <section className={`${styles.section} ${styles.pricingSection}`} id="pricing">
-        <div className={styles.centerHeading}><span className={styles.monoLabel}>START WITHOUT THE GUESSWORK</span><h2>Build your publishing orbit.</h2><p>Create your workspace today. Public plans will be published before billing begins.</p></div>
-        <div className={styles.pricingCard}><span className={styles.panelLabel}>MANAGED CLOUD</span><h3>Start with Orbiloom</h3><p>One workspace for your team, channels and trusted agents.</p><Link href="/auth">Start free ↗</Link></div>
+        <div className={styles.centerHeading}><span className={styles.monoLabel}>START WITHOUT THE GUESSWORK</span><h2>Build your publishing workflow.</h2><p>Create your workspace today. Public plans will be published before billing begins.</p></div>
+        <div className={styles.pricingCard}><span className={styles.panelLabel}>MANAGED CLOUD</span><h3>Start with {brand.name}</h3><p>One workspace for your team, channels and trusted agents.</p><Link href="/auth">Start free ↗</Link></div>
       </section>
 
       <section className={`${styles.section} ${styles.faqSection}`} id="faq">
@@ -139,7 +139,7 @@ export function LandingPage() {
 
       <section className={styles.finalCta}>
         <span className={styles.monoLabel}>YOUR NEXT SIGNAL</span><h2>{brand.heroLine}</h2>
-        <p>Bring your team, channels and trusted agents into one intelligent orbit.</p>
+        <p>Bring your team, channels and trusted agents into one publishing workflow.</p>
         <Link className={styles.limeAction} href="/auth">Start free <span aria-hidden="true">↗</span></Link>
       </section>
     </div>

@@ -22,14 +22,14 @@ body {
 }
 
 [lang^='ar'] body {
-  font-family: var(--orbiloom-font-arabic), sans-serif;
+  font-family: var(--postdelegate-font-arabic), sans-serif;
 }
 
 code,
 pre,
 kbd,
 samp {
-  font-family: var(--orbiloom-font-mono), monospace;
+  font-family: var(--postdelegate-font-mono), monospace;
 }
 
 .box {
@@ -545,7 +545,7 @@ html[dir='rtl'] [dir='ltr'] {
   direction: rtl !important;
 }
 
-/* ─────────────────────────── Orbiloom: RTL + Arabic ────────────────────────
+/* ─────────────────────────── PostDelegate: RTL + Arabic ────────────────────────
    Canonical source for these rules is
    `libraries/nashr-i18n/src/typography.ts` (`arabicTypographyCss`), which is
    exported for consumers that do not build through this stylesheet (the
@@ -558,16 +558,9 @@ html[dir='rtl'] [dir='ltr'] {
      the sign has to flip with the document direction. */
   --nashr-center-x: -50%;
 
-  // `--nashr-font-arabic-loaded` is the self-hosted family injected by
-  // next/font in (app)/layout.tsx. It must come first: the named fallbacks
-  // below are only installed on some client machines, so without it Arabic
-  // rendered in a default system face.
-  // The fallback inside var() is load-bearing. next/font defines
-  // `--nashr-font-arabic-loaded` on <body>, not <html>, so at :root it is
-  // undefined -- and a custom property referencing an undefined var becomes
-  // "invalid at computed-value time", collapsing this whole stack to nothing.
-  --nashr-font-arabic: var(--nashr-font-arabic-loaded, 'IBM Plex Sans Arabic'),
-    'IBM Plex Sans Arabic', 'Noto Kufi Arabic',
+  // System fallbacks. Resolve the next/font family at the consuming element:
+  // --postdelegate-font-arabic is defined on <body>, not on :root.
+  --nashr-font-arabic: 'IBM Plex Sans Arabic', 'Noto Kufi Arabic',
     'Noto Sans Arabic', 'SF Arabic', 'Geeza Pro', 'Segoe UI', 'Dubai', Tahoma,
     sans-serif;
   --nashr-font-arabic-display: 'Noto Kufi Arabic', 'IBM Plex Sans Arabic',
@@ -585,7 +578,7 @@ html[dir='rtl'],
    specificity above that class so Arabic text actually gets the Arabic face. */
 html[dir='rtl'] body,
 html:lang(ar) body {
-  font-family: var(--nashr-font-arabic);
+  font-family: var(--postdelegate-font-arabic, var(--nashr-font-arabic));
   /* Arabic ascenders/descenders and optional diacritics clip at the 1.2–1.3
      line-height that suits Latin UI. */
   line-height: 1.7;
@@ -613,7 +606,7 @@ html[dir='rtl'] h1,
 html[dir='rtl'] h2,
 html[dir='rtl'] h3,
 html[dir='rtl'] h4 {
-  font-family: var(--nashr-font-arabic-display);
+  font-family: var(--postdelegate-font-arabic, var(--nashr-font-arabic-display));
   line-height: 1.4;
 }
 
@@ -653,7 +646,7 @@ html[dir='rtl'] .text-start-safe {
 html[dir='rtl'] .text-end-safe {
   text-align: end;
 }
-/* ───────────────────────── end Orbiloom: RTL + Arabic ───────────────────── */
+/* ───────────────────────── end PostDelegate: RTL + Arabic ───────────────────── */
 //
 .uppy-Dashboard-AddFiles {
   display: none !important;

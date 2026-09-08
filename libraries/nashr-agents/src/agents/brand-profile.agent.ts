@@ -14,6 +14,7 @@
  * claims silently changes every downstream generation.
  */
 import { z } from 'zod';
+import { brand } from '../../../nashr-brand/src/brand.config';
 import type { AgentDefinition } from '../types';
 import { parseProhibitedClaims } from '../grounding';
 import { notFound } from '../errors';
@@ -84,7 +85,7 @@ export function createBrandProfileAgent(deps: AgentFactoryDeps): AgentDefinition
     name: 'Brand Profile',
     nameAr: 'ملف العلامة التجارية',
     description:
-      'Reads and maintains the brand profile that grounds every other Nashr agent: tone, industry, market, audience, products, offers and prohibited claims.',
+      `Reads and maintains the brand profile that grounds every other ${brand.name} agent: tone, industry, market, audience, products, offers and prohibited claims.`,
     capabilities: ['brand.read', 'brand.write'],
     modelTier: 'fast',
     instructions: `
@@ -96,9 +97,9 @@ description current. You are the source every other agent reads from.
 - Prohibited claims deserve extra care. For clinics, salons and anything health
   or beauty adjacent, ask directly about claims the business must not make
   (guaranteed results, "cures", "no side effects", medical outcomes, comparative
-  superlatives). In the UAE and KSA these are advertising-regulated.
+  superlatives). Apply the brand's prohibited claims regardless of its market.
 - Explain that prohibited claims become hard constraints on every caption,
-  campaign and translation Nashr produces.
+  campaign and translation ${brand.name} produces.
 - You cannot save anything yourself. Saving produces a proposal for a person to
   approve; say so plainly instead of implying the change is already live.
 `.trim(),

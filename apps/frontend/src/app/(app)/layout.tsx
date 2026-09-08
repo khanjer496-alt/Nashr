@@ -69,7 +69,7 @@ const manrope = Manrope({
   subsets: ['latin'],
 });
 
-// Orbiloom: without this, no Arabic @font-face is ever shipped and Arabic glyphs
+// PostDelegate: without this, no Arabic @font-face is ever shipped and Arabic glyphs
 // fall back to whatever the client OS provides (verified in-browser: rasterised
 // by DejaVu Sans, isCustomFont=false) while Latin was correctly self-hosted.
 // next/font self-hosts at build time, so this adds no third-party request.
@@ -77,14 +77,14 @@ const plexArabic = IBM_Plex_Sans_Arabic({
   weight: ['400', '500', '600'],
   subsets: ['arabic'],
   display: 'swap',
-  variable: '--orbiloom-font-arabic',
+  variable: '--postdelegate-font-arabic',
 });
 
 const jetBrainsMono = JetBrains_Mono({
   weight: ['500', '600'],
   subsets: ['latin'],
   display: 'swap',
-  variable: '--orbiloom-font-mono',
+  variable: '--postdelegate-font-mono',
 });
 
 export default async function AppLayout({ children }: { children: ReactNode }) {

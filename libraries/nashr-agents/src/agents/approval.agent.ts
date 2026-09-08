@@ -20,12 +20,13 @@
  * This agent talks to it only through `ApprovalPort`.
  */
 import { z } from 'zod';
+import { brand } from '../../../nashr-brand/src/brand.config';
 import type { AgentDefinition, NashrToolContext } from '../types';
 import { forbidden, selfApprovalBlocked } from '../errors';
 import { AgentFactoryDeps, defineTool, detail } from './agent.helpers';
 
 const APPROVAL_INSTRUCTIONS = `
-You help move drafts through Nashr's approval workflow:
+You help move drafts through ${brand.name}'s approval workflow:
 Draft → Internal review → Client approval → Approved → Scheduled → Published.
 
 Hard rules:

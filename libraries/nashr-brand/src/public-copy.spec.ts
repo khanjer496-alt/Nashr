@@ -45,8 +45,8 @@ describe('public product copy', () => {
       : '';
 
     expect(landing).toContain('ProductPreview');
-    expect(landing).toContain('Who is Orbiloom for?');
-    expect(landing).toContain('See Orbiloom in action');
+    expect(landing).toContain('Who is {brand.name} for?');
+    expect(landing).toContain('See {brand.name} in action');
     expect(landing).toContain('Power your content with AI and automation');
     expect(fs.existsSync(path.join(root, previewPath))).toBe(true);
     expect(preview).toContain('Create a post');
@@ -77,7 +77,7 @@ describe('public product copy', () => {
     expect(about).toMatch(/Ramadan|Eid|Hijri/);
   });
 
-  it('contains no legacy customer-facing Nashr name', () => {
+  it('contains no legacy customer-facing product names', () => {
     const customerPages = [
       'apps/frontend/src/app/(app)/(site)/about/page.tsx',
       'apps/frontend/src/app/(app)/auth/layout.tsx',
@@ -88,6 +88,7 @@ describe('public product copy', () => {
       .join('\n');
 
     expect(customerPages).not.toMatch(/\bNashr\b/);
+    expect(customerPages).not.toMatch(/orbiloom|أوربيلوم/i);
     expect(customerPages).toContain('brand.name');
   });
 
