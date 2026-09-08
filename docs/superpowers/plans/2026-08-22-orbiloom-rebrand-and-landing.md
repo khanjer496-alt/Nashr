@@ -31,7 +31,7 @@
 - Modify: `libraries/nashr-brand/src/product-positioning.spec.ts`
 - Modify: `libraries/nashr-brand/src/public-copy.spec.ts`
 - Modify: `libraries/nashr-brand/README.md`
-- Create: `docs/brand/orbiloom-brand-bible.md`
+- Create: `docs/brand/orbiloom-brand-bible.md` (now maintained at [`docs/brand/postdelegate-brand-bible.md`](../../brand/postdelegate-brand-bible.md))
 
 **Interfaces:**
 - Consumes: approved name, messages, tokens and usage rules from the spec.

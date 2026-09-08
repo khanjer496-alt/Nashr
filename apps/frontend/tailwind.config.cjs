@@ -5,7 +5,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Orbiloom brand design tokens. Defined in src/app/colors.scss and mirrored
+        // PostDelegate brand design tokens. Defined in src/app/colors.scss and mirrored
         // from libraries/nashr-brand/src/brand.config.ts (`brand.colors`).
         brand: {
           DEFAULT: 'var(--brand-primary)',
@@ -138,7 +138,7 @@ module.exports = {
       },
       fontFamily: {
         sans: ['Manrope', 'sans-serif'],
-        mono: ['var(--orbiloom-font-mono)', 'monospace'],
+        mono: ['var(--postdelegate-font-mono)', 'monospace'],
       },
       animation: {
         fade: 'fadeOut 0.5s ease-in-out',

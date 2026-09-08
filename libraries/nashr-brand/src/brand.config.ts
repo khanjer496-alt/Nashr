@@ -1,5 +1,5 @@
 /**
- * Orbiloom — centralised customer-facing brand configuration.
+ * PostDelegate — centralised customer-facing brand configuration.
  *
  * This module is the SINGLE SOURCE OF TRUTH for every customer-facing brand
  * string, colour token and URL. Nothing in `apps/*` or `libraries/*` should
@@ -16,7 +16,7 @@
  * - Every value has an empty-safe fallback so the app boots without any brand
  *   environment variables configured.
  *
- * Orbiloom is built on Postiz (https://github.com/gitroomhq/postiz-app) and is
+ * PostDelegate is built on Postiz (https://github.com/gitroomhq/postiz-app) and is
  * distributed under the AGPL-3.0. See `brand.upstream` and `/licenses`.
  */
 
@@ -27,7 +27,7 @@ const env = (value: string | undefined, fallback: string): string =>
  * Placeholder domain. The real domain is supplied through `NEXT_PUBLIC_APP_URL`.
  * Never replace this with a live domain — it is the documented fallback only.
  */
-export const FALLBACK_APP_URL = 'https://orbiloom.example';
+export const FALLBACK_APP_URL = 'https://postdelegate.example';
 
 const appUrl = env(process.env.NEXT_PUBLIC_APP_URL, FALLBACK_APP_URL);
 
@@ -35,7 +35,7 @@ const domain = (() => {
   try {
     return new URL(appUrl).host;
   } catch {
-    return 'orbiloom.example';
+    return 'postdelegate.example';
   }
 })();
 
@@ -132,7 +132,7 @@ export interface Brand {
 const legalEntityName = env(process.env.NEXT_PUBLIC_BRAND_LEGAL_NAME, '');
 
 /**
- * Orbiloom's orbital editorial palette. Signal Lime is an attention accent,
+ * PostDelegate's orbital editorial palette. Signal Lime is an attention accent,
  * not body text on light surfaces. Filled buttons use Cloud on Orbit Violet.
  */
 const colors: BrandColors = {
@@ -155,12 +155,12 @@ const colors: BrandColors = {
 };
 
 export const brand: Brand = {
-  name: 'Orbiloom',
-  nameAr: 'أوربيلوم',
-  nameLower: 'orbiloom',
+  name: 'PostDelegate',
+  nameAr: 'بوست ديليجيت',
+  nameLower: 'postdelegate',
 
   /** Display name used in legal copy — falls back to the product name. */
-  legalName: legalEntityName || 'Orbiloom',
+  legalName: legalEntityName || 'PostDelegate',
   legal: {
     entityName: legalEntityName,
     jurisdiction: env(process.env.NEXT_PUBLIC_BRAND_JURISDICTION, ''),
@@ -172,8 +172,8 @@ export const brand: Brand = {
   taglineAr: 'بنية تحتية للنشر الاجتماعي للبشر ووكلاء الذكاء الاصطناعي',
   heroLine: 'Put every channel in motion.',
   heroLineAr: 'حرّك كل قناة في مسار واحد.',
-  campaignLine: 'Every channel. One intelligent orbit.',
-  campaignLineAr: 'كل قناة. مدار ذكي واحد.',
+  campaignLine: 'Delegate the work. Keep control.',
+  campaignLineAr: 'فوّض العمل. واحتفظ بالتحكم.',
   description:
     'Plan, approve, automate and publish social content across every channel from one workspace.',
   descriptionAr:
@@ -207,13 +207,13 @@ export const brand: Brand = {
   colors,
 
   logo: {
-    mark: '/orbiloom-mark.svg',
-    wordmark: '/orbiloom-logo.svg',
-    wordmarkAr: '/orbiloom-logo-ar.svg',
+    mark: '/postdelegate-mark.svg',
+    wordmark: '/postdelegate-logo.svg',
+    wordmarkAr: '/postdelegate-logo-ar.svg',
     favicon: '/favicon.svg',
     faviconIco: '/favicon.ico',
     appleTouchIcon: '/apple-touch-icon.png',
-    ogImage: '/orbiloom-og.svg',
+    ogImage: '/postdelegate-og.svg',
   },
 
   social: {

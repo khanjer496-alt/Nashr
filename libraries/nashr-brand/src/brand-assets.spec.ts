@@ -13,7 +13,7 @@ const configuredSvgAssets = [
   brand.logo.ogImage,
 ];
 
-describe('Orbiloom brand assets', () => {
+describe('PostDelegate brand assets', () => {
   it.each(configuredSvgAssets)('%s is a safe, scalable SVG', (asset) => {
     const file = path.join(publicDirectory, asset.replace(/^\//, ''));
     expect(fs.existsSync(file)).toBe(true);
@@ -70,7 +70,7 @@ describe('Orbiloom brand assets', () => {
       expect(colors.toUpperCase()).toContain(value.toUpperCase());
     }
 
-    expect(colors).toContain('Orbiloom brand design tokens');
+    expect(colors).toContain('PostDelegate brand design tokens');
     expect(colors).not.toMatch(/--brand-primary:\s*#0E7C74/i);
   });
 });

@@ -2,14 +2,14 @@ import { brand } from './brand.config';
 
 describe('global product positioning', () => {
   it('positions the product for humans and AI agents', () => {
-    expect(brand.name).toBe('Orbiloom');
-    expect(brand.nameAr).toBe('أوربيلوم');
-    expect(brand.nameLower).toBe('orbiloom');
+    expect(brand.name).toBe('PostDelegate');
+    expect(brand.nameAr).toBe('بوست ديليجيت');
+    expect(brand.nameLower).toBe('postdelegate');
     expect(brand.tagline).toBe(
       'Social publishing infrastructure for humans and AI agents'
     );
     expect(brand.heroLine).toBe('Put every channel in motion.');
-    expect(brand.campaignLine).toBe('Every channel. One intelligent orbit.');
+    expect(brand.campaignLine).toBe('Delegate the work. Keep control.');
     expect(brand.description).toBe(
       'Plan, approve, automate and publish social content across every channel from one workspace.'
     );
@@ -43,9 +43,9 @@ describe('global product positioning', () => {
       textMuted: '#9299AA',
     });
     expect(brand.logo).toMatchObject({
-      mark: '/orbiloom-mark.svg',
-      wordmark: '/orbiloom-logo.svg',
-      wordmarkAr: '/orbiloom-logo-ar.svg',
+      mark: '/postdelegate-mark.svg',
+      wordmark: '/postdelegate-logo.svg',
+      wordmarkAr: '/postdelegate-logo-ar.svg',
       favicon: '/favicon.svg',
     });
     expect(brand.upstream.name).toBe('Postiz');

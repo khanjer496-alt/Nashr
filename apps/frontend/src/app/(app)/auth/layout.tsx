@@ -16,8 +16,8 @@ export default async function AuthLayout({
   const t = await getT();
 
   // Upstream renders third-party testimonials that were given to Postiz, not to
-  // Orbiloom. Showing them under our brand would misrepresent them, so the block
-  // stays hidden until Orbiloom has quotes collected with permission.
+  // PostDelegate. Showing them under our brand would misrepresent them, so the block
+  // stays hidden until PostDelegate has quotes collected with permission.
   const showTestimonials = process.env.NEXT_PUBLIC_SHOW_TESTIMONIALS === 'true';
 
   return (

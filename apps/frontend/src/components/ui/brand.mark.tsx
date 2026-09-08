@@ -2,15 +2,15 @@ import React, { FC, useId } from 'react';
 import { brand } from '@gitroom/nashr-brand/brand.config';
 
 /**
- * Orbiloom's interwoven orbital O. The mark itself never mirrors in RTL.
- * Keep it in sync with `apps/frontend/public/orbiloom-mark.svg`.
+ * PostDelegate's interwoven orbital mark. The mark itself never mirrors in RTL.
+ * Keep it in sync with `apps/frontend/public/postdelegate-mark.svg`.
  */
 export const BrandMark: FC<{ size?: number; className?: string }> = ({
   size = 60,
   className,
 }) => {
   const rawId = useId();
-  const titleId = `orbiloom-mark-${rawId.replace(/:/g, '')}`;
+  const titleId = `postdelegate-mark-${rawId.replace(/:/g, '')}`;
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

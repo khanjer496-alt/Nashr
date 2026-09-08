@@ -1,8 +1,8 @@
-# Nashr (temporary working name)
+# PostDelegate
 
 **Social publishing infrastructure for humans and AI agents.**
 
-Nashr is a global-first publishing platform built as a maintained fork of
+PostDelegate is a global publishing platform built as a maintained fork of
 [Postiz](https://github.com/gitroomhq/postiz-app). It keeps the complete web
 product and is extending the same engine through first-class API, MCP, SDK and
 CLI interfaces. The API, MCP and SDK foundations exist today; CLI and deeper
@@ -14,13 +14,17 @@ They do not change the neutral English, UTC and USD product defaults.
 
 This repository is distributed under the [AGPL-3.0 license](LICENSE), preserves
 Postiz attribution, and must expose the exact deployed source to network users.
-See the [approved product direction](docs/superpowers/specs/2026-08-22-global-first-postiz-direction-design.md),
+See the [current PostDelegate brand bible](docs/brand/postdelegate-brand-bible.md),
+the [approved product direction](docs/superpowers/specs/2026-08-22-global-first-postiz-direction-design.md),
 the [fork maintenance ledger](FORK_CUSTOMIZATIONS.md), and
 [launch readiness](LAUNCH_READINESS.md).
 
-> The product is still using the Nashr name and assets until a permanent global
-> name is selected. Links below belong to upstream Postiz and are retained for
-> technical reference; they are not registration links for a hosted Nashr service.
+> PostDelegate is the current product name, replacing Orbiloom and the earlier
+> Nashr working name. Historical plans and internal `nashr-*` identifiers retain
+> their original names. The source repository remains
+> [khanjer496-alt/Nashr](https://github.com/khanjer496-alt/Nashr). Links below belong
+> to upstream Postiz and are retained for technical reference; they are not
+> registration links for a hosted PostDelegate service.
 
 ## Upstream Postiz reference material
 

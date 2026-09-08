@@ -1,8 +1,10 @@
 # nashr-brand
 
-Single source of truth for Orbiloom brand strings, URLs and design tokens.
+Single source of truth for PostDelegate brand strings, URLs and design tokens.
+See the [current brand bible](../../docs/brand/postdelegate-brand-bible.md) for
+name usage, messaging and visual guidance.
 
-Orbiloom is a global social publishing platform for humans and AI agents.
+PostDelegate is a global social publishing platform for humans and AI agents.
 Product defaults are neutral; Arabic, RTL and regional workflows are
 localization layers available to the teams that need them.
 
@@ -29,13 +31,13 @@ All are optional; every one has an empty-safe fallback so the app boots unconfig
 
 | Variable | Fallback | Purpose |
 |---|---|---|
-| `NEXT_PUBLIC_APP_URL` | `https://orbiloom.example` | Public origin. **Placeholder** — never commit a real domain. |
+| `NEXT_PUBLIC_APP_URL` | `https://postdelegate.example` | Public origin. **Placeholder** — never commit a real domain. |
 | `NEXT_PUBLIC_SUPPORT_EMAIL` | `support@<domain>` | Support contact shown in-app and in legal pages. |
 | `NEXT_PUBLIC_PRIVACY_EMAIL` | `privacy@<domain>` | Data-protection contact. |
 | `NEXT_PUBLIC_BRAND_LEGAL_NAME` | *(empty)* | Registered legal entity. Empty ⇒ legal pages render a "needs review" placeholder. |
-| `NEXT_PUBLIC_BRAND_JURISDICTION` | *(empty)* | e.g. `Dubai, United Arab Emirates`. |
+| `NEXT_PUBLIC_BRAND_JURISDICTION` | *(empty)* | Jurisdiction of the registered legal entity; independent of the worldwide audience. |
 | `NEXT_PUBLIC_BRAND_GOVERNING_LAW` | *(empty)* | Governing-law clause text. |
-| `NEXT_PUBLIC_SOURCE_URL` | public Orbiloom source repo | AGPL-3.0 §13 Corresponding Source offer. |
+| `NEXT_PUBLIC_SOURCE_URL` | [public PostDelegate source repo](https://github.com/khanjer496-alt/Nashr) | AGPL-3.0 §13 Corresponding Source offer. |
 | `NEXT_PUBLIC_DOCS_URL` | *(empty)* | Documentation site. |
 | `NEXT_PUBLIC_SOCIAL_X` / `_INSTAGRAM` / `_LINKEDIN` / `_TIKTOK` / `_YOUTUBE` | *(empty)* | Social profiles; empty entries are not rendered. |
 
@@ -43,6 +45,6 @@ No secrets belong in this file — it is bundled into the browser.
 
 ## Attribution
 
-Orbiloom is built on [Postiz](https://github.com/gitroomhq/postiz-app) and distributed under
+PostDelegate is built on [Postiz](https://github.com/gitroomhq/postiz-app) and distributed under
 the AGPL-3.0. `brand.upstream` carries that attribution; neither it nor the live
 deployment's source offer may be removed during a future rebrand.

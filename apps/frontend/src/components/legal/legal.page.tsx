@@ -17,7 +17,7 @@ export const LegalPage: FC<{
     // These pages are English prose and are not yet translated. Rendered inside
     // `<html dir="rtl">` the Unicode bidi algorithm moves neutral characters --
     // sentence-final periods, colons -- to the wrong edge, producing output like
-    // ":You can obtain the complete source code of Orbiloom at". That is not
+    // ":You can obtain the complete source code of PostDelegate at". That is not
     // cosmetic here: this component renders the AGPL section 13 source offer,
     // which has to be legible.
     //
@@ -73,7 +73,7 @@ export const Callout: FC<{ tone?: 'warning' | 'info'; children: ReactNode }> = (
 
 /**
  * Rendered wherever the copy depends on a legal identity that has not been
- * configured yet. Orbiloom must not invent an entity name or a jurisdiction.
+ * configured yet. PostDelegate must not invent an entity name or a jurisdiction.
  */
 export const PlaceholderNotice: FC<{ what: string }> = ({ what }) => (
   <Callout tone="warning">

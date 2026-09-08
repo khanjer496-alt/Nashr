@@ -1,13 +1,15 @@
-# Orbiloom Brand Bible
+# PostDelegate Brand Bible
 
 ## Generation metadata
 
 - Created: 2026-08-22
-- Version: 1.0
-- Sources: owner-approved product direction, approved Orbiloom design
-  specification, current application behavior, Postiz upstream attribution
+- Version: 1.1
+- Revision: owner-approved PostDelegate rename; global audience retained
+- Sources: owner-approved PostDelegate name and global product direction,
+  historical Orbiloom design specification, current application behavior,
+  Postiz upstream attribution
 - Documents processed: 2
-- Conversations analyzed: 1 product-direction conversation
+- Conversations analyzed: product-direction and PostDelegate naming conversations
 - Discovery report used: No; the founding direction came directly from the
   owner and repository
 - Overall confidence: Medium (0.80 weighted score)
@@ -23,16 +25,23 @@ interviews, support conversations and performance data.
 
 ### Name
 
-**Orbiloom**
+**PostDelegate**
 
-Pronunciation: **OR-bee-loom**
+Pronunciation: **POST DEL-uh-gayt** (delegate, the verb)
 
-Arabic companion: **أوربيلوم**
+Arabic companion: **بوست ديليجيت**
 
-Orbiloom combines *orbit* and *loom*: one system weaving people, agents,
-content and channels into coordinated motion. Always write the product name as
-`Orbiloom` in prose and `orbiloom` only in the wordmark, command names, package
-names or handles that require lowercase.
+PostDelegate combines *post* and *delegate*: give a trusted team or agent the
+publishing work while keeping control over approval and delivery. Always write
+the product name as `PostDelegate` in prose and `postdelegate` in the lowercase
+wordmark or identifiers that require lowercase. Existing internal namespaces
+remain unchanged.
+
+PostDelegate replaces the previous Orbiloom customer-facing name. The earlier
+Orbiloom specifications remain historical records; this document is the current
+source for the product identity. The name does not establish domain ownership
+or a live hosted service. Use `https://postdelegate.example` in unconfigured
+examples until a production origin is configured.
 
 ### Purpose
 
@@ -41,8 +50,8 @@ approve and publish across social channels.
 
 ### Promise
 
-Create once, coordinate clearly and publish everywhere from one governed
-system.
+Create once, coordinate clearly and publish across your connected channels
+from one governed system.
 
 ### Category
 
@@ -54,7 +63,7 @@ Agentic social publishing infrastructure.
 
 ### Campaign line
 
-> Every channel. One intelligent orbit.
+> Delegate the work. Keep control.
 
 ### Hero line
 
@@ -63,7 +72,7 @@ Agentic social publishing infrastructure.
 ### Arabic core lines
 
 - Primary value proposition: **بنية تحتية للنشر الاجتماعي للبشر ووكلاء الذكاء الاصطناعي**
-- Campaign line: **كل قناة. مدار ذكي واحد.**
+- Campaign line: **فوّض العمل. واحتفظ بالتحكم.**
 - Hero line: **حرّك كل قناة في مسار واحد.**
 
 Arabic is rewritten for natural rhythm and meaning. It is not forced to mirror
@@ -72,6 +81,10 @@ English word order.
 ---
 
 ## 2. Audience
+
+PostDelegate serves these audiences worldwide. Position the product around
+customer needs and publishing workflows, without making any country or region
+the default market. Language support is a product capability.
 
 ### Creators
 
@@ -111,14 +124,14 @@ programmatic interfaces are entry points into the same publishing system.
 
 ### Clear
 
-- What it means: the reader knows what Orbiloom does after one sentence.
+- What it means: the reader knows what PostDelegate does after one sentence.
 - How it shows up: active verbs, short headings, explicit status labels.
 - Avoid: stacked nouns, vague “solutions”, unexplained acronyms.
 - Evidence: owner-approved global position and interface-parity requirement.
 
 ### Capable
 
-- What it means: Orbiloom understands both creative work and dependable
+- What it means: PostDelegate understands both creative work and dependable
   infrastructure.
 - How it shows up: connect features to real workflow behavior and controls.
 - Avoid: talking down to creators or using code terminology as decoration.
@@ -129,7 +142,8 @@ programmatic interfaces are entry points into the same publishing system.
 - What it means: the brand feels coordinated and in motion.
 - How it shows up: create, connect, move, schedule, publish, measure.
 - Avoid: urgency theater, excessive exclamation marks, animation everywhere.
-- Evidence: approved orbit/loom concept and campaign line.
+- Evidence: retained connected-workflow visual language and coordinated
+  publishing behavior.
 
 ### Inclusive
 
@@ -161,7 +175,7 @@ programmatic interfaces are entry points into the same publishing system.
 
 - Archetype: **The Systems Conductor** — technically deep, creatively aware and
   calm under operational pressure.
-- If Orbiloom were a person: the experienced publishing operator at the center
+- If PostDelegate were a person: the experienced publishing operator at the center
   of a busy launch. They know the creative, API and approval flows, keep every
   participant aligned and never confuse noise with momentum.
 - Core values: coordination, agency, accountability, openness, localization,
@@ -188,14 +202,14 @@ programmatic interfaces are entry points into the same publishing system.
 
 ### Pillar 3: Global from the first screen
 
-- Core idea: Orbiloom is globally understandable while offering meaningful
+- Core idea: PostDelegate is globally understandable while offering meaningful
   localization depth.
 - Use when: explaining Arabic, RTL, dialect and regional-calendar capability.
 - Example: “Global by default. Local when the message demands it.”
 
 ### Pillar 4: Open and extensible
 
-- Core idea: Orbiloom is built on the open-source Postiz engine and exposes
+- Core idea: PostDelegate is built on the open-source Postiz engine and exposes
   first-class integration surfaces.
 - Use when: building developer trust and explaining source availability.
 - Example: “Use the workspace, connect your stack or inspect the source.”
@@ -361,15 +375,15 @@ On-brand:
 
 ### Concept
 
-Two interwoven orbital paths form an O. A Signal Lime node occupies the
-upper-right trajectory. The mark represents coordinated motion, the crossing
-of human and agent workflows, and a loom without illustrating any of those
-ideas literally.
+Two interwoven paths connect people, agents, content and channels. A Signal
+Lime node occupies the upper-right trajectory. The retained mark represents
+connected publishing workflows and coordinated motion as an abstract
+workflow symbol.
 
 ### Lockups
 
-- Primary: mark + lowercase `orbiloom`.
-- Arabic companion: mark + `أوربيلوم`.
+- Primary: mark + lowercase `postdelegate`.
+- Arabic companion: mark + `بوست ديليجيت`.
 - Mark-only: product icon, favicon, avatar and compact navigation.
 - Monochrome: Cloud on dark or Void on light when color reproduction is not
   reliable.
@@ -458,10 +472,10 @@ small interface labels. It is not a decorative body font.
 
 ### Layout
 
-Use generous negative space with precise modular surfaces. One deliberate
-grid-breaking orbital element may become the focal point; the rest of the page
-supports it. Use logical CSS properties so RTL is a first-class layout, not a
-mirrored afterthought.
+Use generous negative space with precise modular surfaces. Lead with product
+workflow previews: composing, calendar planning, approval and publishing status.
+Connected paths support the workflow story without competing with the product.
+Use logical CSS properties so RTL is supported throughout the layout.
 
 ### Graphic language
 
@@ -490,10 +504,12 @@ core meaning available without animation.
 
 ### Marketing website
 
-Use Void, oversized Manrope headlines, original orbital diagrams, truthful
-product proof and high-contrast CTAs. The Postiz reference informs information
-density and clarity—not its trademark, copy, testimonials or hand-drawn pink
-language.
+Use Void, clear Manrope headlines, truthful product workflow previews and
+high-contrast CTAs. Show composing, calendar planning and approvals in a
+connected sequence. Keep language and localization capabilities inside relevant
+product explanations; they do not define a country-specific audience or require
+a dedicated regional showcase. The Postiz reference informs information
+density and clarity; keep the product identity, copy and visuals original.
 
 ### Product workspace
 
@@ -543,7 +559,7 @@ is intentional.
   first 10 qualified customer conversations.
 - No conversion baseline exists. Test hero proof, CTA wording and audience-mode
   order without changing the core position prematurely.
-- No genuine Orbiloom testimonials exist. Keep testimonial components disabled
+- No genuine PostDelegate testimonials exist. Keep testimonial components disabled
   until quotes are collected with permission.
 - Final pricing and legal entity configuration are not approved. Do not hard-
   code either into brand claims.
@@ -557,10 +573,11 @@ is intentional.
 
 | # | Source | Type | Date | Used for | Confidence |
 | --- | --- | --- | --- | --- | --- |
-| 1 | Owner product-direction conversation | Authoritative decision | 2026-08-22 | Name, audience, positioning, localization, engine, interfaces | High |
-| 2 | `docs/superpowers/specs/2026-08-22-orbiloom-brand-and-web-design.md` | Approved specification | 2026-08-22 | Verbal and visual identity, landing architecture, acceptance | High |
-| 3 | Current Orbiloom/Postiz repository behavior | Operational evidence | 2026-08-22 | Product terminology, interface and attribution constraints | Medium |
+| 1 | Owner product-direction conversation | Authoritative decision | 2026-08-22 | Global audience, positioning, localization, engine, interfaces | High |
+| 2 | `docs/superpowers/specs/2026-08-22-orbiloom-brand-and-web-design.md` | Historical approved Orbiloom specification | 2026-08-22 | Retained palette, typography and product presentation; previous name is superseded | High |
+| 3 | Orbiloom/Postiz repository behavior at the founding revision | Historical operational evidence | 2026-08-22 | Product terminology, interface and attribution constraints | Medium |
+| 4 | Owner PostDelegate naming confirmation | Authoritative decision | Current rename | PostDelegate spelling, post + delegate meaning and worldwide audience | High |
 
-Orbiloom is built on Postiz and distributed under AGPL-3.0. The Postiz name and
-project attribution remain visible wherever required; Orbiloom does not claim
+PostDelegate is built on Postiz and distributed under AGPL-3.0. The Postiz name and
+project attribution remain visible wherever required; PostDelegate does not claim
 ownership of the upstream project or its marketing website.
