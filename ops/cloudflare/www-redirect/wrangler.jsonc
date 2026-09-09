@@ -1,0 +1,10 @@
+{
+  "name": "postdelegate-www-redirect",
+  "account_id": "6ada63eb2f8c926ce2d7254c91006e70",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-09-09",
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [{ "pattern": "www.postdelegate.com", "custom_domain": true }],
+  "observability": { "enabled": false }
+}

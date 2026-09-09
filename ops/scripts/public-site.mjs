@@ -36,13 +36,14 @@ export function prepare(env = process.env) {
   writeFileSync(resolve(target, 'robots.txt'), 'User-agent: *\nDisallow: /auth\nDisallow: /api\n');
   writeFileSync(resolve(target, 'deployment.json'), JSON.stringify({
     product: 'PostDelegate', scope: 'public-preview-only', sourceCommit: env.GITHUB_SHA,
+    publicOrigin: requireOrigin(env.NEXT_PUBLIC_APP_URL),
     sourceUrl: env.NEXT_PUBLIC_SOURCE_URL, customerSignup: false, publishingBackend: false,
     platformApprovals: 'not verified',
   }, null, 2) + '\n');
 }
 
 const plain = (html) => html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ');
-export function inspectPage(path, html, sha) {
+export function inspectPage(path, html, sha, origin) {
   const errors = [];
   const text = plain(html);
   if (!text.includes('PostDelegate')) errors.push('Product identity missing');
@@ -53,6 +54,15 @@ export function inspectPage(path, html, sha) {
   if (path === '/licenses' && !html.includes(`https://github.com/khanjer496-alt/Nashr/tree/${sha}`)) errors.push('Exact source offer missing');
   if (path === '/support' && !/<h1[^>]*>Support<\/h1>/.test(html)) errors.push('Support heading missing');
   if (path === '/data-deletion' && !/<h1[^>]*>Data deletion<\/h1>/.test(html)) errors.push('Deletion heading missing');
+  if (origin) {
+    const expectedOrigin = requireOrigin(origin);
+    const ogUrl = html.match(/<meta\s+property="og:url"\s+content="([^"]+)"\s*\/?\s*>/i)?.[1];
+    if (ogUrl !== expectedOrigin && ogUrl !== `${expectedOrigin}/`) errors.push('Open Graph URL does not match the public origin');
+    if (path === '/') {
+      const canonical = html.match(/<link\s+rel="canonical"\s+href="([^"]+)"\s*\/?\s*>/i)?.[1];
+      if (canonical !== expectedOrigin && canonical !== `${expectedOrigin}/`) errors.push('Homepage canonical does not match the public origin');
+    }
+  }
   return errors;
 }
 
@@ -60,7 +70,7 @@ export function verify(directory = resolve(root, 'apps/public-site/out'), env = 
   checkPublicConfig(env);
   const checks = publicPages.map((path) => {
     const file = resolve(directory, path === '/' ? 'index.html' : `${path.slice(1)}.html`);
-    return { path, errors: existsSync(file) ? inspectPage(path, readFileSync(file, 'utf8'), env.GITHUB_SHA) : ['Exported page missing'] };
+    return { path, errors: existsSync(file) ? inspectPage(path, readFileSync(file, 'utf8'), env.GITHUB_SHA, env.NEXT_PUBLIC_APP_URL) : ['Exported page missing'] };
   });
   for (const file of ['404.html', '_headers', '_redirects', 'deployment.json', ...files]) {
     checks.push({ path: file, errors: existsSync(resolve(directory, file)) ? [] : ['Required public asset missing'] });
