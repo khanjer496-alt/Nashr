@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { brand } from '@gitroom/nashr-brand/brand.config';
 import styles from './landing.module.scss';
 
 const platforms = [
@@ -14,7 +15,7 @@ const platforms = [
 
 export function PlatformSignals() {
   return (
-    <div className={styles.platformSignals} aria-label="Supported social channels include">
+    <div className={styles.platformSignals} aria-label={brand.publicPreview ? 'Planned social integrations; approvals not verified' : 'Supported social channels include'}>
       {platforms.map(([asset, label], index) => (
         <div
           className={styles.platformSignal}

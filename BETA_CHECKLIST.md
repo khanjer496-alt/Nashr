@@ -1,5 +1,10 @@
 # BETA_CHECKLIST.md — Nashr (نشر)
 
+> **PostDelegate global-first update — 9 September 2026:** use [the current launch execution guide](docs/launch/README.md)
+> and [platform application pack](docs/launch/platform-access.md). The regional cohort,
+> fixed approval-time estimates and API-tier descriptions below are historical,
+> not current launch instructions. Preserve the per-platform real-publish and safety evidence gates.
+
 **Phase 8 deliverable.** The go/no-go gate for the first closed beta:
 **5–10 businesses, no more.** Compiled 2026-08-08.
 

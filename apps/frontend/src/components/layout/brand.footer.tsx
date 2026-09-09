@@ -28,6 +28,12 @@ export const BrandFooter = () => {
       <Link className="hover:text-newTextColor" href={brand.privacyUrl}>
         Privacy
       </Link>
+      <Link className="hover:text-newTextColor" href={brand.supportUrl}>
+        Support
+      </Link>
+      <Link className="hover:text-newTextColor" href={brand.dataDeletionUrl}>
+        Data deletion
+      </Link>
       <Link className="hover:text-newTextColor" href={brand.licensesUrl}>
         Licences
       </Link>

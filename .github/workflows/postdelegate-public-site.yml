@@ -1,0 +1,53 @@
+name: PostDelegate Public Site
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, launch/postdelegate-platform-access]
+    paths:
+      - 'apps/frontend/**'
+      - 'apps/public-site/**'
+      - 'libraries/nashr-brand/**'
+      - 'libraries/nestjs-libraries/src/integrations/social/**'
+      - 'ops/scripts/public-site.mjs'
+      - 'tests/ops/**'
+      - '.github/workflows/postdelegate-public-site.yml'
+      - 'pnpm-lock.yaml'
+permissions:
+  contents: read
+concurrency:
+  group: postdelegate-public-site-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  public-site:
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: --max-old-space-size=5120
+      NEXT_TELEMETRY_DISABLED: '1'
+      NEXT_PUBLIC_APP_URL: https://postdelegate.pages.dev
+      NEXT_PUBLIC_SOURCE_URL: https://github.com/khanjer496-alt/Nashr/tree/${{ github.sha }}
+      NEXT_PUBLIC_POSTDELEGATE_PREVIEW: 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.12.0'
+      - uses: pnpm/action-setup@v4
+        with:
+          version: '10.6.1'
+      - run: pnpm install --frozen-lockfile
+      - name: Launch and provider regression tests
+        run: node --test tests/ops/platform-access.test.mjs tests/ops/public-site.test.mjs tests/ops/provider-auth.test.cjs
+      - name: Prepare allowlisted static assets
+        run: node ops/scripts/public-site.mjs prepare
+      - name: Build public website (no backend)
+        # Tailwind 3 loads the shared CJS config relative to this source tree.
+        # Turbopack relocates that config and breaks its sibling imports.
+        run: pnpm exec next build apps/public-site --webpack
+      - name: Verify exported website
+        run: node ops/scripts/public-site.mjs verify
+      - uses: actions/upload-artifact@v4
+        with:
+          name: postdelegate-public-site-${{ github.sha }}
+          path: apps/public-site/out
+          retention-days: 14
+          if-no-files-found: error

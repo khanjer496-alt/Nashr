@@ -18,6 +18,31 @@ brief item 9.
 
 ## Repository layout
 
+### 9 September 2026 — launch permission and public-site corrections
+
+- Member LinkedIn consent now requests OIDC and `w_member_social` only; Page
+  consent keeps organization-management scopes without member-writing or legacy
+  profile access. Both use `/v2/userinfo` rather than restricted `/v2/me`. Company
+  lookup is intentionally unavailable on a member-only connection, and remains
+  available through the Page provider. Interactive consent is no longer forced
+  into `prompt=none`.
+- YouTube requests profile, read-only channel data, uploads and read-only
+  analytics, not email, full account management or CMS partner access. The actual
+  provider auth methods are exercised with API doubles; real-account approval
+  and publishing remain separate release gates.
+- `apps/public-site` exports the existing public UI as a static preview, with
+  allowlisted brand assets, exact-source attribution, support/deletion information
+  and explicit closed-signup status. It does not replace the Docker application
+  or pretend to expose a publishing API. No new UI dependencies or palette changes.
+- Working email addresses are never inferred from a hostname. Empty contact
+  configuration is disclosed instead of linking to nonexistent mailboxes.
+- `PostDelegate Public Site` builds and checks a downloadable CI artifact. It has
+  no Cloudflare credentials or automatic production deployment authority.
+  Its static entrypoint uses Webpack to preserve Tailwind 3's relative shared
+  configuration loading; the full application build is unchanged.
+- Public legal pages wrap long exact-commit source links rather than overflowing
+  small screens. This was caught by the 390px deployed-preview browser check.
+
 | Remote | Target | Purpose |
 |---|---|---|
 | `origin` | `khanjer496-alt/Nashr` | Our fork |

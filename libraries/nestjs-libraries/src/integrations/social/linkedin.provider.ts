@@ -65,10 +65,6 @@ export class LinkedinProvider extends SocialAbstract implements SocialProvider {
     'openid',
     'profile',
     'w_member_social',
-    'r_basicprofile',
-    'rw_organization_admin',
-    'w_organization_social',
-    'r_organization_social',
   ];
   override maxConcurrentJob = 2;
   refreshWait = true;
@@ -145,14 +141,6 @@ export class LinkedinProvider extends SocialAbstract implements SocialProvider {
       })
     ).json();
 
-    const { vanityName } = await (
-      await fetch('https://api.linkedin.com/v2/me', {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      })
-    ).json();
-
     const {
       name,
       sub: id,
@@ -172,7 +160,9 @@ export class LinkedinProvider extends SocialAbstract implements SocialProvider {
       expiresIn: expires_in,
       name,
       picture: picture || '',
-      username: vanityName,
+      // OIDC profile does not expose a vanity handle. Do not request the
+      // restricted legacy profile API just to decorate the connection.
+      username: '',
     };
   }
 
@@ -181,7 +171,7 @@ export class LinkedinProvider extends SocialAbstract implements SocialProvider {
     const codeVerifier = makeId(30);
     const url = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${
       process.env.LINKEDIN_CLIENT_ID
-    }&prompt=none&redirect_uri=${encodeURIComponent(
+    }&redirect_uri=${encodeURIComponent(
       `${process.env.FRONTEND_URL}/integrations/social/linkedin`
     )}&state=${state}&scope=${encodeURIComponent(this.scopes.join(' '))}`;
     return {
@@ -237,14 +227,6 @@ export class LinkedinProvider extends SocialAbstract implements SocialProvider {
       })
     ).json();
 
-    const { vanityName } = await (
-      await fetch('https://api.linkedin.com/v2/me', {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      })
-    ).json();
-
     return {
       id,
       accessToken,
@@ -252,11 +234,21 @@ export class LinkedinProvider extends SocialAbstract implements SocialProvider {
       expiresIn,
       name,
       picture,
-      username: vanityName,
+      username: '',
     };
   }
 
   async company(token: string, data: { url: string }) {
+    // Organization search belongs to the Page integration. A member-only
+    // token must never be sent to an organization-management endpoint.
+    if (!this.scopes.includes('rw_organization_admin')) {
+      throw new BadBody(
+        this.identifier,
+        '{}',
+        '{}',
+        'Company lookup requires a LinkedIn Page connection.'
+      );
+    }
     const { url } = data;
     const getCompanyVanity = url.match(
       /^https?:\/\/(?:www\.)?linkedin\.com\/company\/([^/]+)\/?$/
@@ -1204,6 +1196,9 @@ export class LinkedinProvider extends SocialAbstract implements SocialProvider {
   }
 
   override async mention(token: string, data: { query: string }) {
+    if (!this.scopes.includes('rw_organization_admin')) {
+      return [];
+    }
     const { elements } = await (
       await fetch(
         `https://api.linkedin.com/v2/organizations?q=vanityName&vanityName=${encodeURIComponent(

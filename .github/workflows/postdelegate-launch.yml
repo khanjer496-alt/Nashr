@@ -1,0 +1,114 @@
+name: PostDelegate Launch Preparation
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/postdelegate-launch.yml'
+      - 'ops/scripts/platform-access.mjs'
+      - 'tests/ops/**'
+      - 'docs/launch/**'
+      - 'libraries/nestjs-libraries/src/integrations/social/**'
+      - 'libraries/nashr-brand/src/brand.config.ts'
+      - 'apps/frontend/src/proxy.ts'
+      - 'apps/frontend/src/app/(app)/(site)/**'
+      - 'apps/frontend/src/components/layout/brand.footer.tsx'
+  workflow_dispatch:
+    inputs:
+      build_image:
+        description: 'Build and publish a configured image (does NOT deploy a server)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test launch tooling and source contracts
+        run: node --test tests/ops/platform-access.test.mjs
+      - name: Export actual provider scopes and callback paths
+        run: node ops/scripts/platform-access.mjs manifest > platform-access-manifest.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: postdelegate-platform-access-${{ github.sha }}
+          path: platform-access-manifest.json
+
+  production-image:
+    if: github.event_name == 'workflow_dispatch' && inputs.build_image
+    needs: validate
+    runs-on: ubuntu-latest
+    environment: postdelegate-production
+    permissions:
+      contents: read
+      packages: write
+    env:
+      STORAGE_PROVIDER: cloudflare
+      NEXT_PUBLIC_APP_URL: ${{ vars.POSTDELEGATE_APP_URL }}
+      NEXT_PUBLIC_BACKEND_URL: ${{ vars.POSTDELEGATE_APP_URL }}/api
+      NEXT_PUBLIC_SOURCE_URL: ${{ github.server_url }}/${{ github.repository }}/tree/${{ github.sha }}
+      NEXT_PUBLIC_BRAND_LEGAL_NAME: ${{ vars.POSTDELEGATE_LEGAL_NAME }}
+      NEXT_PUBLIC_BRAND_JURISDICTION: ${{ vars.POSTDELEGATE_JURISDICTION }}
+      NEXT_PUBLIC_BRAND_GOVERNING_LAW: ${{ vars.POSTDELEGATE_GOVERNING_LAW }}
+      NEXT_PUBLIC_SUPPORT_EMAIL: ${{ vars.POSTDELEGATE_SUPPORT_EMAIL }}
+      NEXT_PUBLIC_PRIVACY_EMAIL: ${{ vars.POSTDELEGATE_PRIVACY_EMAIL }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Refuse missing public build configuration
+        run: node ops/scripts/platform-access.mjs check-build
+      - name: Select our registry and a unique release tag
+        id: image
+        env:
+          OWNER: ${{ github.repository_owner }}
+        run: |
+          echo "name=ghcr.io/${OWNER,,}/postdelegate" >> "$GITHUB_OUTPUT"
+          echo "tag=sha-${GITHUB_SHA}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_OUTPUT"
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build the maintained PostDelegate production image
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.prod
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.image.outputs.name }}:${{ steps.image.outputs.tag }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            NASHR_VERSION=${{ steps.image.outputs.tag }}
+            STORAGE_PROVIDER=${{ env.STORAGE_PROVIDER }}
+            NEXT_PUBLIC_APP_URL=${{ env.NEXT_PUBLIC_APP_URL }}
+            NEXT_PUBLIC_BACKEND_URL=${{ env.NEXT_PUBLIC_BACKEND_URL }}
+            NEXT_PUBLIC_SOURCE_URL=${{ env.NEXT_PUBLIC_SOURCE_URL }}
+            NEXT_PUBLIC_BRAND_LEGAL_NAME=${{ env.NEXT_PUBLIC_BRAND_LEGAL_NAME }}
+            NEXT_PUBLIC_BRAND_JURISDICTION=${{ env.NEXT_PUBLIC_BRAND_JURISDICTION }}
+            NEXT_PUBLIC_BRAND_GOVERNING_LAW=${{ env.NEXT_PUBLIC_BRAND_GOVERNING_LAW }}
+            NEXT_PUBLIC_SUPPORT_EMAIL=${{ env.NEXT_PUBLIC_SUPPORT_EMAIL }}
+            NEXT_PUBLIC_PRIVACY_EMAIL=${{ env.NEXT_PUBLIC_PRIVACY_EMAIL }}
+      - name: Record build evidence (not a deployment or approval)
+        env:
+          IMAGE: ${{ steps.image.outputs.name }}
+          TAG: ${{ steps.image.outputs.tag }}
+          DIGEST: ${{ steps.build.outputs.digest }}
+        run: |
+          {
+            echo '## PostDelegate image built; no server deployed'
+            printf '\nImage: `%s:%s`\n\nDigest: `%s`\n\nSource: %s\n' "$IMAGE" "$TAG" "$DIGEST" "$NEXT_PUBLIC_SOURCE_URL"
+            echo 'Run staging, production preflight, public smoke checks and the platform evidence checklist before onboarding customers.'
+          } >> "$GITHUB_STEP_SUMMARY"

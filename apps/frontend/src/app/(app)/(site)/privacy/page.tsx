@@ -8,6 +8,7 @@ import {
   PlaceholderNotice,
   Entity,
   Jurisdiction,
+  ContactAddress,
 } from '@gitroom/frontend/components/legal/legal.page';
 
 export const metadata: Metadata = {
@@ -27,9 +28,7 @@ export default async function Page() {
         <p>
           The controller of personal data processed through {brand.name} is{' '}
           <Entity />, established in <Jurisdiction />. Data-protection enquiries:{' '}
-          <a className="underline" href={`mailto:${brand.privacyEmail}`}>
-            {brand.privacyEmail}
-          </a>
+          <ContactAddress kind="privacy" />
           .
         </p>
       </Section>
@@ -100,9 +99,7 @@ export default async function Page() {
             Licences &amp; source
           </Link>{' '}
           page and in our processor register, available on request from{' '}
-          <a className="underline" href={`mailto:${brand.privacyEmail}`}>
-            {brand.privacyEmail}
-          </a>
+          <ContactAddress kind="privacy" />
           .
         </p>
       </Section>
@@ -153,10 +150,11 @@ export default async function Page() {
 
       <Section heading="8. Security">
         <p>
-          Access tokens for connected channels are stored encrypted. Access to
-          production data is restricted and logged. No system is perfectly
-          secure; if a breach affects you we will notify you as required by the
-          applicable law.
+          The production token-storage, encryption, access-control and audit-log
+          arrangements are to be confirmed before accepting customer-connected
+          accounts. This draft must be updated to describe the controls actually
+          deployed and verified. No system is perfectly secure; breach-notification
+          duties depend on the applicable law.
         </p>
       </Section>
 
@@ -165,10 +163,12 @@ export default async function Page() {
           Subject to the law that applies to you, you may request access to your
           personal data, correction, deletion, a portable copy, or restriction of
           or objection to certain processing. Write to{' '}
-          <a className="underline" href={`mailto:${brand.privacyEmail}`}>
-            {brand.privacyEmail}
-          </a>
+          <ContactAddress kind="privacy" />
           . You may also complain to your local data-protection authority.
+        </p>
+        <p>
+          Follow the <Link className="underline" href={brand.dataDeletionUrl}>data deletion instructions</Link>{' '}
+          to request removal of account or connected-channel data.
         </p>
       </Section>
 
@@ -193,9 +193,7 @@ export default async function Page() {
         <p>
           We will announce material changes in the product before they take
           effect. Questions:{' '}
-          <a className="underline" href={`mailto:${brand.privacyEmail}`}>
-            {brand.privacyEmail}
-          </a>
+          <ContactAddress kind="privacy" />
           .
         </p>
       </Section>

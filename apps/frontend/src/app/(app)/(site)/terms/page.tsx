@@ -7,6 +7,7 @@ import {
   PlaceholderNotice,
   Entity,
   Jurisdiction,
+  ContactAddress,
 } from '@gitroom/frontend/components/legal/legal.page';
 
 export const metadata: Metadata = {
@@ -53,9 +54,7 @@ export default async function Page() {
           You are responsible for the accuracy of your registration details, for
           keeping your credentials secure, and for everything done through your
           workspace by the people you invite to it. Tell us promptly at{' '}
-          <a className="underline" href={`mailto:${brand.supportEmail}`}>
-            {brand.supportEmail}
-          </a>{' '}
+          <ContactAddress kind="support" />{' '}
           if you believe your account has been compromised.
         </p>
       </Section>
@@ -186,9 +185,7 @@ export default async function Page() {
 
       <Section heading="15. Contact">
         <p>
-          <a className="underline" href={`mailto:${brand.supportEmail}`}>
-            {brand.supportEmail}
-          </a>
+          <ContactAddress kind="support" />
         </p>
       </Section>
     </LegalPage>

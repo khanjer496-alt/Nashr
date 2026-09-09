@@ -1,5 +1,10 @@
 # DEPLOYMENT.md — Nashr (نشر)
 
+> **PostDelegate update — 9 September 2026:** use [the current launch execution guide](docs/launch/README.md)
+> and [platform application pack](docs/launch/platform-access.md) for release builds, OAuth scopes and current review requirements.
+> The platform guidance in §7 is historical, including the X tier descriptions,
+> TikTok private-draft wording and simplified scope lists. Keep the approved Docker + Cloudflare + R2 topology below.
+
 Production deployment of Nashr, the temporary name for a global social
 publishing platform derived from
 [Postiz](https://github.com/gitroomhq/postiz-app) v1.47.0 (AGPL-3.0). The first
