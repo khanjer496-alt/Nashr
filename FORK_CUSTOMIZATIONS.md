@@ -38,6 +38,8 @@ brief item 9.
   configuration is disclosed instead of linking to nonexistent mailboxes.
 - `PostDelegate Public Site` builds and checks a downloadable CI artifact. It has
   no Cloudflare credentials or automatic production deployment authority.
+  Its static entrypoint uses Webpack to preserve Tailwind 3's relative shared
+  configuration loading; the full application build is unchanged.
 
 | Remote | Target | Purpose |
 |---|---|---|

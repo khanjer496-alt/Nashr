@@ -40,7 +40,9 @@ jobs:
       - name: Prepare allowlisted static assets
         run: node ops/scripts/public-site.mjs prepare
       - name: Build public website (no backend)
-        run: pnpm exec next build apps/public-site
+        # Tailwind 3 loads the shared CJS config relative to this source tree.
+        # Turbopack relocates that config and breaks its sibling imports.
+        run: pnpm exec next build apps/public-site --webpack
       - name: Verify exported website
         run: node ops/scripts/public-site.mjs verify
       - uses: actions/upload-artifact@v4

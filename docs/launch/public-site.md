@@ -18,7 +18,7 @@ export NEXT_PUBLIC_SOURCE_URL="https://github.com/khanjer496-alt/Nashr/tree/$GIT
 export NEXT_PUBLIC_POSTDELEGATE_PREVIEW=true
 node --test tests/ops/platform-access.test.mjs tests/ops/public-site.test.mjs tests/ops/provider-auth.test.cjs
 node ops/scripts/public-site.mjs prepare
-pnpm exec next build apps/public-site
+pnpm exec next build apps/public-site --webpack
 node ops/scripts/public-site.mjs verify
 ```
 
@@ -27,6 +27,10 @@ node ops/scripts/public-site.mjs verify
 the shared brand, typography, public shell, product preview and policy components;
 it is not an independently redesigned landing page. Only explicitly allowlisted
 public assets are copied. The static entrypoint always sets preview mode.
+
+This entrypoint uses Next's Webpack builder because Turbopack relocates the shared
+Tailwind 3 CJS configuration and breaks its sibling import. Do not remove the flag
+without verifying both compilation and the rendered styles.
 
 ## Deployment
 
