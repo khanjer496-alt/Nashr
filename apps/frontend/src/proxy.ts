@@ -11,7 +11,7 @@ import {
 acceptLanguage.languages(languages);
 
 // Reachable without authentication.
-const publicPages = ['/about', '/terms', '/privacy', '/licenses'];
+const publicPages = ['/about', '/terms', '/privacy', '/licenses', '/support', '/data-deletion'];
 
 // This function can be marked `async` if using `await` inside
 export async function proxy(request: NextRequest) {

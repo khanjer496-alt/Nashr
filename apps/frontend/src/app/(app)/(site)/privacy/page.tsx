@@ -153,10 +153,11 @@ export default async function Page() {
 
       <Section heading="8. Security">
         <p>
-          Access tokens for connected channels are stored encrypted. Access to
-          production data is restricted and logged. No system is perfectly
-          secure; if a breach affects you we will notify you as required by the
-          applicable law.
+          The production token-storage, encryption, access-control and audit-log
+          arrangements are to be confirmed before accepting customer-connected
+          accounts. This draft must be updated to describe the controls actually
+          deployed and verified. No system is perfectly secure; breach-notification
+          duties depend on the applicable law.
         </p>
       </Section>
 
@@ -169,6 +170,10 @@ export default async function Page() {
             {brand.privacyEmail}
           </a>
           . You may also complain to your local data-protection authority.
+        </p>
+        <p>
+          Follow the <Link className="underline" href={brand.dataDeletionUrl}>data deletion instructions</Link>{' '}
+          to request removal of account or connected-channel data.
         </p>
       </Section>
 

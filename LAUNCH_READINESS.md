@@ -1,5 +1,9 @@
 # LAUNCH_READINESS.md — Nashr (نشر)
 
+> **PostDelegate update — 9 September 2026:** [current launch execution and blockers](docs/launch/README.md)
+> and [platform application pack](docs/launch/platform-access.md) supersede old product-name,
+> regional-only and platform-access assumptions below. Historical verification remains evidence only for the build and date it names.
+
 > **Global-first pivot — 2026-08-22.** The approved direction is documented in
 > [`docs/superpowers/specs/2026-08-22-global-first-postiz-direction-design.md`](docs/superpowers/specs/2026-08-22-global-first-postiz-direction-design.md).
 > Earlier regional verification remains useful engineering evidence, but it is

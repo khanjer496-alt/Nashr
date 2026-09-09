@@ -1,5 +1,8 @@
 # PostDelegate
 
+> **Launch work — 9 September 2026:** start with the [current deployment and launch execution guide](docs/launch/README.md)
+> and [platform application pack](docs/launch/platform-access.md). Prepared tooling is not proof of a live deployment or approved platform access.
+
 **Social publishing infrastructure for humans and AI agents.**
 
 PostDelegate is a global publishing platform built as a maintained fork of

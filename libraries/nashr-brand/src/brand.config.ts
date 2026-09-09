@@ -108,6 +108,8 @@ export interface Brand {
   readonly privacyEmail: string;
   readonly termsUrl: string;
   readonly privacyUrl: string;
+  readonly supportUrl: string;
+  readonly dataDeletionUrl: string;
   readonly aboutUrl: string;
   readonly licensesUrl: string;
   readonly sourceUrl: string;
@@ -187,6 +189,8 @@ export const brand: Brand = {
 
   termsUrl: '/terms',
   privacyUrl: '/privacy',
+  supportUrl: '/support',
+  dataDeletionUrl: '/data-deletion',
   aboutUrl: '/about',
   licensesUrl: '/licenses',
 
