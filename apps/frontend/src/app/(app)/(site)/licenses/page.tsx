@@ -4,6 +4,7 @@ import {
   LegalPage,
   Section,
   Callout,
+  ContactAddress,
 } from '@gitroom/frontend/components/legal/legal.page';
 import {
   dependencyLicenses,
@@ -62,9 +63,7 @@ export default async function Page() {
           That repository contains the full source, build instructions and the
           modifications made on top of {brand.upstream.name}. If the link is
           unavailable, or you would prefer the source on physical media, write to{' '}
-          <a className="underline" href={`mailto:${brand.supportEmail}`}>
-            {brand.supportEmail}
-          </a>{' '}
+          <ContactAddress kind="support" />{' '}
           and we will provide it at no more than the cost of distribution.
         </p>
         <p>
@@ -113,9 +112,7 @@ export default async function Page() {
             Privacy Policy
           </a>{' '}
           for what is sent and why, or ask{' '}
-          <a className="underline" href={`mailto:${brand.privacyEmail}`}>
-            {brand.privacyEmail}
-          </a>{' '}
+          <ContactAddress kind="privacy" />{' '}
           for the current processor register.
         </p>
       </Section>

@@ -1,0 +1,13 @@
+@use '../../frontend/src/app/colors.scss';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html { scroll-behavior: smooth; background: #080a0f; }
+body { margin: 0; color: #f7f7f2; background: #080a0f; }
+button:disabled { cursor: default; }
+a:focus-visible, summary:focus-visible { outline: 2px solid #c8ff4d; outline-offset: 4px; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}

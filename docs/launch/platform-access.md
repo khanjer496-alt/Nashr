@@ -143,9 +143,12 @@ member publishing. Community Management is a separate access track for the
 organization-management use case; development access is not production Standard
 access. Prepare the required application, review recording and test access.
 
-**Code blocker:** both member and Page providers currently request organization
-scopes. Scope minimization and feature gating need testing before a member-only
-self-serve launch. Do not assume approval is automatic or guarantee a review time.
+**Code correction, 9 September 2026:** member consent requests only `openid`,
+`profile` and `w_member_social`. Page consent separately requests OIDC and the
+organization scopes. Both use OIDC identity rather than `/v2/me`; organization
+lookup is gated away from member-only tokens. Mocked authentication and refresh
+regressions pass, but real-account OAuth/publishing and any required platform
+approval still need evidence. Do not assume approval is automatic.
 
 Sources: [Share on LinkedIn](https://learn.microsoft.com/en-us/linkedin/consumer/integrations/self-serve/share-on-linkedin),
 [Community Management review](https://learn.microsoft.com/en-us/linkedin/marketing/community-management-app-review?view=li-lms-2026-08).
@@ -160,7 +163,11 @@ public privacy policy and feature recording.
 Separately, YouTube restricts uploads from unverified API projects created after
 28 July 2020 to private visibility until the project passes its compliance
 audit. OAuth verification alone is not proof that public uploads are permitted.
-Review the broad and partner scopes currently requested before submission.
+The provider now requests only `userinfo.profile`, `youtube.readonly`,
+`youtube.upload` and `yt-analytics.readonly` (all under Google's full scope URL).
+Email, full-account and partner scopes were removed after checking the implemented
+upload, thumbnail, discovery and analytics operations. Re-run real feature tests
+before submitting; this code change is not a completed audit.
 Update privacy/terms with the actual Google/YouTube data handling and required
 policy disclosures rather than relying on the generic draft.
 

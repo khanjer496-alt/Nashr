@@ -42,10 +42,16 @@ test('Instagram Facebook and standalone credentials are not confused', () => {
   assert.deepEqual(result.find((p) => p.id === 'instagram').credentialNames, ['FACEBOOK_APP_ID', 'FACEBOOK_APP_SECRET']);
   assert.deepEqual(result.find((p) => p.id === 'instagram-standalone').credentialNames, ['INSTAGRAM_APP_ID', 'INSTAGRAM_APP_SECRET']);
 });
-test('source inventory exposes actual elevated LinkedIn/YouTube permissions', () => {
+test('personal publishing does not request organization or YouTube partner access', () => {
   const result = manifest().providers;
-  assert.ok(result.find((p) => p.id === 'linkedin').scopes.includes('w_organization_social'));
-  assert.ok(result.find((p) => p.id === 'youtube').scopes.includes('https://www.googleapis.com/auth/youtubepartner'));
+  assert.deepEqual(result.find((p) => p.id === 'linkedin').scopes, ['openid', 'profile', 'w_member_social']);
+  assert.deepEqual(result.find((p) => p.id === 'linkedin-page').scopes, ['openid', 'profile', 'rw_organization_admin', 'w_organization_social', 'r_organization_social']);
+  assert.deepEqual(result.find((p) => p.id === 'youtube').scopes, [
+    'https://www.googleapis.com/auth/userinfo.profile',
+    'https://www.googleapis.com/auth/youtube.readonly',
+    'https://www.googleapis.com/auth/youtube.upload',
+    'https://www.googleapis.com/auth/yt-analytics.readonly',
+  ]);
   assert.ok(!result.find((p) => p.id === 'threads').scopes.includes('threads_profile_discovery'));
   assert.equal(result.find((p) => p.id === 'x').auth.startsWith('OAuth 1.0a'), true);
 });

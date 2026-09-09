@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { brand, brandTitle } from '@gitroom/nashr-brand/brand.config';
-import { LegalPage, Section } from '@gitroom/frontend/components/legal/legal.page';
+import { LegalPage, Section, ContactAddress, Callout } from '@gitroom/frontend/components/legal/legal.page';
 
 export const metadata: Metadata = {
   title: brandTitle('Support'),
@@ -11,9 +11,10 @@ export const metadata: Metadata = {
 export default function Page() {
   return (
     <LegalPage title="Support" subtitle={`Help with your ${brand.name} workspace.`}>
+      {!brand.supportEmail && <Callout tone="warning">Customer signup is not open. A private support contact must be activated before accounts open. Never post private account data in a public issue.</Callout>}
       <Section heading="Contact support">
         <p>
-          Email <a className="underline" href={`mailto:${brand.supportEmail}`}>{brand.supportEmail}</a>{' '}
+          Contact: <ContactAddress kind="support" />. Once support is active, write{' '}
           from the address you use for your account. Include your workspace name,
           the affected channel, the time and timezone, and what you expected to happen.
         </p>

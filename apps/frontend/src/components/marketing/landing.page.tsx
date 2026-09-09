@@ -24,13 +24,15 @@ const interfaces = [
 ] as const;
 
 const faqs = [
-  ['How do I get started?', 'Create a workspace, connect your channels and invite your team. Agent and developer interfaces use the same workspace when you need them.'],
+  ['How do I get started?', brand.publicPreview ? 'This is a product preview. Customer signup and publishing are not open. The launch status page explains what is still being prepared.' : 'Create a workspace, connect your channels and invite your team. Agent and developer interfaces use the same workspace when you need them.'],
   [`Is ${brand.name} only for AI agents?`, 'No. It is a complete social publishing workspace for people, with first-class interfaces for software and trusted agents.'],
-  ['Which social channels can I connect?', `${brand.name} supports major social platforms. Availability depends on each network’s current API and account requirements.`],
+  ['Which social channels can I connect?', brand.publicPreview ? 'The icons show planned integrations, not approved customer access. No accounts can be connected on this preview site.' : `${brand.name} supports major social platforms. Availability depends on each network’s current API and account requirements.`],
   ['Can agents publish without review?', 'Agent work begins as a draft unless your workspace explicitly permits autonomous publishing under its approval policy.'],
 ] as const;
 
 export function LandingPage() {
+  const entryHref = brand.publicPreview ? '/status' : '/auth';
+  const entryLabel = brand.publicPreview ? 'View launch status' : 'Start free';
   return (
     <div className={styles.page}>
       <section className={styles.hero} id="product">
@@ -41,10 +43,11 @@ export function LandingPage() {
           <p className={styles.heroDescriptor}>{brand.tagline}.</p>
           <p className={styles.heroBody}>Create, approve, schedule and analyze every channel—without losing control of the work that goes live.</p>
           <div className={styles.heroActions}>
-            <Link className={styles.primaryAction} href="/auth">Start free <span aria-hidden="true">↗</span></Link>
+            <Link className={styles.primaryAction} href={entryHref}>{entryLabel} <span aria-hidden="true">↗</span></Link>
             <Link className={styles.secondaryAction} href="#in-action">See it in action <span aria-hidden="true">↓</span></Link>
           </div>
           <PlatformSignals />
+          {brand.publicPreview && <p className={styles.heroBody}>Product preview · Customer signup and publishing are not open yet.</p>}
         </div>
         <ProductPreview />
       </section>
@@ -67,7 +70,7 @@ export function LandingPage() {
             <article className={styles.audienceCard} key={title}>
               <span className={styles.audienceIcon} aria-hidden="true">{icon}</span>
               <h3>{title}</h3><p>{body}</p>
-              <Link href="/auth">Start your workspace <span aria-hidden="true">↗</span></Link>
+              <Link href={entryHref}>{brand.publicPreview ? 'View launch status' : 'Start your workspace'} <span aria-hidden="true">↗</span></Link>
             </article>
           ))}
         </div>
@@ -120,16 +123,16 @@ export function LandingPage() {
         <div className={styles.interfaceCopy}>
           <span className={styles.monoLabel}>FIRST-CLASS INTERFACES</span><h2>Web for people.<br />Tools for agents.</h2>
           <p>{brand.campaignLine} Use the interface that fits the work without creating a second publishing system.</p>
-          <div className={styles.codeBlock}><div><span>$</span> {brand.nameLower} draft create --channels x,linkedin</div><div className={styles.codeResponse}>→ draft created · approval requested</div></div>
+          <div className={styles.codeBlock}><div>CLI example · in development</div><div><span>$</span> {brand.nameLower} draft create --channels x,linkedin</div><div className={styles.codeResponse}>→ draft created · approval requested</div></div>
         </div>
         <div className={styles.interfaceList}>
-          {interfaces.map(([name, status, body]) => <article key={name}><div><h3>{name}</h3><span className={status === 'In progress' ? styles.statusProgress : styles.statusLive}>{status}</span></div><p>{body}</p></article>)}
+          {interfaces.map(([name, status, body]) => <article key={name}><div><h3>{name}</h3><span className={brand.publicPreview || status === 'In progress' ? styles.statusProgress : styles.statusLive}>{brand.publicPreview && status === 'Available' ? 'Preparing beta' : status}</span></div><p>{body}</p></article>)}
         </div>
       </section>
 
       <section className={`${styles.section} ${styles.pricingSection}`} id="pricing">
-        <div className={styles.centerHeading}><span className={styles.monoLabel}>START WITHOUT THE GUESSWORK</span><h2>Build your publishing workflow.</h2><p>Create your workspace today. Public plans will be published before billing begins.</p></div>
-        <div className={styles.pricingCard}><span className={styles.panelLabel}>MANAGED CLOUD</span><h3>Start with {brand.name}</h3><p>One workspace for your team, channels and trusted agents.</p><Link href="/auth">Start free ↗</Link></div>
+        <div className={styles.centerHeading}><span className={styles.monoLabel}>START WITHOUT THE GUESSWORK</span><h2>Build your publishing workflow.</h2><p>{brand.publicPreview ? 'Customer signup is not open. Public plans will be published before billing begins.' : 'Create your workspace today. Public plans will be published before billing begins.'}</p></div>
+        <div className={styles.pricingCard}><span className={styles.panelLabel}>MANAGED CLOUD</span><h3>Start with {brand.name}</h3><p>One workspace for your team, channels and trusted agents.</p><Link href={entryHref}>{entryLabel} ↗</Link></div>
       </section>
 
       <section className={`${styles.section} ${styles.faqSection}`} id="faq">
@@ -140,7 +143,7 @@ export function LandingPage() {
       <section className={styles.finalCta}>
         <span className={styles.monoLabel}>YOUR NEXT SIGNAL</span><h2>{brand.heroLine}</h2>
         <p>Bring your team, channels and trusted agents into one publishing workflow.</p>
-        <Link className={styles.limeAction} href="/auth">Start free <span aria-hidden="true">↗</span></Link>
+        <Link className={styles.limeAction} href={entryHref}>{entryLabel} <span aria-hidden="true">↗</span></Link>
       </section>
     </div>
   );

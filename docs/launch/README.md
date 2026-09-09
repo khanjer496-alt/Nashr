@@ -16,9 +16,11 @@ their security, isolation, approval or restore requirements.
 | Corresponding-source repository | `khanjer496-alt/Nashr` is public; the deployed image must offer its exact commit |
 | Production topology | Existing approved Docker origin + Cloudflare edge + R2; no Workers-only rewrite |
 | Developer applications | No console application IDs, submissions or approval evidence verified in this work |
-| Deployment | No owned production hostname or running PostDelegate origin verified in this work |
+| Public website | Existing `postdelegate.pages.dev` Cloudflare Pages project verified; previous deployment came from `c53f035`. This is a static preview, not a running publishing origin. See [public-site deployment](public-site.md). |
+| App runtime and domain | No full application origin verified; the connected Cloudflare account returned no managed DNS zones. This does not establish domain ownership in other accounts. |
 | Hosting credentials | No configured local `hcloud` context; no repository-level Actions secrets/variables returned by the checks. This is not an inventory of other accounts or environments. |
-| Public review pages | Support and manual data-deletion instructions added to the existing public shell; not yet deployed |
+| Public review pages | Support and deletion-process information included in the reproducible public-site export. Private request contacts and legal policies remain unfinished; these are not yet acceptable evidence of operational handling. |
+| R2 | Existing `nashr-production-media` and `nashr-production-backups` buckets verified; no replacement buckets created |
 | Production build workflow | New manual, opt-in `PostDelegate Launch Preparation` workflow uses `Dockerfile.prod` and our GHCR namespace; not run as a production build |
 | Launch tooling | Source-derived scope/callback manifest, public-build configuration guard, read-only public smoke checker, dependency-free tests |
 
@@ -33,7 +35,7 @@ No customer publishing access is certified by this document.**
 | Actual operating entity or legally valid operator, jurisdiction and governing terms | Consistent platform applications, terms/privacy, business verification where required | Confirm real details; do not invent an LLC or borrow another business's identity |
 | Monitored support and privacy addresses | Reviewer contact, account support and deletion requests | Create and test mailboxes/routing under the owned domain |
 | Docker host/provider, region and approved spend | Stateful app, PostgreSQL, Redis and Temporal | Use an existing authorized host or approve a specific new purchase before provisioning |
-| Cloudflare account/zone and R2 setup | DNS/TLS and media/backups | Use scoped account access and secret storage, not chat messages |
+| Managed production DNS zone | Cloudflare account, Pages and existing R2 buckets are accessible; a production DNS zone still needs verification | Do not duplicate existing resources or ask for already-working Cloudflare login |
 | Platform developer-account owners | Create and submit apps, business/Page verification, required owner consent | Owner signs in and completes MFA/identity steps; app secrets go directly to server secret storage |
 
 Do not put passwords, OAuth client secrets, SSH keys, R2 keys or reviewer

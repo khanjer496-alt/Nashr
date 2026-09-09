@@ -56,6 +56,16 @@ export const Section: FC<{ heading: string; children: ReactNode }> = ({
   </section>
 );
 
+/** Only explicitly configured addresses are presented as working contacts. */
+export const ContactAddress: FC<{ kind: 'support' | 'privacy' }> = ({ kind }) => {
+  const email = kind === 'privacy' ? brand.privacyEmail : brand.supportEmail;
+  return email ? (
+    <a className="underline" href={`mailto:${email}`}>{email}</a>
+  ) : (
+    <span>{kind === 'privacy' ? 'Privacy' : 'Support'} contact will be published before accounts open</span>
+  );
+};
+
 export const Callout: FC<{ tone?: 'warning' | 'info'; children: ReactNode }> = ({
   tone = 'info',
   children,

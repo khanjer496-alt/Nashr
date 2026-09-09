@@ -8,6 +8,7 @@ import {
   PlaceholderNotice,
   Entity,
   Jurisdiction,
+  ContactAddress,
 } from '@gitroom/frontend/components/legal/legal.page';
 
 export const metadata: Metadata = {
@@ -27,9 +28,7 @@ export default async function Page() {
         <p>
           The controller of personal data processed through {brand.name} is{' '}
           <Entity />, established in <Jurisdiction />. Data-protection enquiries:{' '}
-          <a className="underline" href={`mailto:${brand.privacyEmail}`}>
-            {brand.privacyEmail}
-          </a>
+          <ContactAddress kind="privacy" />
           .
         </p>
       </Section>
@@ -100,9 +99,7 @@ export default async function Page() {
             Licences &amp; source
           </Link>{' '}
           page and in our processor register, available on request from{' '}
-          <a className="underline" href={`mailto:${brand.privacyEmail}`}>
-            {brand.privacyEmail}
-          </a>
+          <ContactAddress kind="privacy" />
           .
         </p>
       </Section>
@@ -166,9 +163,7 @@ export default async function Page() {
           Subject to the law that applies to you, you may request access to your
           personal data, correction, deletion, a portable copy, or restriction of
           or objection to certain processing. Write to{' '}
-          <a className="underline" href={`mailto:${brand.privacyEmail}`}>
-            {brand.privacyEmail}
-          </a>
+          <ContactAddress kind="privacy" />
           . You may also complain to your local data-protection authority.
         </p>
         <p>
@@ -198,9 +193,7 @@ export default async function Page() {
         <p>
           We will announce material changes in the product before they take
           effect. Questions:{' '}
-          <a className="underline" href={`mailto:${brand.privacyEmail}`}>
-            {brand.privacyEmail}
-          </a>
+          <ContactAddress kind="privacy" />
           .
         </p>
       </Section>

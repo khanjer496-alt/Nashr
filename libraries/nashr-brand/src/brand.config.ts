@@ -89,6 +89,8 @@ export interface BrandColors {
 }
 
 export interface Brand {
+  /** Static, non-transactional product preview; never a publishing backend. */
+  readonly publicPreview: boolean;
   readonly name: string;
   readonly nameAr: string;
   readonly nameLower: string;
@@ -157,6 +159,7 @@ const colors: BrandColors = {
 };
 
 export const brand: Brand = {
+  publicPreview: process.env.NEXT_PUBLIC_POSTDELEGATE_PREVIEW === 'true',
   name: 'PostDelegate',
   nameAr: 'بوست ديليجيت',
   nameLower: 'postdelegate',
@@ -184,8 +187,10 @@ export const brand: Brand = {
   appUrl,
   domain,
 
-  supportEmail: env(process.env.NEXT_PUBLIC_SUPPORT_EMAIL, `support@${domain}`),
-  privacyEmail: env(process.env.NEXT_PUBLIC_PRIVACY_EMAIL, `privacy@${domain}`),
+  // A hostname does not establish a working mailbox (especially pages.dev).
+  // Public pages must not invent deliverable support or privacy addresses.
+  supportEmail: env(process.env.NEXT_PUBLIC_SUPPORT_EMAIL, ''),
+  privacyEmail: env(process.env.NEXT_PUBLIC_PRIVACY_EMAIL, ''),
 
   termsUrl: '/terms',
   privacyUrl: '/privacy',

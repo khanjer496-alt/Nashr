@@ -4,6 +4,7 @@ import { brand, brandTitle } from '@gitroom/nashr-brand/brand.config';
 import {
   LegalPage,
   Section,
+  ContactAddress,
 } from '@gitroom/frontend/components/legal/legal.page';
 
 export const metadata: Metadata = {
@@ -86,9 +87,7 @@ export default async function Page() {
       <Section heading="Contact">
         <p>
           Questions, feedback or partnership enquiries:{' '}
-          <a className="underline" href={`mailto:${brand.supportEmail}`}>
-            {brand.supportEmail}
-          </a>
+          <ContactAddress kind="support" />
           .
         </p>
       </Section>
