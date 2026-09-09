@@ -40,6 +40,8 @@ brief item 9.
   no Cloudflare credentials or automatic production deployment authority.
   Its static entrypoint uses Webpack to preserve Tailwind 3's relative shared
   configuration loading; the full application build is unchanged.
+- Public legal pages wrap long exact-commit source links rather than overflowing
+  small screens. This was caught by the 390px deployed-preview browser check.
 
 | Remote | Target | Purpose |
 |---|---|---|

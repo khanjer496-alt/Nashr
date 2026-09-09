@@ -22,7 +22,7 @@ export const LegalPage: FC<{
     // which has to be legible.
     //
     // Remove this only when the legal copy is genuinely translated, not before.
-    <div dir="ltr" className="flex-1 w-full">
+    <div dir="ltr" className="flex-1 min-w-0 w-full [overflow-wrap:anywhere]">
       <div className="w-full max-w-[860px] mx-auto px-[20px] py-[40px] flex flex-col gap-[28px]">
         <header className="flex flex-col gap-[8px]">
           <div className="text-[12px] uppercase tracking-[0.18em] font-[600] text-brand-primarySoft">
