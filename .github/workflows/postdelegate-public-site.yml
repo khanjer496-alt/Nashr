@@ -9,6 +9,7 @@ on:
       - 'libraries/nashr-brand/**'
       - 'libraries/nestjs-libraries/src/integrations/social/**'
       - 'ops/scripts/public-site.mjs'
+      - 'ops/cloudflare/www-redirect/**'
       - 'tests/ops/**'
       - '.github/workflows/postdelegate-public-site.yml'
       - 'pnpm-lock.yaml'
@@ -23,7 +24,7 @@ jobs:
     env:
       NODE_OPTIONS: --max-old-space-size=5120
       NEXT_TELEMETRY_DISABLED: '1'
-      NEXT_PUBLIC_APP_URL: https://postdelegate.pages.dev
+      NEXT_PUBLIC_APP_URL: https://postdelegate.com
       NEXT_PUBLIC_SOURCE_URL: https://github.com/khanjer496-alt/Nashr/tree/${{ github.sha }}
       NEXT_PUBLIC_POSTDELEGATE_PREVIEW: 'true'
     steps:
@@ -36,7 +37,7 @@ jobs:
           version: '10.6.1'
       - run: pnpm install --frozen-lockfile
       - name: Launch and provider regression tests
-        run: node --test tests/ops/platform-access.test.mjs tests/ops/public-site.test.mjs tests/ops/provider-auth.test.cjs
+        run: node --test tests/ops/platform-access.test.mjs tests/ops/public-site.test.mjs tests/ops/provider-auth.test.cjs tests/ops/www-redirect.test.mjs
       - name: Prepare allowlisted static assets
         run: node ops/scripts/public-site.mjs prepare
       - name: Build public website (no backend)

@@ -18,6 +18,20 @@ brief item 9.
 
 ## Repository layout
 
+### Owned PostDelegate domain
+
+- The public-site build now uses `https://postdelegate.com` for absolute sharing
+  metadata and the homepage canonical; export tests prevent stale `pages.dev`
+  metadata. The public-preview design, robots policy, closed signup and existing
+  apex Pages association remain unchanged.
+- A small, separately deployable Worker handles only the `www.postdelegate.com`
+  alias. Its fixed HTTPS apex redirect preserves path/query, rejects other hosts
+  and non-navigation methods, has no secrets/bindings/logging, and does not replace
+  the Pages origin. Workers Custom Domain provisioning manages this alias's DNS
+  and TLS. Tests cover destination safety and loop avoidance.
+- No Temporal workflow, social-provider permissions, billing, company domain,
+  existing email DNS, or customer-data storage are changed by this work.
+
 ### 9 September 2026 — launch permission and public-site corrections
 
 - Member LinkedIn consent now requests OIDC and `w_member_social` only; Page

@@ -1,7 +1,9 @@
 # PostDelegate public website
 
 The existing Cloudflare Pages project is **postdelegate**, served at
-`https://postdelegate.pages.dev`. This is the public product preview, **not** the
+`https://postdelegate.com`. The owned apex domain is active on that existing
+project; `https://postdelegate.pages.dev` remains its fallback/preview hostname.
+This is the public product preview, **not** the
 stateful application or an approved social-publishing service. Keep the established
 Docker + PostgreSQL + Redis + Temporal + R2 architecture for the actual app.
 
@@ -13,10 +15,10 @@ are needed to build the website.
 ```sh
 pnpm install --frozen-lockfile
 export GITHUB_SHA="$(git rev-parse HEAD)"
-export NEXT_PUBLIC_APP_URL=https://postdelegate.pages.dev
+export NEXT_PUBLIC_APP_URL=https://postdelegate.com
 export NEXT_PUBLIC_SOURCE_URL="https://github.com/khanjer496-alt/Nashr/tree/$GITHUB_SHA"
 export NEXT_PUBLIC_POSTDELEGATE_PREVIEW=true
-node --test tests/ops/platform-access.test.mjs tests/ops/public-site.test.mjs tests/ops/provider-auth.test.cjs
+node --test tests/ops/platform-access.test.mjs tests/ops/public-site.test.mjs tests/ops/provider-auth.test.cjs tests/ops/www-redirect.test.mjs
 node ops/scripts/public-site.mjs prepare
 pnpm exec next build apps/public-site --webpack
 node ops/scripts/public-site.mjs verify
@@ -51,6 +53,38 @@ personal OAuth session.
 
 The previous production deployment can be selected in Cloudflare Pages to roll
 back. Never delete its immutable deployment while verifying a new one.
+
+## Owned-domain configuration
+
+The production build sets the sharing metadata and homepage canonical to
+`https://postdelegate.com`, and records `publicOrigin` in `/deployment.json`.
+The export check rejects old `pages.dev` metadata. Do not point every legal
+subpage's canonical at the homepage. Preview/no-index and closed-signup behavior
+remain unchanged; buying a domain is not a product launch.
+
+The optional `www` alias is handled by the narrowly scoped redirect Worker in
+`ops/cloudflare/www-redirect`. It responds only to navigation requests for
+`www.postdelegate.com`, sends them to the HTTPS apex, and preserves path and query.
+It cannot proxy traffic, collect forms, or choose a destination from user input.
+There are no secrets, database bindings, enabled request logs or workers.dev URL.
+
+```sh
+wrangler deploy --config ops/cloudflare/www-redirect/wrangler.jsonc
+```
+
+This uses Cloudflare's supported Workers Custom Domain provisioning (which creates
+the alias's DNS and certificate) without replacing the working apex Pages mapping.
+Do not override any existing hostname binding or DNS record during deployment.
+The connected CLI has Workers/Pages access but was denied direct DNS-record access;
+browser form scripting was also disabled. The separate `nasidaapps.com` domain and
+the old pending `postdelegate.nasidaapps.com` alias are deliberately left unchanged.
+
+Verify actual activation after deployment: `https://www.postdelegate.com/privacy?x=1`
+must return a 301 to `https://postdelegate.com/privacy?x=1`, and the apex must still
+return the intended page with valid TLS. Preparation is not activation evidence.
+
+References: [Pages custom domains](https://developers.cloudflare.com/pages/configuration/custom-domains/),
+[Workers Custom Domains](https://developers.cloudflare.com/workers/configuration/routing/custom-domains/).
 
 ## Gates that this does not satisfy
 
