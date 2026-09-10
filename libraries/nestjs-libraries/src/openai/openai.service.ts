@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { assertLaunchFeature } from '@gitroom/nestjs-libraries/services/launch.policy';
 import OpenAI from 'openai';
 import { shuffle } from 'lodash';
 import { zodResponseFormat } from 'openai/helpers/zod';
@@ -19,6 +20,7 @@ const VoicePrompt = z.object({
 @Injectable()
 export class OpenaiService {
   async generateImage(prompt: string, isVertical = false) {
+    assertLaunchFeature('hostedAi');
     // gpt-image models always return base64 (b64_json) and do not accept the
     // `response_format` parameter, unlike the deprecated dall-e-3.
     const generate = (
@@ -33,6 +35,7 @@ export class OpenaiService {
   }
 
   async generatePromptForPicture(prompt: string) {
+    assertLaunchFeature('hostedAi');
     return (
       (
         await openai.chat.completions.parse({
@@ -54,6 +57,7 @@ export class OpenaiService {
   }
 
   async generateVoiceFromText(prompt: string) {
+    assertLaunchFeature('hostedAi');
     return (
       (
         await openai.chat.completions.parse({
@@ -75,6 +79,7 @@ export class OpenaiService {
   }
 
   async generatePosts(content: string) {
+    assertLaunchFeature('hostedAi');
     const posts = (
       await Promise.all([
         openai.chat.completions.create({
@@ -133,6 +138,7 @@ export class OpenaiService {
     );
   }
   async extractWebsiteText(content: string) {
+    assertLaunchFeature('hostedAi');
     const websiteContent = await openai.chat.completions.create({
       messages: [
         {
@@ -154,6 +160,7 @@ export class OpenaiService {
   }
 
   async separatePosts(content: string, len: number) {
+    assertLaunchFeature('hostedAi');
     const SeparatePostsPrompt = z.object({
       posts: z.array(z.string()),
     });
@@ -228,6 +235,7 @@ export class OpenaiService {
   }
 
   async generateSlidesFromText(text: string) {
+    assertLaunchFeature('hostedAi');
     for (let i = 0; i < 3; i++) {
       try {
         const message = `You are an assistant that takes a text and break it into slides, each slide should have an image prompt and voice text to be later used to generate a video and voice, image prompt should capture the essence of the slide and also have a back dark gradient on top, image prompt should not contain text in the picture, generate between 3-5 slides maximum`;

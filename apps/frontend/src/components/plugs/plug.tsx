@@ -18,7 +18,7 @@ import {
   useFormContext,
 } from 'react-hook-form';
 import { Input } from '@gitroom/react/form/input';
-import { CopilotTextarea } from '@copilotkit/react-textarea';
+import { OptionalAiTextarea as CopilotTextarea } from '@gitroom/frontend/components/layout/optional-ai';
 import clsx from 'clsx';
 import { string, object } from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';

@@ -1,0 +1,24 @@
+# Opt-in overlay; use AFTER docker-compose.prod.yaml or staging.yaml.
+# No new infrastructure, smaller untested limits, or public signup implied.
+services:
+  app:
+    image: ${NASHR_IMAGE:?NASHR_IMAGE required}@${POSTDELEGATE_IMAGE_DIGEST:?Exact sha256 image digest required}
+    build:
+      args:
+        NEXT_PUBLIC_POLOTNO: ""
+    environment:
+      POSTDELEGATE_LAUNCH_MODE: lean
+      POSTDELEGATE_ENABLED_PROVIDERS: ${POSTDELEGATE_ENABLED_PROVIDERS:-}
+      DISABLE_REGISTRATION: "true"
+      # Clear paid credentials even if an existing env file contains them.
+      OPENAI_API_KEY: ""
+      FAL_KEY: ""
+      NEXT_PUBLIC_POLOTNO: ""
+      TRANSLOADIT_AUTH: ""
+      TRANSLOADIT_TEMPLATE: ""
+      X_API_KEY: ""
+      X_API_SECRET: ""
+      DISABLE_X_ANALYTICS: "true"
+      STRIPE_SECRET_KEY: ""
+      STRIPE_PUBLISHABLE_KEY: ""
+      STRIPE_SIGNING_KEY: ""

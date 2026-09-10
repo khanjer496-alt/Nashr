@@ -30,6 +30,7 @@ import { useModals } from '@gitroom/frontend/components/layout/new-modal';
 import { capitalize } from 'lodash';
 import { SelectCustomer } from '@gitroom/frontend/components/launches/select.customer';
 import { CopilotPopup } from '@copilotkit/react-ui';
+import { useLaunchCapabilities } from '@gitroom/react/helpers/variable.context';
 import { DummyCodeComponent } from '@gitroom/frontend/components/new-launch/dummy.code.component';
 import { CreationMethodBadge } from '@gitroom/frontend/components/launches/creation.method.badge';
 import {
@@ -45,6 +46,7 @@ import dayjs from 'dayjs';
 import { Button } from '@gitroom/react/form/button';
 
 export const ManageModal: FC<AddEditModalProps> = (props) => {
+  const { hostedAi } = useLaunchCapabilities();
   const t = useT();
   const fetch = useFetch();
   const ref = useRef(null);
@@ -691,7 +693,7 @@ export const ManageModal: FC<AddEditModalProps> = (props) => {
           </div>
         </div>
       </div>
-      <CopilotPopup
+      {hostedAi && <CopilotPopup
         hitEscapeToClose={false}
         clickOutsideToClose={true}
         instructions={`
@@ -712,7 +714,7 @@ After using the addPostFor{num} it will create a new addPostContentFor{num+ 1} f
             'Hi! I can help you to refine your social media posts.'
           ),
         }}
-      />
+      />}
     </div>
   );
 };

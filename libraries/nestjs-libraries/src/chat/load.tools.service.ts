@@ -1,4 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import { isLaunchToolEnabled } from '@gitroom/helpers/configuration/launch.capabilities';
+import { assertLaunchFeature } from '@gitroom/nestjs-libraries/services/launch.policy';
 import { Agent } from '@mastra/core/agent';
 import { openai } from '@ai-sdk/openai';
 import { Memory } from '@mastra/memory';
@@ -26,6 +28,7 @@ export class LoadToolsService {
       await Promise.all<{ name: string; tool: any }>(
         toolList
           .map((p) => this._moduleRef.get(p, { strict: false }))
+          .filter((p) => isLaunchToolEnabled(p.name))
           .map(async (p) => ({
             name: p.name as string,
             tool: await p.run(),
@@ -41,6 +44,7 @@ export class LoadToolsService {
   }
 
   async agent() {
+    assertLaunchFeature('hostedAi');
     const tools = await this.loadTools();
     return new Agent({
       id: 'postiz',

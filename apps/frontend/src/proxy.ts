@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getLaunchCapabilities } from '@gitroom/helpers/configuration/launch.capabilities';
 import type { NextRequest } from 'next/server';
 import { getCookieUrlFromDomain } from '@gitroom/helpers/subdomain/subdomain.management';
 import { internalFetch } from '@gitroom/helpers/utils/internal.fetch';
@@ -167,7 +168,7 @@ export async function proxy(request: NextRequest) {
     if (nextUrl.pathname === '/') {
       return NextResponse.redirect(
         new URL(
-          !!process.env.IS_GENERAL ? '/launches' : `/analytics`,
+          getLaunchCapabilities().lean || !!process.env.IS_GENERAL ? '/launches' : `/analytics`,
           nextUrl.href
         )
       );

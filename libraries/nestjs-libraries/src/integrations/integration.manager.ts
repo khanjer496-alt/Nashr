@@ -1,6 +1,8 @@
 import 'reflect-metadata';
 
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { isProviderEnabled } from '@gitroom/helpers/configuration/launch.capabilities';
+import { assertLaunchProvider } from '@gitroom/nestjs-libraries/services/launch.policy';
 import { XProvider } from '@gitroom/nestjs-libraries/integrations/social/x.provider';
 import { SocialProvider } from '@gitroom/nestjs-libraries/integrations/social/social.integrations.interface';
 import { LinkedinProvider } from '@gitroom/nestjs-libraries/integrations/social/linkedin.provider';
@@ -74,7 +76,7 @@ export const socialIntegrationList: Array<SocialAbstract & SocialProvider> = [
   new MeweProvider(),
   new TumblrProvider(),
   // new MastodonCustomProvider(),
-];
+].filter((provider) => isProviderEnabled(provider.identifier));
 
 @Injectable()
 export class IntegrationManager {
@@ -156,7 +158,9 @@ export class IntegrationManager {
   }
 
   getInternalPlugs(providerName: string) {
+    assertLaunchProvider(providerName);
     const p = socialIntegrationList.find((p) => p.identifier === providerName)!;
+    if (!p) throw new NotFoundException('Channel not available');
     return {
       internalPlugs:
         (
@@ -172,6 +176,9 @@ export class IntegrationManager {
     return socialIntegrationList.map((p) => p.identifier);
   }
   getSocialIntegration(integration: string): SocialProvider {
-    return socialIntegrationList.find((i) => i.identifier === integration)!;
+    assertLaunchProvider(integration);
+    const provider = socialIntegrationList.find((i) => i.identifier === integration);
+    if (!provider) throw new NotFoundException('Channel not available');
+    return provider;
   }
 }

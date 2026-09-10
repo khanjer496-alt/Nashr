@@ -1,7 +1,9 @@
 'use client';
 
 import { createContext, FC, ReactNode, useContext, useEffect } from 'react';
+import type { getLaunchCapabilities } from '@gitroom/helpers/configuration/launch.capabilities';
 interface VariableContextInterface {
+  launchCapabilities?: ReturnType<typeof getLaunchCapabilities>;
   stripeClient: string;
   billingEnabled: boolean;
   isChatBase: boolean;
@@ -84,6 +86,12 @@ export const VariableContextComponent: FC<
 };
 export const useVariables = () => {
   return useContext(VariableContext);
+};
+// Missing context never enables paid services. All server layouts provide the
+// runtime policy, including the provider and extension entrypoints.
+export const useLaunchCapabilities = () => useVariables().launchCapabilities ?? {
+  lean: true, hostedAi: false, customAgents: false,
+  designer: false, platformAnalytics: false,
 };
 export const loadVars = () => {
   // @ts-ignore

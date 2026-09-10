@@ -1,5 +1,6 @@
 import { SentryComponent } from '@gitroom/frontend/components/layout/sentry.component';
 import { brand } from '@gitroom/nashr-brand/brand.config';
+import { getLaunchCapabilities } from '@gitroom/helpers/configuration/launch.capabilities';
 import type { Metadata } from 'next';
 
 export const dynamic = 'force-dynamic';
@@ -124,12 +125,13 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
         )}
       >
         <VariableContextComponent
+          launchCapabilities={getLaunchCapabilities()}
           storageProvider={
             process.env.STORAGE_PROVIDER! as 'local' | 'cloudflare'
           }
           environment={process.env.NODE_ENV!}
           backendUrl={process.env.NEXT_PUBLIC_BACKEND_URL!}
-          plontoKey={process.env.NEXT_PUBLIC_POLOTNO!}
+          plontoKey={getLaunchCapabilities().designer ? process.env.NEXT_PUBLIC_POLOTNO! : ''}
           stripeClient={process.env.STRIPE_PUBLISHABLE_KEY!}
           isChatBase={!!process.env.CHATBASE_TOKEN}
           billingEnabled={!!process.env.STRIPE_PUBLISHABLE_KEY}

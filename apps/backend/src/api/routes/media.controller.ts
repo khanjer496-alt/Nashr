@@ -9,6 +9,7 @@ import {
   Req,
   Res,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
   UsePipes,
 } from '@nestjs/common';
@@ -25,6 +26,7 @@ import { UploadFactory } from '@gitroom/nestjs-libraries/upload/upload.factory';
 import { SaveMediaInformationDto } from '@gitroom/nestjs-libraries/dtos/media/save.media.information.dto';
 import { VideoDto } from '@gitroom/nestjs-libraries/dtos/videos/video.dto';
 import { VideoFunctionDto } from '@gitroom/nestjs-libraries/dtos/videos/video.function.dto';
+import { HostedAiGuard } from '@gitroom/nestjs-libraries/services/launch.policy';
 
 @ApiTags('Media')
 @Controller('/media')
@@ -41,6 +43,7 @@ export class MediaController {
   }
 
   @Post('/generate-video')
+  @UseGuards(HostedAiGuard)
   generateVideo(
     @GetOrgFromRequest() org: Organization,
     @Body() body: VideoDto
@@ -50,6 +53,7 @@ export class MediaController {
   }
 
   @Post('/generate-image')
+  @UseGuards(HostedAiGuard)
   async generateImage(
     @GetOrgFromRequest() org: Organization,
     @Req() req: Request,
@@ -69,6 +73,7 @@ export class MediaController {
   }
 
   @Post('/generate-image-with-prompt')
+  @UseGuards(HostedAiGuard)
   async generateImageFromText(
     @GetOrgFromRequest() org: Organization,
     @Req() req: Request,
@@ -188,11 +193,13 @@ export class MediaController {
   }
 
   @Get('/video-options')
+  @UseGuards(HostedAiGuard)
   getVideos() {
     return this._mediaService.getVideoOptions();
   }
 
   @Post('/video/function')
+  @UseGuards(HostedAiGuard)
   videoFunction(
     @Body() body: VideoFunctionDto
   ) {
@@ -200,6 +207,7 @@ export class MediaController {
   }
 
   @Get('/generate-video/:type/allowed')
+  @UseGuards(HostedAiGuard)
   generateVideoAllowed(
     @GetOrgFromRequest() org: Organization,
     @Param('type') type: string

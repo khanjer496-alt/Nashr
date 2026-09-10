@@ -1,4 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import { getLaunchCapabilities } from '@gitroom/helpers/configuration/launch.capabilities';
+import { assertLaunchFeature } from '@gitroom/nestjs-libraries/services/launch.policy';
 import { ModuleRef } from '@nestjs/core';
 
 import {
@@ -20,6 +22,7 @@ export class VideoManager {
     placement: string;
     trial: boolean;
   }[] {
+    if (!getLaunchCapabilities().hostedAi) return [];
     return (Reflect.getMetadata('video', VideoAbstract) || [])
       .filter((f: any) => f.available)
       .map((p: any) => ({
@@ -42,6 +45,7 @@ export class VideoManager {
   getVideoByName(
     identifier: string
   ): (VideoParams & { instance: VideoAbstract<any> }) | undefined {
+    assertLaunchFeature('hostedAi');
     const video = (Reflect.getMetadata('video', VideoAbstract) || []).find(
       (p: any) => p.identifier === identifier
     );

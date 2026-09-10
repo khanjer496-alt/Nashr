@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { assertLaunchFeature } from '@gitroom/nestjs-libraries/services/launch.policy';
 import { BaseMessage, HumanMessage } from '@langchain/core/messages';
 import { END, START, StateGraph } from '@langchain/langgraph';
 import { ChatOpenAI } from '@langchain/openai';
@@ -53,6 +54,7 @@ export class AgentGraphInsertService {
     });
 
   async findCategory(state: WorkflowChannelsState) {
+    assertLaunchFeature('hostedAi');
     const { messages } = state;
     const structuredOutput = model.withStructuredOutput(category);
     return ChatPromptTemplate.fromTemplate(
@@ -71,6 +73,7 @@ Here is the post:
   }
 
   findTopic(state: WorkflowChannelsState) {
+    assertLaunchFeature('hostedAi');
     const { messages } = state;
     const structuredOutput = model.withStructuredOutput(topic);
     return ChatPromptTemplate.fromTemplate(
@@ -89,6 +92,7 @@ Here is the post:
   }
 
   findHook(state: WorkflowChannelsState) {
+    assertLaunchFeature('hostedAi');
     const { messages } = state;
     const structuredOutput = model.withStructuredOutput(hook);
     return ChatPromptTemplate.fromTemplate(
@@ -115,6 +119,7 @@ You are an assistant that get a social media post and extract the hook, the hook
   }
 
   newPost(post: string) {
+    assertLaunchFeature('hostedAi');
     const state = AgentGraphInsertService.state();
     const workflow = state
       .addNode('find-category', this.findCategory)

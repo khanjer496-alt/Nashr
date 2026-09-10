@@ -12,6 +12,7 @@
  * change can never accidentally grant a Nashr agent an ungated tool.
  */
 import { Injectable, Logger } from '@nestjs/common';
+import { assertLaunchFeature } from '@gitroom/nestjs-libraries/services/launch.policy';
 import { Mastra } from '@mastra/core/mastra';
 import { ConsoleLogger } from '@mastra/core/logger';
 import { pStore } from '@gitroom/nestjs-libraries/chat/mastra.store';
@@ -44,6 +45,7 @@ import { notConfigured, upstreamUnavailable } from './errors';
 @Injectable()
 export class OpenAiModelPort implements ModelPort {
   async generate(request: ModelRequest): Promise<ModelResponse> {
+    assertLaunchFeature('hostedAi');
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
       throw notConfigured('OPENAI_API_KEY is not set');
@@ -135,6 +137,7 @@ export class NashrAgentsService {
 
   /** Lazily built so a deployment without OPENAI_API_KEY still boots. */
   async mastra(): Promise<Mastra> {
+    assertLaunchFeature('customAgents');
     if (!this.mastraInstance) {
       this.mastraInstance = new Mastra({
         storage: pStore,

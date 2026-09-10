@@ -29,7 +29,8 @@ import { MultiMediaComponent } from '@gitroom/frontend/components/media/media.co
 import { UpDownArrow } from '@gitroom/frontend/components/launches/up.down.arrow';
 import { deleteDialog } from '@gitroom/react/helpers/delete.dialog';
 import { useExistingData } from '@gitroom/frontend/components/launches/helpers/use.existing.data';
-import { useCopilotAction, useCopilotReadable } from '@copilotkit/react-core';
+import { EditorAiBindings } from '@gitroom/frontend/components/new-launch/editor-ai-bindings';
+import { useLaunchCapabilities } from '@gitroom/react/helpers/variable.context';
 import { useDropzone } from 'react-dropzone';
 import { useUppyUploader } from '@gitroom/frontend/components/media/new.uploader';
 import { Dashboard } from '@uppy/react';
@@ -103,6 +104,7 @@ export const EditorWrapper: FC<{
   value: string;
 }> = () => {
   const t = useT();
+  const { hostedAi } = useLaunchCapabilities();
   const {
     setGlobalValueText,
     setInternalValueText,
@@ -215,26 +217,6 @@ export const EditorWrapper: FC<{
     },
     [internal, items]
   );
-
-  useCopilotReadable({
-    description: 'Current content of posts',
-    value: items.map((p) => p.content),
-  });
-
-  useCopilotAction({
-    name: 'setPosts',
-    description: 'a thread of posts',
-    parameters: [
-      {
-        name: 'content',
-        type: 'string[]',
-        description: 'a thread of posts',
-      },
-    ],
-    handler: async ({ content }) => {
-      setValue(content);
-    },
-  });
 
   const changeValue = useCallback(
     (index: number) => (value: string) => {
@@ -366,6 +348,7 @@ export const EditorWrapper: FC<{
           'bg-newSettings rounded-[12px]'
       )}
     >
+      {hostedAi && <EditorAiBindings value={items.map((p) => p.content)} onChange={setValue} />}
       {isCreateSet && current !== 'global' && (
         <>
           <div className="text-center absolute w-full h-full left-0 top-0 items-center justify-center flex z-[101] flex-col gap-[16px]">

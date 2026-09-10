@@ -1,3 +1,4 @@
+import { assertLaunchFeature } from '@gitroom/nestjs-libraries/services/launch.policy';
 import {
   forwardRef,
   HttpException,
@@ -335,6 +336,7 @@ export class IntegrationService {
     date: string,
     forceRefresh = false
   ): Promise<AnalyticsData[]> {
+    assertLaunchFeature('platformAnalytics');
     const getIntegration = await this.getIntegrationById(org.id, integration);
 
     if (!getIntegration) {

@@ -1,4 +1,5 @@
 import { brand } from '@gitroom/nashr-brand/brand.config';
+import { getLaunchCapabilities } from '@gitroom/helpers/configuration/launch.capabilities';
 export const dynamic = 'force-dynamic';
 import '../global.scss';
 import 'react-tooltip/dist/react-tooltip.css';
@@ -27,6 +28,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
         className={clsx(jakartaSans.className, 'dark text-primary !bg-primary')}
       >
         <VariableContextComponent
+          launchCapabilities={getLaunchCapabilities()}
           language="en"
           storageProvider={
             process.env.STORAGE_PROVIDER! as 'local' | 'cloudflare'
@@ -34,7 +36,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
           stripeClient=""
           environment={process.env.NODE_ENV!}
           backendUrl={process.env.NEXT_PUBLIC_BACKEND_URL!}
-          plontoKey={process.env.NEXT_PUBLIC_POLOTNO!}
+          plontoKey={getLaunchCapabilities().designer ? process.env.NEXT_PUBLIC_POLOTNO! : ''}
           billingEnabled={!!process.env.STRIPE_PUBLISHABLE_KEY}
           discordUrl={process.env.NEXT_PUBLIC_DISCORD_SUPPORT!}
           frontEndUrl={process.env.FRONTEND_URL!}

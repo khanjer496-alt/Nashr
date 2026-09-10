@@ -27,7 +27,9 @@ import {
   Query,
   Req,
   Res,
+  UseGuards,
 } from '@nestjs/common';
+import { CustomAgentsGuard } from '@gitroom/nestjs-libraries/services/launch.policy';
 import { ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { Organization } from '@prisma/client';
@@ -61,6 +63,7 @@ type NashrCopilotContext = Record<string, string>;
 
 @ApiTags('Nashr Agents')
 @Controller('/nashr-agents')
+@UseGuards(CustomAgentsGuard)
 export class NashrAgentsController {
   private readonly logger = new Logger(NashrAgentsController.name);
 

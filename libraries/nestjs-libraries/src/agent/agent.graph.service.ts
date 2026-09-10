@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { assertLaunchFeature } from '@gitroom/nestjs-libraries/services/launch.policy';
 import {
   BaseMessage,
   HumanMessage,
@@ -133,6 +134,7 @@ export class AgentGraphService {
     });
 
   async startCall(state: WorkflowChannelsState) {
+    assertLaunchFeature('hostedAi');
     const runTools = model.bindTools(tools);
     const response = await ChatPromptTemplate.fromTemplate(
       `
@@ -156,6 +158,7 @@ export class AgentGraphService {
   }
 
   async findCategories(state: WorkflowChannelsState) {
+    assertLaunchFeature('hostedAi');
     const allCategories = await this._postsService.findAllExistingCategories();
     const structuredOutput = model.withStructuredOutput(category);
     const { category: outputCategory } = await ChatPromptTemplate.fromTemplate(
@@ -177,6 +180,7 @@ export class AgentGraphService {
   }
 
   async findTopic(state: WorkflowChannelsState) {
+    assertLaunchFeature('hostedAi');
     const allTopics = await this._postsService.findAllExistingTopicsOfCategory(
       state?.category!
     );
@@ -212,6 +216,7 @@ export class AgentGraphService {
   }
 
   async generateHook(state: WorkflowChannelsState) {
+    assertLaunchFeature('hostedAi');
     const structuredOutput = model.withStructuredOutput(hook);
     const { hook: outputHook } = await ChatPromptTemplate.fromTemplate(
       `
@@ -254,6 +259,7 @@ export class AgentGraphService {
   }
 
   async generateContent(state: WorkflowChannelsState) {
+    assertLaunchFeature('hostedAi');
     const structuredOutput = model.withStructuredOutput(
       contentZod(!!state.isPicture, state.format)
     );
@@ -315,6 +321,7 @@ export class AgentGraphService {
   }
 
   async generatePictures(state: WorkflowChannelsState) {
+    assertLaunchFeature('hostedAi');
     if (!state.isPicture) {
       return {};
     }
@@ -376,6 +383,7 @@ export class AgentGraphService {
   }
 
   start(orgId: string, body: GeneratorDto) {
+    assertLaunchFeature('hostedAi');
     const state = AgentGraphService.state();
     const workflow = state
       .addNode('agent', this.startCall.bind(this))

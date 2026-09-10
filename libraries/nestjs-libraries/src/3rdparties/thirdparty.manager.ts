@@ -1,4 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import { getLaunchCapabilities } from '@gitroom/helpers/configuration/launch.capabilities';
+import { assertLaunchFeature } from '@gitroom/nestjs-libraries/services/launch.policy';
 import {
   ThirdPartyAbstract,
   ThirdPartyParams,
@@ -14,6 +16,7 @@ export class ThirdPartyManager {
   ) {}
 
   getAllThirdParties(): any[] {
+    if (!getLaunchCapabilities().hostedAi) return [];
     return (Reflect.getMetadata('third:party', ThirdPartyAbstract) || []).map(
       (p: any) => ({
         identifier: p.identifier,
@@ -27,6 +30,7 @@ export class ThirdPartyManager {
   getThirdPartyByName(
     identifier: string
   ): (ThirdPartyParams & { instance: ThirdPartyAbstract }) | undefined {
+    assertLaunchFeature('hostedAi');
     const thirdParty = (
       Reflect.getMetadata('third:party', ThirdPartyAbstract) || []
     ).find((p: any) => p.identifier === identifier);
@@ -39,10 +43,12 @@ export class ThirdPartyManager {
   }
 
   getIntegrationById(org: string, id: string) {
+    assertLaunchFeature('hostedAi');
     return this._thirdPartyService.getIntegrationById(org, id);
   }
 
   getAllThirdPartiesByOrganization(org: string) {
+    if (!getLaunchCapabilities().hostedAi) return [];
     return this._thirdPartyService.getAllThirdPartiesByOrganization(org);
   }
 
@@ -52,6 +58,7 @@ export class ThirdPartyManager {
     apiKey: string,
     data: { name: string; username: string; id: string }
   ) {
+    assertLaunchFeature('hostedAi');
     return this._thirdPartyService.saveIntegration(
       org,
       identifier,

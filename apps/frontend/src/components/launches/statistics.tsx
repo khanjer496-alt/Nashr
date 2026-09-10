@@ -6,6 +6,7 @@ import { ChartSocial } from '@gitroom/frontend/components/analytics/chart-social
 import { Select } from '@gitroom/react/form/select';
 import { LoadingComponent } from '@gitroom/frontend/components/layout/loading';
 import { MissingReleaseModal } from '@gitroom/frontend/components/launches/missing-release.modal';
+import { useLaunchCapabilities } from '@gitroom/react/helpers/variable.context';
 
 interface AnalyticsData {
   label: string;
@@ -18,6 +19,7 @@ export const StatisticsModal: FC<{
   postId: string;
 }> = (props) => {
   const { postId } = props;
+  const { platformAnalytics } = useLaunchCapabilities();
   const t = useT();
   const fetch = useFetch();
   const [dateRange, setDateRange] = useState(7);
@@ -36,7 +38,7 @@ export const StatisticsModal: FC<{
   );
 
   const { data: analyticsData, isLoading: isLoadingAnalytics, mutate: mutateAnalytics } = useSWR(
-    `/analytics/post/${postId}?date=${dateRange}`,
+    platformAnalytics ? `/analytics/post/${postId}?date=${dateRange}` : null,
     loadPostAnalytics,
     {
       revalidateOnFocus: false,

@@ -8,7 +8,7 @@ import { TopTitle } from '@gitroom/frontend/components/launches/helpers/top.titl
 import { array, boolean, object, string } from 'yup';
 import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { CopilotTextarea } from '@copilotkit/react-textarea';
+import { OptionalAiTextarea as CopilotTextarea } from '@gitroom/frontend/components/layout/optional-ai';
 import { Select } from '@gitroom/react/form/select';
 import { useToaster } from '@gitroom/react/toaster/toaster';
 import { useT } from '@gitroom/react/translation/get.transation.service.client';
