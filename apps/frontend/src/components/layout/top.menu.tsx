@@ -2,7 +2,7 @@
 
 import { FC, ReactNode, useCallback } from 'react';
 import { useUser } from '@gitroom/frontend/components/layout/user.context';
-import { useVariables } from '@gitroom/react/helpers/variable.context';
+import { useVariables, useLaunchCapabilities } from '@gitroom/react/helpers/variable.context';
 import { useT } from '@gitroom/react/translation/get.transation.service.client';
 import { MenuItem } from '@gitroom/frontend/components/new-layout/menu-item';
 import { useModals } from '@gitroom/frontend/components/layout/new-modal';
@@ -24,6 +24,7 @@ const affiliateUrl = process.env.NEXT_PUBLIC_AFFILIATE_URL || '';
 
 export const useMenuItem = () => {
   const { isGeneral } = useVariables();
+  const capabilities = useLaunchCapabilities();
   const t = useT();
   const { openModal } = useModals();
 
@@ -75,6 +76,7 @@ export const useMenuItem = () => {
         </svg>
       ),
       path: '/agents',
+      hide: !capabilities.hostedAi,
     },
     {
       name: t('analytics', 'Analytics'),
@@ -96,6 +98,7 @@ export const useMenuItem = () => {
         </svg>
       ),
       path: '/analytics',
+      hide: !capabilities.platformAnalytics,
     },
     {
       name: t('media', 'Media'),
@@ -159,6 +162,7 @@ export const useMenuItem = () => {
         </svg>
       ),
       path: '/third-party',
+      hide: !capabilities.hostedAi,
     },
   ] satisfies MenuItemInterface[] as MenuItemInterface[];
 
@@ -195,6 +199,7 @@ export const useMenuItem = () => {
       role: ['ADMIN', 'SUPERADMIN', 'USER'],
       requireBilling: true,
       onClick: handleAgentMediaClick,
+      hide: !capabilities.hostedAi,
     },
     {
       name: t('affiliate', 'Affiliate'),

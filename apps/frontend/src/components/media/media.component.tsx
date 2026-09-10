@@ -53,9 +53,14 @@ import { useLaunchStore } from '@gitroom/frontend/components/new-launch/store';
 import { useShallow } from 'zustand/react/shallow';
 import { LoadingComponent } from '@gitroom/frontend/components/layout/loading';
 import { useDebounce } from 'use-debounce';
-const Polonto = dynamic(
+import { useLaunchCapabilities } from '@gitroom/react/helpers/variable.context';
+const LicensedPolonto = dynamic(
   () => import('@gitroom/frontend/components/launches/polonto')
 );
+const Polonto = (props: React.ComponentProps<typeof LicensedPolonto>) => {
+  const { designer } = useLaunchCapabilities();
+  return designer ? <LicensedPolonto {...props} /> : null;
+};
 const showModalEmitter = new EventEmitter();
 export const Pagination: FC<{
   current: number;
@@ -206,6 +211,7 @@ export const MediaBox: FC<{
   type?: 'image' | 'video';
   closeModal: () => void;
 }> = ({ type, standalone, setMedia }) => {
+  const { hostedAi } = useLaunchCapabilities();
   const [page, setPage] = useState(0);
   const [search, setSearch] = useState('');
   const [debouncedSearch] = useDebounce(search, 300);
@@ -443,7 +449,7 @@ export const MediaBox: FC<{
           />
           <div className="flex gap-[8px]">
             {btn}
-            <ThirdPartyMediaLibrary onImported={() => mutate()} />
+            {hostedAi && <ThirdPartyMediaLibrary onImported={() => mutate()} />}
           </div>
         </div>
         <div className="w-full pointer-events-none relative mt-[5px] mb-[5px]">
@@ -505,7 +511,7 @@ export const MediaBox: FC<{
                 </div>
                 <div className="forceChange flex gap-[8px]">
                   {btn}
-                  <ThirdPartyMediaLibrary onImported={() => mutate()} />
+                  {hostedAi && <ThirdPartyMediaLibrary onImported={() => mutate()} />}
                 </div>
               </>
             )}
@@ -676,6 +682,7 @@ export const MultiMediaComponent: FC<{
     information,
     mediaNotAvailable,
   } = props;
+  const { designer, hostedAi } = useLaunchCapabilities();
   const user = useUser();
   const modals = useModals();
   const t = useT();
@@ -740,7 +747,7 @@ export const MultiMediaComponent: FC<{
   );
 
   const designMedia = useCallback(() => {
-    if (!!user?.tier?.ai && !dummy) {
+    if (designer && !!user?.tier?.ai && !dummy) {
       modals.openModal({
         askClose: false,
         title: t('design_media', 'Design Media'),
@@ -750,7 +757,7 @@ export const MultiMediaComponent: FC<{
         ),
       });
     }
-  }, [changeMedia, t]);
+  }, [changeMedia, t, designer, user?.tier?.ai, dummy]);
 
   return (
     <>
@@ -839,7 +846,7 @@ export const MultiMediaComponent: FC<{
                   </div>
                 </div>
               </div>
-              <div
+              {designer && <div
                 onClick={designMedia}
                 className="cursor-pointer h-[30px] rounded-[6px] justify-center items-center flex bg-newColColor px-[8px]"
               >
@@ -851,11 +858,11 @@ export const MultiMediaComponent: FC<{
                     {t('design_media', 'Design Media')}
                   </div>
                 </div>
-              </div>
+              </div>}
 
-              <ThirdPartyMedia allData={allData} onChange={changeMedia} />
+              {hostedAi && <ThirdPartyMedia allData={allData} onChange={changeMedia} />}
 
-              {!!user?.tier?.ai && (
+              {hostedAi && !!user?.tier?.ai && (
                 <>
                   <AiImage value={text} onChange={changeMedia} />
                   <AiVideo value={text} onChange={changeMedia} />
@@ -909,6 +916,7 @@ export const MediaComponent: FC<{
 
   const { name, type, label, description, onChange, value, width, height } =
     props;
+  const { designer } = useLaunchCapabilities();
   const { getValues } = useSettings();
   const user = useUser();
   useEffect(() => {
@@ -922,6 +930,7 @@ export const MediaComponent: FC<{
   const mediaDirectory = useMediaDirectory();
 
   const showDesignModal = useCallback(() => {
+    if (!designer) return;
     modals.openModal({
       title: t('media_editor', 'Media Editor'),
       askClose: false,
@@ -938,7 +947,7 @@ export const MediaComponent: FC<{
         />
       ),
     });
-  }, [t]);
+  }, [t, designer, width, height]);
   const changeMedia = useCallback((m: { path: string; id: string }[]) => {
     setCurrentMedia(m[0]);
     onChange({
@@ -985,9 +994,9 @@ export const MediaComponent: FC<{
       )}
       <div className="flex gap-[5px]">
         <Button onClick={showModal}>{t('select', 'Select')}</Button>
-        <Button onClick={showDesignModal} className="!bg-customColor45">
+        {designer && <Button onClick={showDesignModal} className="!bg-customColor45">
           {t('editor', 'Editor')}
-        </Button>
+        </Button>}
         <Button secondary={true} onClick={clearMedia}>
           {t('clear', 'Clear')}
         </Button>

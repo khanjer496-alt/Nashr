@@ -1,3 +1,4 @@
+import { assertLaunchFeature } from '@gitroom/nestjs-libraries/services/launch.policy';
 import {
   BadRequestException,
   Injectable,
@@ -156,6 +157,7 @@ export class PostsService {
     date: number,
     forceRefresh = false
   ): Promise<AnalyticsData[] | { missing: true }> {
+    assertLaunchFeature('platformAnalytics');
     const post = await this._postRepository.getPostById(postId, orgId);
     if (!post || !post.releaseId) {
       return [];

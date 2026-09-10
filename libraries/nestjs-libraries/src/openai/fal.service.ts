@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { assertLaunchFeature } from '@gitroom/nestjs-libraries/services/launch.policy';
 
 import pLimit from 'p-limit';
 const limit = pLimit(10);
@@ -10,6 +11,7 @@ export class FalService {
     text: string,
     isVertical: boolean = false
   ): Promise<string> {
+    assertLaunchFeature('hostedAi');
     const { images, video, ...all } = await (
       await limit(() =>
         fetch(`https://fal.run/fal-ai/${model}`, {

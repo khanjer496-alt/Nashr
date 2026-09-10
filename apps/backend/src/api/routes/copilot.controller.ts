@@ -7,7 +7,10 @@ import {
   Res,
   Query,
   Param,
+  UseGuards,
+  ServiceUnavailableException,
 } from '@nestjs/common';
+import { HostedAiGuard } from '@gitroom/nestjs-libraries/services/launch.policy';
 import {
   CopilotRuntime,
   OpenAIAdapter,
@@ -31,6 +34,7 @@ export type ChannelsContext = {
 };
 
 @Controller('/copilot')
+@UseGuards(HostedAiGuard)
 export class CopilotController {
   constructor(
     private _subscriptionService: SubscriptionService,
@@ -42,8 +46,7 @@ export class CopilotController {
       process.env.OPENAI_API_KEY === undefined ||
       process.env.OPENAI_API_KEY === ''
     ) {
-      Logger.warn('OpenAI API key not set, chat functionality will not work');
-      return;
+      throw new ServiceUnavailableException('Hosted AI is not configured');
     }
 
     const copilotRuntimeHandler = copilotRuntimeNodeHttpEndpoint({
@@ -68,8 +71,7 @@ export class CopilotController {
       process.env.OPENAI_API_KEY === undefined ||
       process.env.OPENAI_API_KEY === ''
     ) {
-      Logger.warn('OpenAI API key not set, chat functionality will not work');
-      return;
+      throw new ServiceUnavailableException('Hosted AI is not configured');
     }
     const mastra = await this._mastraService.mastra();
     const requestContext = new RequestContext<ChannelsContext>();

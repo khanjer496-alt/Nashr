@@ -18,6 +18,34 @@ brief item 9.
 
 ## Repository layout
 
+### 10 September 2026 — fail-closed lean beta profile
+
+- Added an opt-in `POSTDELEGATE_LAUNCH_MODE=lean` policy. It preserves normal
+  composer/calendar/media uploads and the existing PostgreSQL/Redis/Temporal
+  publishing architecture while disabling PostDelegate-hosted AI, unfinished
+  custom agents, platform analytics, commercial design tooling, third-party AI
+  media, Stripe billing and X for the first controlled beta.
+- Social providers are filtered at the shared integration registry, not only in
+  the picker UI. Lean mode defaults to an empty allowlist; direct API/worker users
+  therefore cannot reach a provider merely because its implementation exists.
+- Hosted AI is gated at controllers/services and model-backed tool construction.
+  The MCP server can still expose a reviewed non-hosted tool subset without
+  instantiating PostDelegate's model agent, so external clients can bring their
+  own model while server authorization remains in the existing tool paths.
+- Polotno controls, Copilot runtime UI, AI media, agents, analytics and autopost
+  generation are removed from the lean user surface. Ordinary textareas and
+  ordinary media upload remain available. Direct server calls are also blocked;
+  this is not a cosmetic hide-only implementation.
+- Added a production/staging Compose overlay requiring an exact GHCR digest,
+  closed registration, Cloudflare storage, empty paid credentials and private
+  existing stateful services. It does **not** reduce the unmeasured memory limits
+  or remove Elasticsearch solely to fit a cheaper VPS.
+- Added a new CI workflow and dependency-light regression/Compose checks. The
+  workflow produces evidence only; it cannot buy infrastructure, deploy a server
+  or imply social-platform approval.
+- See `docs/launch/lean-beta.md`. No existing Temporal workflow definition or
+  activity contract is changed by this launch profile.
+
 ### Owned PostDelegate domain
 
 - The public-site build now uses `https://postdelegate.com` for absolute sharing

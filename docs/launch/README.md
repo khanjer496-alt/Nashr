@@ -1,6 +1,6 @@
 # PostDelegate launch execution
 
-Updated: **9 September 2026**. Product: **PostDelegate**. Repository and internal
+Updated: **10 September 2026**. Product: **PostDelegate**. Repository and internal
 `nashr-*` identifiers intentionally remain unchanged. This is a global product;
 Arabic and regional capabilities are optional, not the definition of the market.
 
@@ -15,14 +15,16 @@ their security, isolation, approval or restore requirements.
 | Rebrand baseline | `c53f035602ece610667aa0ca659ccad69b312a0b` on main before this launch work |
 | Corresponding-source repository | `khanjer496-alt/Nashr` is public; the deployed image must offer its exact commit |
 | Production topology | Existing approved Docker origin + Cloudflare edge + R2; no Workers-only rewrite |
+| Operating entity | Nasida Apps LLC is formed in Wyoming; EIN, banking/payment eligibility and final commercial/legal commitments are separate gates |
 | Developer applications | No console application IDs, submissions or approval evidence verified in this work |
-| Public website | Existing `postdelegate.pages.dev` Cloudflare Pages project verified; previous deployment came from `c53f035`. This is a static preview, not a running publishing origin. See [public-site deployment](public-site.md). |
-| App runtime and domain | No full application origin verified; the connected Cloudflare account returned no managed DNS zones. This does not establish domain ownership in other accounts. |
+| Public website | `https://postdelegate.com` is the verified Cloudflare Pages public preview. `www` redirects to the apex. See [public-site deployment](public-site.md). |
+| App runtime and domain | `app.postdelegate.com` is the chosen full-app origin but no stateful production runtime is verified there yet |
 | Hosting credentials | No configured local `hcloud` context; no repository-level Actions secrets/variables returned by the checks. This is not an inventory of other accounts or environments. |
 | Public review pages | Support and deletion-process information included in the reproducible public-site export. Private request contacts and legal policies remain unfinished; these are not yet acceptable evidence of operational handling. |
 | R2 | Existing `nashr-production-media` and `nashr-production-backups` buckets verified; no replacement buckets created |
 | Production build workflow | New manual, opt-in `PostDelegate Launch Preparation` workflow uses `Dockerfile.prod` and our GHCR namespace; not run as a production build |
 | Launch tooling | Source-derived scope/callback manifest, public-build configuration guard, read-only public smoke checker, dependency-free tests |
+| Lean beta profile | [Lean beta](lean-beta.md) removes optional AI/designer/X/billing spend while retaining the existing publishing architecture and fail-closed provider rollout |
 
 **Prepared is not submitted. Built is not deployed. Configured is not approved.
 No customer publishing access is certified by this document.**
@@ -31,11 +33,9 @@ No customer publishing access is certified by this document.**
 
 | Input | Why it is needed | Safe handoff |
 |---|---|---|
-| Registered domain and chosen app hostname | Website, OAuth callbacks, verification and brand email | Domain name and DNS account access; do not assume `postdelegate.com` is owned |
-| Actual operating entity or legally valid operator, jurisdiction and governing terms | Consistent platform applications, terms/privacy, business verification where required | Confirm real details; do not invent an LLC or borrow another business's identity |
 | Monitored support and privacy addresses | Reviewer contact, account support and deletion requests | Create and test mailboxes/routing under the owned domain |
 | Docker host/provider, region and approved spend | Stateful app, PostgreSQL, Redis and Temporal | Use an existing authorized host or approve a specific new purchase before provisioning |
-| Managed production DNS zone | Cloudflare account, Pages and existing R2 buckets are accessible; a production DNS zone still needs verification | Do not duplicate existing resources or ask for already-working Cloudflare login |
+| Final governing/refund/retention terms | Terms/privacy and deletion handling must match actual Nasida Apps LLC operations | Confirm commitments; do not remove draft notices just to pass review |
 | Platform developer-account owners | Create and submit apps, business/Page verification, required owner consent | Owner signs in and completes MFA/identity steps; app secrets go directly to server secret storage |
 
 Do not put passwords, OAuth client secrets, SSH keys, R2 keys or reviewer
@@ -46,6 +46,9 @@ credentials in this public repository, issue comments, videos or screenshots.
 ### 1. Prepare the review deployment
 
 Keep the approved deployment topology from [DEPLOYMENT.md](../../DEPLOYMENT.md).
+For the first low-cost beta, apply the [lean beta profile](lean-beta.md): build in
+CI, run one production host, and use isolated staging on demand rather than paying
+for a permanent second server. This reduces optional spend, not safety controls.
 Use separate production/staging secrets, databases, buckets and volumes. The
 current image workflow targets **linux/amd64**; choose a matching host or add and
 test an ARM64 build before ordering an ARM host. Do not purchase infrastructure

@@ -21,7 +21,7 @@ import { TeamsComponent } from '@gitroom/frontend/components/settings/teams.comp
 import { useUser } from '@gitroom/frontend/components/layout/user.context';
 import { LogoutComponent } from '@gitroom/frontend/components/layout/logout.component';
 import { useSearchParams } from 'next/navigation';
-import { useVariables } from '@gitroom/react/helpers/variable.context';
+import { useVariables, useLaunchCapabilities } from '@gitroom/react/helpers/variable.context';
 import { PublicComponent } from '@gitroom/frontend/components/public-api/public.component';
 import Link from 'next/link';
 import { Webhooks } from '@gitroom/frontend/components/webhooks/webhooks';
@@ -82,6 +82,7 @@ export const SettingsPopup: FC<{
   }, []);
 
   const [tab, setTab] = useState('global_settings');
+  const { hostedAi } = useLaunchCapabilities();
 
   const t = useT();
   const list = useMemo(() => {
@@ -94,7 +95,7 @@ export const SettingsPopup: FC<{
     if (user?.tier?.webhooks) {
       arr.push({ tab: 'webhooks', label: t('webhooks_1', 'Webhooks') });
     }
-    if (user?.tier?.autoPost) {
+    if (hostedAi && user?.tier?.autoPost) {
       arr.push({ tab: 'autopost', label: t('auto_post', 'Auto Post') });
     }
     if (user?.tier.current !== 'FREE') {
@@ -109,7 +110,7 @@ export const SettingsPopup: FC<{
     arr.push({ tab: 'approved_apps', label: t('approved_apps', 'Approved Apps') });
 
     return arr;
-  }, [user, isGeneral, showLogout, t]);
+  }, [user, isGeneral, showLogout, t, hostedAi]);
 
   useEffect(() => {
     loadProfile();
@@ -177,7 +178,7 @@ export const SettingsPopup: FC<{
                 </div>
               )}
 
-              {tab === 'autopost' && !!user?.tier?.autoPost && (
+              {tab === 'autopost' && hostedAi && !!user?.tier?.autoPost && (
                 <div>
                   <Autopost />
                 </div>

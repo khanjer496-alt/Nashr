@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { assertLaunchFeature } from '@gitroom/nestjs-libraries/services/launch.policy';
 import { AutopostRepository } from '@gitroom/nestjs-libraries/database/prisma/autopost/autopost.repository';
 import { AutopostDto } from '@gitroom/nestjs-libraries/dtos/autopost/autopost.dto';
 import dayjs from 'dayjs';
@@ -79,6 +80,7 @@ export class AutopostService {
   }
 
   async createAutopost(orgId: string, body: AutopostDto, id?: string) {
+    assertLaunchFeature('hostedAi');
     const data = await this._autopostsRepository.createAutopost(
       orgId,
       body,
@@ -91,6 +93,7 @@ export class AutopostService {
   }
 
   async changeActive(orgId: string, id: string, active: boolean) {
+    if (active) assertLaunchFeature('hostedAi');
     const data = await this._autopostsRepository.changeActive(
       orgId,
       id,
@@ -101,6 +104,7 @@ export class AutopostService {
   }
 
   async processCron(active: boolean, orgId: string, id: string) {
+    if (active) assertLaunchFeature('hostedAi');
     if (active) {
       try {
         return this._temporalService.client
@@ -199,6 +203,7 @@ export class AutopostService {
   }
 
   async generateDescription(state: WorkflowChannelsState) {
+    assertLaunchFeature('hostedAi');
     if (!state.body.generateContent) {
       return {
         ...state,
@@ -242,6 +247,7 @@ export class AutopostService {
   }
 
   async generatePicture(state: WorkflowChannelsState) {
+    assertLaunchFeature('hostedAi');
     const structuredOutput = model.withStructuredOutput(dallePrompt);
     const { generatedTextToBeSentToDallE } =
       await ChatPromptTemplate.fromTemplate(
@@ -311,6 +317,7 @@ export class AutopostService {
   }
 
   async startAutopost(id: string) {
+    assertLaunchFeature('hostedAi');
     const getPost = await this._autopostsRepository.getAutopost(id);
     if (!getPost || !getPost.active) {
       return;

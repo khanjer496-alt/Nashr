@@ -7,7 +7,7 @@ import { useFetch } from '@gitroom/helpers/utils/custom.fetch';
 import { Toaster } from '@gitroom/react/toaster/toaster';
 import { MantineWrapper } from '@gitroom/react/helpers/mantine.wrapper';
 import { useVariables } from '@gitroom/react/helpers/variable.context';
-import { CopilotKit } from '@copilotkit/react-core';
+import { OptionalAiProvider } from '@gitroom/frontend/components/layout/optional-ai';
 import { ToolTip } from '@gitroom/frontend/components/layout/top.tip';
 export const PreviewWrapper = ({ children }: { children: ReactNode }) => {
   const fetch = useFetch();
@@ -24,17 +24,13 @@ export const PreviewWrapper = ({ children }: { children: ReactNode }) => {
   });
   return (
     <ContextWrapper user={user}>
-      <CopilotKit
-        credentials="include"
-        runtimeUrl={backendUrl + '/copilot/chat'}
-        showDevConsole={false}
-      >
+      <OptionalAiProvider>
         <MantineWrapper>
           <Toaster />
           <ToolTip />
           {children}
         </MantineWrapper>
-      </CopilotKit>
+      </OptionalAiProvider>
     </ContextWrapper>
   );
 };

@@ -1,4 +1,5 @@
 import { brand } from '@gitroom/nashr-brand/brand.config';
+import { getLaunchCapabilities } from '@gitroom/helpers/configuration/launch.capabilities';
 import { INestApplication } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { MastraService } from '@gitroom/nestjs-libraries/chat/mastra.service';
@@ -32,15 +33,17 @@ export const startMcp = async (app: INestApplication) => {
     return organizationService.getOrgByApiKey(token);
   };
 
-  const mastra = await mastraService.mastra();
-  const agent = mastra.getAgent('postiz');
-  const tools = await agent.listTools();
+  // External MCP clients bring their model. Lean mode must neither instantiate
+  // a hosted model agent nor advertise its billable agent-execution tools.
+  const hostedAi = getLaunchCapabilities().hostedAi;
+  const agent = hostedAi ? (await mastraService.mastra()).getAgent('postiz') : undefined;
+  const tools = agent ? await agent.listTools() : await mastraService.tools();
 
   const serverConfig = {
     name: `${brand.name} MCP`,
     version: '1.0.0',
     tools,
-    agents: { postiz: agent },
+    ...(agent ? { agents: { postiz: agent } } : {}),
   };
 
   const server = new MCPServer(serverConfig);

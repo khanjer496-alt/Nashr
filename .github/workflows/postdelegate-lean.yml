@@ -1,0 +1,46 @@
+name: PostDelegate Lean Release Checks
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, launch/lean-beta]
+    paths:
+      - 'apps/**'
+      - 'libraries/**'
+      - 'tests/ops/**'
+      - 'tests/scripts/verify-lean-compose.mjs'
+      - 'ops/scripts/lean-preflight.mjs'
+      - 'docker-compose*.yaml'
+      - '.github/workflows/postdelegate-lean.yml'
+      - 'pnpm-lock.yaml'
+permissions:
+  contents: read
+concurrency:
+  group: postdelegate-lean-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  lean-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      NODE_OPTIONS: --max-old-space-size=5120
+      NEXT_TELEMETRY_DISABLED: '1'
+      POSTDELEGATE_LAUNCH_MODE: lean
+      POSTDELEGATE_ENABLED_PROVIDERS: ''
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.12.0'
+      - uses: pnpm/action-setup@v4
+        with:
+          version: '10.6.1'
+      - run: pnpm install --frozen-lockfile
+      - name: Lean policy, service gates, MCP and UI fallback regressions
+        run: node --test tests/ops/lean-launch.test.cjs tests/ops/lean-compose.test.mjs
+      - name: Validate actual production and staging Compose merges
+        run: node tests/scripts/verify-lean-compose.mjs
+      - name: Full application build with lean mode and no social or AI credentials
+        run: pnpm run build
+      - name: Record scope of evidence
+        run: |
+          echo 'Lean configuration and code tested. No server deployed, subscription activated or platform approval asserted.' >> "$GITHUB_STEP_SUMMARY"
