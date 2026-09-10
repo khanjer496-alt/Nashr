@@ -20,7 +20,7 @@ their security, isolation, approval or restore requirements.
 | Public website | `https://postdelegate.com` is the verified Cloudflare Pages public preview. `www` redirects to the apex. See [public-site deployment](public-site.md). |
 | App runtime and domain | `app.postdelegate.com` is the chosen full-app origin but no stateful production runtime is verified there yet |
 | Hosting credentials | No configured local `hcloud` context; no repository-level Actions secrets/variables returned by the checks. This is not an inventory of other accounts or environments. |
-| Public review pages | Support and deletion-process information included in the reproducible public-site export. Private request contacts and legal policies remain unfinished; these are not yet acceptable evidence of operational handling. |
+| Public review pages | Cloudflare Email Routing is active for `support@postdelegate.com` and `privacy@postdelegate.com`; the public-site build now renders those monitored contacts plus the confirmed Nasida Apps LLC / Wyoming operator identity. Final governing/refund/retention terms remain unfinished. |
 | R2 | Existing `nashr-production-media` and `nashr-production-backups` buckets verified; no replacement buckets created |
 | Production build workflow | New manual, opt-in `PostDelegate Launch Preparation` workflow uses `Dockerfile.prod` and our GHCR namespace; not run as a production build |
 | Launch tooling | Source-derived scope/callback manifest, public-build configuration guard, read-only public smoke checker, dependency-free tests |
@@ -33,7 +33,6 @@ No customer publishing access is certified by this document.**
 
 | Input | Why it is needed | Safe handoff |
 |---|---|---|
-| Monitored support and privacy addresses | Reviewer contact, account support and deletion requests | Create and test mailboxes/routing under the owned domain |
 | Docker host/provider, region and approved spend | Stateful app, PostgreSQL, Redis and Temporal | Use an existing authorized host or approve a specific new purchase before provisioning |
 | Final governing/refund/retention terms | Terms/privacy and deletion handling must match actual Nasida Apps LLC operations | Confirm commitments; do not remove draft notices just to pass review |
 | Platform developer-account owners | Create and submit apps, business/Page verification, required owner consent | Owner signs in and completes MFA/identity steps; app secrets go directly to server secret storage |
