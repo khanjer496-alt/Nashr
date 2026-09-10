@@ -3,7 +3,7 @@ import { useCopilotAction, useCopilotReadable } from '@copilotkit/react-core';
 
 // These children mount only inside the optional AI provider. The ordinary
 // editor/selector must remain usable without any model-runtime context.
-export function EditorAiBindings({ value, onChange }: { value: string[]; onChange: (value: string[]) => void }) {
+export function EditorAiBindings({ value, onChange }: { value: string[]; onChange: (value: string[]) => void }): null {
   useCopilotReadable({ description: 'Current content of posts', value });
   useCopilotAction({
     name: 'setPosts', description: 'a thread of posts',
@@ -16,7 +16,7 @@ export function EditorAiBindings({ value, onChange }: { value: string[]; onChang
 export function PlatformAiBindings({ integrations, isMain, handler }: {
   integrations: unknown; isMain: boolean;
   handler: (value: { integrationsId: string[] }) => Promise<void>;
-}) {
+}): null {
   useCopilotReadable({
     description: isMain ? 'All available platforms channels' : 'Possible platforms channels to edit',
     value: JSON.stringify(integrations),
