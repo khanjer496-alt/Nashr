@@ -27,6 +27,10 @@ jobs:
       NEXT_PUBLIC_APP_URL: https://postdelegate.com
       NEXT_PUBLIC_SOURCE_URL: https://github.com/khanjer496-alt/Nashr/tree/${{ github.sha }}
       NEXT_PUBLIC_POSTDELEGATE_PREVIEW: 'true'
+      NEXT_PUBLIC_BRAND_LEGAL_NAME: Nasida Apps LLC
+      NEXT_PUBLIC_BRAND_JURISDICTION: Wyoming, United States
+      NEXT_PUBLIC_SUPPORT_EMAIL: support@postdelegate.com
+      NEXT_PUBLIC_PRIVACY_EMAIL: privacy@postdelegate.com
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
