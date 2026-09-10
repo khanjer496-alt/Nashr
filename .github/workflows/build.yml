@@ -3,6 +3,11 @@ name: Build
 
 on:
   push:
+    # Feature branches are validated by the pull_request event below. Running
+    # the same build again for every branch push created duplicate checks (and
+    # duplicate red failures) on each PR. Keep a post-merge build on main.
+    branches:
+      - main
   merge_group:
   pull_request:
 
