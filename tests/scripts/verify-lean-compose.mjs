@@ -35,6 +35,9 @@ try {
     const report = checkLeanCompose(config);
     assert.equal(report.ok, true, report.errors.join('; '));
     assert.equal(config.services.app.build.args.NEXT_PUBLIC_POLOTNO, '');
+    assert.equal(config.services.temporal.environment.ENABLE_ES, 'false');
+    assert.equal(config.services.temporal.environment.ES_SEEDS, '');
+    assert.ok(config.services['temporal-elasticsearch']?.profiles?.includes('temporal-es'));
     assert.equal(config.name, target === 'prod' ? 'nashr-prod' : 'nashr-staging');
     assert.ok(Object.values(config.volumes).every((volume) => volume.name.startsWith(config.name)), 'Volume boundary changed');
     console.log(`${target}: merged lean policy, exact digest and isolated volumes passed (configuration only)`);

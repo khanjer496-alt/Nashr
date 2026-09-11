@@ -28,6 +28,8 @@ Disabled in lean mode:
 - third-party AI/video providers;
 - X, which requires a separately budgeted rollout;
 - Stripe billing during the free beta.
+- Temporal Elasticsearch; Temporal uses its supported PostgreSQL visibility
+  store for the first beta, avoiding a separate JVM/search service on the host.
 
 `POSTDELEGATE_LAUNCH_MODE=lean` is fail-closed. An empty
 `POSTDELEGATE_ENABLED_PROVIDERS` means **zero customer social connections**. Add an
@@ -68,6 +70,12 @@ For the first beta, run one production Docker host and build the image in CI.
 Do not permanently rent a second staging host. Use an isolated temporary host for
 release/restore rehearsals, then deliberately destroy it. A stopped cloud VM may
 still incur charges.
+
+The lean overlay also profile-gates `temporal-elasticsearch` and sets
+`ENABLE_ES=false`. Temporal supports PostgreSQL as a visibility store, so the
+first beta does not need an Elasticsearch container. Do not enable the
+`temporal-es` profile unless a measured product requirement justifies the extra
+memory.
 
 The production app image must be referenced by **digest**, not `latest`, `main` or
 another floating tag. The lean Compose overlay requires:

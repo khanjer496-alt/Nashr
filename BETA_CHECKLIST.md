@@ -1,9 +1,11 @@
 # BETA_CHECKLIST.md — Nashr (نشر)
 
-> **PostDelegate global-first update — 9 September 2026:** use [the current launch execution guide](docs/launch/README.md)
-> and [platform application pack](docs/launch/platform-access.md). The regional cohort,
-> fixed approval-time estimates and API-tier descriptions below are historical,
-> not current launch instructions. Preserve the per-platform real-publish and safety evidence gates.
+> **PostDelegate global-first update — 10 September 2026:** use [the current launch execution guide](docs/launch/README.md),
+> [lean beta profile](docs/launch/lean-beta.md) and [platform application pack](docs/launch/platform-access.md).
+> Regional cohort guidance, fixed approval-time estimates and historical API-tier
+> descriptions below are retained only as old evidence. The current beta is
+> global-first: enable a country/locale only after its localized experience has
+> been reviewed. Preserve the per-platform real-publish and safety evidence gates.
 
 **Phase 8 deliverable.** The go/no-go gate for the first closed beta:
 **5–10 businesses, no more.** Compiled 2026-08-08.
@@ -94,9 +96,9 @@ table. Summarised here:
 **See §3.** This is the gate most likely to be skipped and the one that most
 directly determines whether the beta is a product test or an embarrassment.
 
-### 2.5 🟠 Quality — blocking for Arabic-facing customers
+### 2.5 🟠 Localization quality — blocking only for locales offered to beta users
 
-- [ ] Native Arabic review completed for at least the **high-traffic screens**:
+- [ ] Before offering Arabic to beta users, native Arabic review completed for at least the **high-traffic screens**:
       login, calendar, composer, approval flow, settings, billing, and all error
       copy. Full-catalogue review (~700 keys) may continue in parallel, but the
       screens a customer touches daily must be reviewed first (RISK-P2).
@@ -225,9 +227,11 @@ Recruit deliberately, not opportunistically.
 | 1–2 | Salon or clinic | Tests the prohibited-claims feature under real advertising rules. |
 | 1–2 | Small business / retail | Breadth. |
 
-**Start UAE-only.** The calendar week-start bug (`FEATURES.md` §5.7) makes KSA
-and the other markets a worse first experience, and the UAE is the stated
-initial market.
+**Do not force a UAE-only cohort.** The current product direction is global-first.
+Choose initial beta users by supported platform/account eligibility and support
+capacity. A locale must not be offered as production-ready until its own UI and
+copy have been reviewed; Arabic can remain an optional capability during the
+first English-language beta.
 
 **Prefer customers who:**
 - will answer the phone and tell you the truth

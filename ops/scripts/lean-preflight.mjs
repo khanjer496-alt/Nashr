@@ -23,12 +23,19 @@ export function checkLeanCompose(config) {
   if (typeof raw !== 'string' || providers.some((id) => !/^[a-z0-9][a-z0-9-]*$/.test(id)) || providers.includes('x')) {
     errors.push('Provider allowlist must contain explicit IDs and exclude X');
   }
-  for (const name of ['postgres','redis','temporal','temporal-postgres','temporal-elasticsearch']) {
+  for (const name of ['postgres','redis','temporal','temporal-postgres']) {
     const service = config?.services?.[name];
     if (!service) errors.push(`Required existing service missing: ${name}`);
     if (service?.ports?.some((port) => typeof port === 'string' || !['127.0.0.1','::1'].includes(port.host_ip))) {
       errors.push(`Internal service exposed: ${name}`);
     }
+  }
+  const temporalEnv = config?.services?.temporal?.environment || {};
+  if (temporalEnv.ENABLE_ES !== 'false') errors.push('Lean Temporal must use PostgreSQL visibility');
+  if (temporalEnv.ES_SEEDS || temporalEnv.ES_VERSION) errors.push('Lean Temporal must not configure Elasticsearch');
+  const elastic = config?.services?.['temporal-elasticsearch'];
+  if (elastic && !elastic.profiles?.includes('temporal-es')) {
+    errors.push('Temporal Elasticsearch must be profile-gated in lean mode');
   }
   if (!Object.keys(config?.volumes || {}).length) errors.push('Persistent volumes missing');
   return {

@@ -1,0 +1,27 @@
+# Temporal dynamic config for the PostDelegate lean beta.
+# PostgreSQL is the visibility store; no Elasticsearch reads are enabled.
+
+limit.maxIDLength:
+  - value: 255
+    constraints: {}
+
+limit.blobSize.warn:
+  - value: 262144
+    constraints: {}
+limit.blobSize.error:
+  - value: 2097152
+    constraints: {}
+
+frontend.namespaceRPS:
+  - value: 800
+    constraints: {}
+frontend.namespaceCount:
+  - value: 200
+    constraints: {}
+
+history.persistenceMaxQPS:
+  - value: 600
+    constraints: {}
+frontend.persistenceMaxQPS:
+  - value: 600
+    constraints: {}

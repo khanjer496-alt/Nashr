@@ -92,6 +92,27 @@ regression tests; it is not required simply to upload a video.
 
 ## Platform submission tracks
 
+### Lean-beta permission policy
+
+For the first controlled beta, request only permissions needed by the features
+that are actually enabled. Platform analytics polling is disabled in lean mode,
+and comment/reply management should not be presented as available unless the
+corresponding permission has been approved and the deployed provider path has
+been exercised with a real account.
+
+For the initial Meta review package, the target publishing-only surface is:
+
+- Facebook Pages: Page discovery/read access plus Page publishing;
+- Instagram: account discovery/basic access plus content publishing;
+- no analytics, comment-management or broad Business Manager discovery claims
+  merely because those methods exist in the maintained fork.
+
+The provider source currently contains optional analytics, comments and broader
+Business Manager discovery paths. Before submitting a reduced-scope Meta app,
+either gate those paths in lean mode or retain the relevant permissions and show
+the corresponding feature in review. Never submit a scope that the review build
+cannot demonstrate.
+
 ### Meta: Facebook Pages, Instagram and Threads
 
 Register the appropriate current use cases in the operator's Meta developer

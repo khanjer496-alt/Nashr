@@ -22,3 +22,24 @@ services:
       STRIPE_SECRET_KEY: ""
       STRIPE_PUBLISHABLE_KEY: ""
       STRIPE_SIGNING_KEY: ""
+
+  # Temporal can use PostgreSQL for both persistence and visibility. The full
+  # production profile retains Elasticsearch, but the 5-10 workspace lean beta
+  # does not need a separate search cluster. Keep the inherited dependency
+  # optional and disable ES explicitly so a lean host does not spend ~1 GB of
+  # RAM on an otherwise idle JVM.
+  temporal:
+    depends_on:
+      temporal-elasticsearch:
+        condition: service_healthy
+        required: false
+    environment:
+      ENABLE_ES: "false"
+      ES_SEEDS: ""
+      ES_VERSION: ""
+      DYNAMIC_CONFIG_FILE_PATH: config/dynamicconfig/lean-sql.yaml
+
+  # Disabled by default in lean mode. It can still be started deliberately with
+  # --profile temporal-es for diagnosis without deleting the full-stack service.
+  temporal-elasticsearch:
+    profiles: ["temporal-es"]

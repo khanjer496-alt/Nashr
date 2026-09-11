@@ -11,7 +11,7 @@ function valid() {
       ...Object.fromEntries(['OPENAI_API_KEY','FAL_KEY','NEXT_PUBLIC_POLOTNO','TRANSLOADIT_AUTH','TRANSLOADIT_TEMPLATE',
         'X_API_KEY','X_API_SECRET','STRIPE_SECRET_KEY','STRIPE_PUBLISHABLE_KEY','STRIPE_SIGNING_KEY'].map((key) => [key, ''])),
     },
-  }, postgres: {}, redis: {}, temporal: {}, 'temporal-postgres': {}, 'temporal-elasticsearch': {} }, volumes: { postgres: {} } };
+  }, postgres: {}, redis: {}, temporal: { environment: { ENABLE_ES: 'false', ES_SEEDS: '', ES_VERSION: '' } }, 'temporal-postgres': {}, 'temporal-elasticsearch': { profiles: ['temporal-es'] } }, volumes: { postgres: {} } };
 }
 
 test('lean merged config is valid with no channels enabled; never asserts launch approval', () => {
@@ -45,6 +45,15 @@ test('floating images, missing persistence, unsafe flags and public DB ports fai
     (c) => { c.services.postgres.ports = [{ target: 5432, published: '5432' }]; },
     (c) => { delete c.services['temporal-postgres']; },
     (c) => { c.volumes = {}; },
+  ]) {
+    const config = valid(); mutate(config); assert.equal(checkLeanCompose(config).ok, false);
+  }
+});
+test('lean mode refuses to silently re-enable Temporal Elasticsearch', () => {
+  for (const mutate of [
+    (c) => { c.services.temporal.environment.ENABLE_ES = 'true'; },
+    (c) => { c.services.temporal.environment.ES_SEEDS = 'temporal-elasticsearch'; },
+    (c) => { c.services['temporal-elasticsearch'].profiles = []; },
   ]) {
     const config = valid(); mutate(config); assert.equal(checkLeanCompose(config).ok, false);
   }
