@@ -17,78 +17,65 @@ export default async function Page() {
     <LegalPage title={`About ${brand.name}`} subtitle={brand.tagline}>
       <Section heading={`What ${brand.name} is`}>
         <p>
-          <strong>
-            Social publishing infrastructure for humans and AI agents.
-          </strong>{' '}
-          {brand.name} gives creators, teams and agencies a complete workspace
-          to plan a content calendar, review and approve posts, publish across
-          connected channels, and measure what happened afterwards.
+          <strong>Social publishing for humans and AI agents.</strong>{' '}
+          {brand.name} brings planning, content review, scheduling and publishing
+          into a shared workspace for creators, teams and agencies.
         </p>
         <p>
-          The browser product remains the complete control surface. The same
-          publishing engine is being opened through programmable interfaces so
-          software and trusted agents can participate under the same permissions,
-          approvals and audit trail as people.
+          The workspace is built on BrightBean Studio. People use the browser;
+          software and trusted agents connect through REST and MCP. Workspace
+          permissions and configured approval requirements govern the publishing
+          workflow across these interfaces.
         </p>
       </Section>
 
-      <Section heading="One publishing system, every interface">
+      <Section heading="Choose your interface">
         <ul className="list-disc ps-[22px] flex flex-col gap-[6px]">
           <li>
-            <strong>Web.</strong> The complete product for planning, approvals,
-            publishing, analytics and administration.
+            <strong>Web.</strong> Plan the calendar, compose posts, organize media
+            and review work with your team.
           </li>
           <li>
-            <strong>API, MCP and SDK.</strong> First-class integration surfaces
-            for products and AI agents, built around the same publishing model.
+            <strong>REST API.</strong> Connect your own tools to workspace content
+            and publishing operations using scoped access.
           </li>
           <li>
-            <strong>CLI.</strong> A command-line interface is being completed for
-            automation, scripting and terminal-native workflows.
+            <strong>MCP.</strong> Give a compatible AI client access to the
+            workspace tools it is authorized to use.
           </li>
         </ul>
+        <p>
+          Channel connections, publishing and analytics depend on the configured
+          integrations, platform permissions and account requirements. See the{' '}
+          <Link className="underline" href="/status">launch status</Link> for
+          current availability.
+        </p>
       </Section>
 
-      <Section heading="Global by default, local when it matters">
-        <ul className="list-disc ps-[22px] flex flex-col gap-[6px]">
-          <li>
-            <strong>Arabic and bilingual publishing.</strong> The interface
-            supports right-to-left (RTL) layouts, and one workspace can plan,
-            approve and publish Arabic and English content side by side.
-          </li>
-          <li>
-            <strong>Regional voice.</strong> Dialect-aware content tools help
-            teams adapt a message without making one region the product default.
-          </li>
-          <li>
-            <strong>Calendars that understand context.</strong> Optional Hijri,
-            Ramadan and Eid planning layers sit alongside global scheduling.
-          </li>
-          <li>
-            <strong>Agency-shaped collaboration.</strong> Multiple client brands,
-            separate channel sets and approvals before anything goes out.
-          </li>
-        </ul>
+      <Section heading="Built for teams around the world">
+        <p>
+          Organize separate client workspaces, coordinate publishing times and
+          keep review decisions with the content. The product serves a global
+          audience of people and software working together.
+        </p>
       </Section>
 
       <Section heading="Open source">
         <p>
-          {brand.name} is {brand.upstream.attribution} and is itself distributed
-          under the {brand.upstream.license}. That means the software running
-          this service is free software, and you are entitled to its source code.
-          See the{' '}
+          The BrightBean-based workspace and this Postiz-derived website have
+          separate source repositories. Both retain their upstream authors&rsquo;
+          notices and are distributed under AGPL-3.0. See the{' '}
           <Link className="underline" href={brand.licensesUrl}>
             licences and source offer
           </Link>{' '}
-          page.
+          for each component and its source.
         </p>
       </Section>
 
       <Section heading="Contact">
         <p>
           Questions, feedback or partnership enquiries:{' '}
-          <ContactAddress kind="support" />
-          .
+          <ContactAddress kind="support" />.
         </p>
       </Section>
     </LegalPage>

@@ -4,8 +4,21 @@ The existing Cloudflare Pages project is **postdelegate**, served at
 `https://postdelegate.com`. The owned apex domain is active on that existing
 project; `https://postdelegate.pages.dev` remains its fallback/preview hostname.
 This is the public product preview, **not** the
-stateful application or an approved social-publishing service. Keep the established
-Docker + PostgreSQL + Redis + Temporal + R2 architecture for the actual app.
+stateful application or an approved social-publishing service.
+
+The application now uses the **BrightBean-based Django app, background worker and
+PostgreSQL**, packaged with Docker. The planned hosting is a small Hetzner server
+behind Cloudflare, with R2 for media. Redis and Temporal are not part of this
+launch architecture. The static marketing website remains in this repository;
+application work lives in the separate
+[PostDelegate BrightBean fork](https://github.com/khanjer496-alt/brightbean-studio).
+
+Local signup and the dashboard have been checked in a browser. This does not make
+the hosted beta available: Hetzner deployment is deferred, and public signup,
+social connections and publishing remain closed. The confirmed operator is
+**Nasida Apps LLC**. Working private contacts and social-platform approvals are
+still pending; keep policies visibly marked as drafts until the hosted service
+and its actual handling of customer data are finalized.
 
 ## Reproducible build
 
@@ -88,15 +101,17 @@ References: [Pages custom domains](https://developers.cloudflare.com/pages/confi
 
 ## Gates that this does not satisfy
 
-- `/api` remains absent; an HTTP 200 home-page fallback must not mask missing APIs.
+- `/api` is a public documentation hub. Runtime `/api/v1/` endpoints remain absent from the static export; missing backend routes must not fall back to the homepage.
 - Signup, payments and social account connections remain closed; `/auth` redirects
   to the truthful launch-status page, not a working account flow.
-- No fake domain mailboxes or legal operator are generated. Policy drafts stay
-  visibly marked; support/deletion pages explain that the private channels are not
-  active until actually configured and tested.
-- The full-app check `node ops/scripts/platform-access.mjs smoke <origin>` should
-  continue to fail against this preview. Passing the static export check is not
-  authorization to submit an app review or open customer access.
+- Nasida Apps LLC is the confirmed operator. Private support/privacy contacts
+  remain pending verification and end-to-end testing. Policy drafts stay visibly
+  marked; the contact pages must not imply those channels are operational.
+- Local browser verification of signup and the dashboard is not hosted launch
+  evidence. Hetzner deployment remains deferred.
+- Passing the static export check does not validate the separate BrightBean app,
+  establish platform approval or open customer access. App runtime, provider and
+  recovery checks belong to the BrightBean deployment.
 
 ## Account access observed on 9 September 2026
 
@@ -111,3 +126,41 @@ weakened and no browser credentials were extracted.
 
 No platform application has been submitted by this work. The prepared descriptions,
 scopes and recording guidance remain in [platform-access.md](platform-access.md).
+
+## BrightBean content review — 12 September 2026
+
+The landing source now uses an actual local workspace screenshot, shows the
+implemented Web/REST/MCP/client-review surfaces, and removes the fictional CLI,
+AI copilot and simulated verification claims. Platform icons match providers in
+the BrightBean code; they do not establish platform approval. The About and
+Licenses pages distinguish the BrightBean workspace from this inherited website.
+`NEXT_PUBLIC_WORKSPACE_URL` is separate from the public website origin and is
+used for BrightBean account links only when public-preview gating is disabled.
+
+The updated homepage was rendered locally from its TSX/SCSS and checked in
+Chrome at desktop and mobile widths, with its CTA reaching local signup. This
+local preview renderer is not the Next.js production export. The source changes
+and screenshot still require the normal reviewed export/CI and Pages deployment
+before they appear on the public domain. No live deployment was performed.
+
+
+## Resource pages and free tools — 12 September 2026
+
+Added 23 pages: four agent/API guides, eleven platform guides, two comparisons,
+two functional utilities and four directory pages. A grouped footer links to
+these destinations. The catch-all static route generates each from the typed
+content catalog; existing legal and status routes remain explicit pages.
+
+The free caption checker counts Unicode code points and whitespace-delimited
+words against a user-selected limit. The UTM builder validates HTTP(S) URLs,
+rejects embedded credentials, preserves unrelated query parameters and fragments,
+and replaces the three selected UTM tags. Both run locally in the browser; no
+input is transmitted or stored by the app. Client guides distinguish documented
+protocol support from actual client installation and live-publishing verification.
+
+Local verification: all 30 non-home public pages returned HTTP 200 with one H1;
+all local footer links resolved; caption/emoji/limit and UTM preservation/invalid
+URL cases passed; selected pages passed 390px layout checks; no JavaScript errors
+remained after correcting the local SSR/hydration harness. Sixteen existing/new
+public export and redirect checks passed. These results do not replace the full
+Next.js export, CI and Cloudflare Pages deployment, which remain pending.

@@ -3,14 +3,14 @@ import { brand } from '@gitroom/nashr-brand/brand.config';
 import styles from './landing.module.scss';
 
 const platforms = [
-  ['x', 'X'],
+  ['facebook', 'Facebook'],
   ['linkedin', 'LinkedIn'],
   ['instagram', 'Instagram'],
   ['youtube', 'YouTube'],
   ['tiktok', 'TikTok'],
   ['threads', 'Threads'],
   ['bluesky', 'Bluesky'],
-  ['reddit', 'Reddit'],
+  ['pinterest', 'Pinterest'],
 ] as const;
 
 export function PlatformSignals() {

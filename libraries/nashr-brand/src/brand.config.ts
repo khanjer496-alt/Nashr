@@ -16,7 +16,7 @@
  * - Every value has an empty-safe fallback so the app boots without any brand
  *   environment variables configured.
  *
- * PostDelegate is built on Postiz (https://github.com/gitroomhq/postiz-app) and is
+ * This website and legacy checkout are derived from Postiz (https://github.com/gitroomhq/postiz-app) and is
  * distributed under the AGPL-3.0. See `brand.upstream` and `/licenses`.
  */
 
@@ -105,6 +105,8 @@ export interface Brand {
   readonly description: string;
   readonly descriptionAr: string;
   readonly appUrl: string;
+  /** Separate BrightBean workspace origin; never used for website canonicals. */
+  readonly workspaceUrl: string;
   readonly domain: string;
   readonly supportEmail: string;
   readonly privacyEmail: string;
@@ -173,18 +175,19 @@ export const brand: Brand = {
     isConfigured: legalEntityName.length > 0,
   },
 
-  tagline: 'Social publishing infrastructure for humans and AI agents',
-  taglineAr: 'بنية تحتية للنشر الاجتماعي للبشر ووكلاء الذكاء الاصطناعي',
-  heroLine: 'Put every channel in motion.',
-  heroLineAr: 'حرّك كل قناة في مسار واحد.',
+  tagline: 'Social media scheduling for people and AI agents',
+  taglineAr: 'بنية تحتية للنشر الاجتماعي لوكلاء الذكاء الاصطناعي',
+  heroLine: 'Your social posts, handled.',
+  heroLineAr: 'دع وكلاءك ينشرون. واحتفظ بالتحكم.',
   campaignLine: 'Delegate the work. Keep control.',
   campaignLineAr: 'فوّض العمل. واحتفظ بالتحكم.',
   description:
-    'Plan, approve, automate and publish social content across every channel from one workspace.',
+    'Connect AI agents through REST and MCP to prepare and schedule social posts, with scoped access, approval controls and a web workspace for oversight.',
   descriptionAr:
-    'خطّط للمحتوى واعتمده وأتمته وانشره عبر جميع القنوات من مساحة عمل واحدة.',
+    'اربط وكلاء الذكاء الاصطناعي عبر REST وMCP لإعداد المنشورات الاجتماعية وجدولتها، مع صلاحيات محددة وضوابط اعتماد ومساحة عمل ويب للإشراف.',
 
   appUrl,
+  workspaceUrl: env(process.env.NEXT_PUBLIC_WORKSPACE_URL, 'https://app.postdelegate.com').replace(/\/+$/, ''),
   domain,
 
   // A hostname does not establish a working mailbox (especially pages.dev).
@@ -241,7 +244,7 @@ export const brand: Brand = {
     name: 'Postiz',
     url: 'https://github.com/gitroomhq/postiz-app',
     license: 'AGPL-3.0',
-    attribution: 'Built on Postiz (AGPL-3.0)',
+    attribution: 'Website derived from Postiz (AGPL-3.0)',
   },
 };
 

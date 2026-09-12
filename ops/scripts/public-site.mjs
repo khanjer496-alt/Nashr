@@ -6,14 +6,20 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { requireOrigin } from './platform-access.mjs';
 
 const root = fileURLToPath(new URL('../../', import.meta.url));
-export const publicPages = ['/', '/about', '/terms', '/privacy', '/licenses', '/support', '/data-deletion', '/status'];
-const files = ['postdelegate-mark.svg', 'postdelegate-logo.svg', 'postdelegate-logo-ar.svg', 'postdelegate-og.svg', 'favicon.svg', 'favicon.ico', 'apple-touch-icon.png'];
-const platforms = ['x', 'linkedin', 'instagram', 'youtube', 'tiktok', 'threads', 'bluesky', 'reddit'];
+export const publicPages = ['/', '/about', '/terms', '/privacy', '/licenses', '/support', '/data-deletion', '/status', '/agents', '/mcp', '/api', '/claude-cowork', '/codex', '/platforms', '/instagram-scheduler', '/linkedin-scheduler', '/facebook-scheduler', '/tiktok-scheduler', '/youtube-scheduler', '/bluesky-scheduler', '/threads-scheduler', '/pinterest-scheduler', '/google-business-scheduler', '/mastodon-scheduler', '/devto-scheduler', '/tools', '/tools/caption-checker', '/tools/utm-builder', '/compare', '/compare/postiz', '/compare/post-bridge'];
+const files = ['postdelegate-mark.svg', 'postdelegate-logo.svg', 'postdelegate-logo-ar.svg', 'postdelegate-og.svg', 'favicon.svg', 'favicon.ico', 'apple-touch-icon.png', 'postdelegate-workspace-preview.png', 'postdelegate-composer-preview.png'];
+const platforms = ['facebook', 'linkedin', 'instagram', 'youtube', 'tiktok', 'threads', 'bluesky', 'pinterest'];
 
 export function checkPublicConfig(env) {
   requireOrigin(env.NEXT_PUBLIC_APP_URL);
   if (!/^[a-f0-9]{40}$/.test(env.GITHUB_SHA || '')) throw new Error('Exact source commit is required');
   if (env.NEXT_PUBLIC_SOURCE_URL !== `https://github.com/khanjer496-alt/Nashr/tree/${env.GITHUB_SHA}`) throw new Error('Source offer must match this build');
+}
+
+export function createSitemap(origin) {
+  const base = requireOrigin(origin);
+  const urls = publicPages.map((path) => `<url><loc>${base}${path}</loc></url>`).join('');
+  return `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls}</urlset>\n`;
 }
 
 export function prepare(env = process.env) {
@@ -33,7 +39,8 @@ export function prepare(env = process.env) {
   Permissions-Policy: camera=(), microphone=(), geolocation=()
   Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'
 `);
-  writeFileSync(resolve(target, 'robots.txt'), 'User-agent: *\nDisallow: /auth\nDisallow: /api\n');
+  writeFileSync(resolve(target, 'robots.txt'), `User-agent: *\nDisallow: /auth\nDisallow: /api/v1/\nSitemap: ${requireOrigin(env.NEXT_PUBLIC_APP_URL)}/sitemap.xml\n`);
+  writeFileSync(resolve(target, 'sitemap.xml'), createSitemap(env.NEXT_PUBLIC_APP_URL));
   writeFileSync(resolve(target, 'deployment.json'), JSON.stringify({
     product: 'PostDelegate', scope: 'public-preview-only', sourceCommit: env.GITHUB_SHA,
     publicOrigin: requireOrigin(env.NEXT_PUBLIC_APP_URL),
@@ -57,7 +64,8 @@ export function inspectPage(path, html, sha, origin) {
   if (origin) {
     const expectedOrigin = requireOrigin(origin);
     const ogUrl = html.match(/<meta\s+property="og:url"\s+content="([^"]+)"\s*\/?\s*>/i)?.[1];
-    if (ogUrl !== expectedOrigin && ogUrl !== `${expectedOrigin}/`) errors.push('Open Graph URL does not match the public origin');
+    const allowedOgUrls = path === '/' ? [expectedOrigin, `${expectedOrigin}/`] : [expectedOrigin, `${expectedOrigin}/`, `${expectedOrigin}${path}`, `${expectedOrigin}${path}/`];
+    if (!allowedOgUrls.includes(ogUrl)) errors.push('Open Graph URL does not match the public origin');
     if (path === '/') {
       const canonical = html.match(/<link\s+rel="canonical"\s+href="([^"]+)"\s*\/?\s*>/i)?.[1];
       if (canonical !== expectedOrigin && canonical !== `${expectedOrigin}/`) errors.push('Homepage canonical does not match the public origin');
@@ -72,10 +80,10 @@ export function verify(directory = resolve(root, 'apps/public-site/out'), env = 
     const file = resolve(directory, path === '/' ? 'index.html' : `${path.slice(1)}.html`);
     return { path, errors: existsSync(file) ? inspectPage(path, readFileSync(file, 'utf8'), env.GITHUB_SHA, env.NEXT_PUBLIC_APP_URL) : ['Exported page missing'] };
   });
-  for (const file of ['404.html', '_headers', '_redirects', 'deployment.json', ...files]) {
+  for (const file of ['404.html', '_headers', '_redirects', 'deployment.json', 'robots.txt', 'sitemap.xml', ...files]) {
     checks.push({ path: file, errors: existsSync(resolve(directory, file)) ? [] : ['Required public asset missing'] });
   }
-  for (const path of ['api', 'api.html', 'auth.html', '.env', 'uploads', '.next/server']) {
+  for (const path of ['api/v1', 'auth.html', '.env', 'uploads', '.next/server']) {
     checks.push({ path, errors: existsSync(resolve(directory, path)) ? ['Private/runtime path must not be exported'] : [] });
   }
   return { ok: checks.every((c) => c.errors.length === 0), scope: 'public-preview-only', checks, notice: 'Not a full-app readiness check; policy drafts, backend and social approvals remain separate gates.' };

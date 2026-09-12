@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { checkPublicConfig, inspectPage } from '../../ops/scripts/public-site.mjs';
+import { checkPublicConfig, inspectPage, createSitemap } from '../../ops/scripts/public-site.mjs';
 
 const sha = 'a'.repeat(40);
 const env = { GITHUB_SHA: sha, NEXT_PUBLIC_APP_URL: 'https://postdelegate.com', NEXT_PUBLIC_SOURCE_URL: `https://github.com/khanjer496-alt/Nashr/tree/${sha}` };
@@ -31,4 +31,20 @@ test('the custom-domain build cannot retain pages.dev sharing metadata', () => {
 });
 test('subpages do not require a misleading homepage canonical', () => {
   assert.deepEqual(inspectPage('/about', 'PostDelegate<meta property="og:url" content="https://postdelegate.com"/>', sha, env.NEXT_PUBLIC_APP_URL), []);
+});
+
+test('sitemap contains public pages on the canonical host and no app endpoints', () => {
+  const xml = createSitemap('https://postdelegate.com');
+  assert.ok(xml.includes('<loc>https://postdelegate.com/</loc>'));
+  assert.ok(xml.includes('<loc>https://postdelegate.com/privacy</loc>'));
+  assert.ok(!xml.includes('/auth'));
+  assert.ok(xml.includes('<loc>https://postdelegate.com/api</loc>'));
+  assert.ok(!xml.includes('/api/v1'));
+  assert.ok(!xml.includes('localhost'));
+  assert.throws(() => createSitemap('https://postdelegate.com/path'));
+});
+
+test('resource pages may identify their own public URL for sharing', () => {
+  assert.deepEqual(inspectPage('/mcp', 'PostDelegate<meta property="og:url" content="https://postdelegate.com/mcp"/>', sha, env.NEXT_PUBLIC_APP_URL), []);
+  assert.ok(inspectPage('/mcp', 'PostDelegate<meta property="og:url" content="https://postdelegate.com/unrelated"/>', sha, env.NEXT_PUBLIC_APP_URL).length);
 });
